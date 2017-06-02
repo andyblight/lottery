@@ -20,12 +20,12 @@ def load_file(filename):
             lucky_stars.append(row[7])
 
 def frequency(max_num, ball_list):
-    print(ball_list)
+    # print(ball_list)
     frequency_of_balls = []
     for ball_number in range(1, max_num + 1):
         ball_count = 0
         for ball in ball_list:
-            print(ball_number, ball_count, ball)
+            # print(ball_number, ball_count, ball)
             if ball_number == int(ball):
                 ball_count += 1
         frequency_of_balls.append((ball_number, ball_count))
@@ -34,4 +34,5 @@ def frequency(max_num, ball_list):
 if __name__ == "__main__":
     # execute only if run as a script
     load_file('euromillions-draw-history.csv')
+    frequency(50, main_balls)
     frequency(12, lucky_stars)
