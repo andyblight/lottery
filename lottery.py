@@ -1,23 +1,14 @@
+"""
+TODO
+Frequency count for date ranges.
+
+"""
 import csv
+import datetime
+
 
 main_balls = []
 lucky_stars = []
-
-def load_file(filename):
-    with open(filename, newline='') as csvfile:
-        filereader = csv.reader(csvfile, delimiter=',', quotechar='|')
-        first_row = True
-        for row in filereader:
-            if first_row:
-                first_row = False
-                continue
-            main_balls.append(row[1])
-            main_balls.append(row[2])
-            main_balls.append(row[3])
-            main_balls.append(row[4])
-            main_balls.append(row[5])
-            lucky_stars.append(row[6])
-            lucky_stars.append(row[7])
 
 def frequency(max_num, ball_list):
     # print(ball_list)
@@ -31,8 +22,31 @@ def frequency(max_num, ball_list):
         frequency_of_balls.append((ball_number, ball_count))
     print(frequency_of_balls)
 
-if __name__ == "__main__":
-    # execute only if run as a script
-    load_file('euromillions-draw-history.csv')
+def convert_str_to_date(date_str):
+    formatter_string = "%d-%b-%Y" 
+    date_object = datetime.datetime.strptime(date_str, formatter_string).date()
+    return date_object
+
+def frequency_in_date_range(filereader, date_from_str, date_to_str):
+    print("From", date_from_str, "to", date_to_str)
+    date_from = convert_str_to_date(date_from_str)
+    date_to = convert_str_to_date(date_to_str)
+    print("Converted: From", date_from, "to", date_to)
+    #for row in filereader:
+#        row_date = date
+#        if (row[0] )
+#            print(row)
+
+def process_data(filereader):
+    frequency_in_date_range(filereader, "23-Jan-2017", "23-Feb-2017")
     frequency(50, main_balls)
     frequency(12, lucky_stars)
+
+def run(filename):
+    with open(filename, newline='') as csvfile:
+        filereader = csv.reader(csvfile, delimiter=',', quotechar='|')
+        process_data(filereader)
+
+if __name__ == "__main__":
+    # execute only if run as a script
+    run('euromillions-draw-history.csv')
