@@ -1,8 +1,3 @@
-"""
-TODO
-Frequency count for various date ranges from the first entry in the file.
-
-"""
 import csv
 import datetime
 
@@ -20,6 +15,7 @@ def frequency(max_num, ball_list):
     print(frequency_of_balls)
 
 def convert_str_to_date(date_str):
+    print("date_str", date_str)
     formatter_string = "%d-%b-%Y"
     date_object = datetime.datetime.strptime(date_str, formatter_string).date()
     return date_object
@@ -71,10 +67,31 @@ def process_data(filereader):
     earliest_date = latest_date + datetime.timedelta(days=-30)
     frequency_in_date_range(filereader, earliest_date, latest_date)
 
+def AddEuroMillionsRow(row):
+    EuroMillionsEntry = collections.namedtuple('EuroMillionsEntry', ['draw_date', 'main_1', 'main_2', 'main_3', 'main_4', 'main_5', 'lucky_1', 'lucky_2'])
+    e = EuroMillionsEntry
+    e.draw_date = convert_str_to_date(str(row[0]))
+    e.main_1 = int(row[1])
+    e.main_2 = int(row[2])
+    e.main_3 = int(row[3])
+    e.main_4 = int(row[4])
+    e.main_5 = int(row[5])
+    e.lucky_1 = int(row[6])
+    e.lucky_2 = int(row[7])
+    return e
+
 def run(filename):
     with open(filename, newline='') as csvfile:
         filereader = csv.reader(csvfile, delimiter=',', quotechar='|')
-        process_data(filereader)
+        file_data = []
+        ignore_header = True
+        for row in filereader:
+            if ignore_header:
+                ignore_header = False
+                continue
+            file_data.append(AddEuroMillionsRow(row))
+        print(file_data)
+        # process_data(filereader)
 
 if __name__ == "__main__":
     # execute only if run as a script
