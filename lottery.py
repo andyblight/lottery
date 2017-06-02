@@ -1,14 +1,11 @@
 """
 TODO
-Frequency count for date ranges.
+Frequency count for various date ranges from the first entry in the file.
 
 """
 import csv
 import datetime
 
-
-main_balls = []
-lucky_stars = []
 
 def frequency(max_num, ball_list):
     # print(ball_list)
@@ -27,7 +24,7 @@ def convert_str_to_date(date_str):
     date_object = datetime.datetime.strptime(date_str, formatter_string).date()
     return date_object
 
-def copy_row_data_to_lists(row):
+def copy_row_data_to_lists(row, main_balls, lucky_stars):
     print(row)
     main_balls.append(row[1])
     main_balls.append(row[2])
@@ -37,12 +34,11 @@ def copy_row_data_to_lists(row):
     lucky_stars.append(row[6])
     lucky_stars.append(row[7])
 
-def frequency_in_date_range(filereader, date_from_str, date_to_str):
-    print("From", date_from_str, "to", date_to_str)
-    date_from = convert_str_to_date(date_from_str)
-    date_to = convert_str_to_date(date_to_str)
-    # print("Converted: From", date_from, "to", date_to)
+def frequency_in_date_range(filereader, date_from, date_to):
+    print("From", date_from, "to", date_to)
+    main_balls = []
     first_row = True
+    lucky_stars = []
     for row in filereader:
         if first_row:
             first_row = False
@@ -52,12 +48,28 @@ def frequency_in_date_range(filereader, date_from_str, date_to_str):
         row_date = convert_str_to_date(row_date_str)
         # print("Converted: row date", row_date)
         if (row_date >= date_from and row_date <= date_to):
-            copy_row_data_to_lists(row)
-
-def process_data(filereader):
-    frequency_in_date_range(filereader, "23-Jan-2017", "23-Feb-2017")
+            copy_row_data_to_lists(row, main_balls, lucky_stars)
     frequency(50, main_balls)
     frequency(12, lucky_stars)
+
+def get_latest_date(filereader):
+    """ The latest date is the first element on the second row"""
+    header = True
+    for row in filereader:
+        if header:
+            header = False
+            continue
+        # Second row
+        row_date_str = str(row[0])
+        # print("row date", row_date_str)
+        latest_date = convert_str_to_date(row_date_str)
+        break
+    return latest_date
+
+def process_data(filereader):
+    latest_date = get_latest_date(filereader)
+    earliest_date = latest_date + datetime.timedelta(days=-30)
+    frequency_in_date_range(filereader, earliest_date, latest_date)
 
 def run(filename):
     with open(filename, newline='') as csvfile:
