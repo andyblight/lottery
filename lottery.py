@@ -23,19 +23,36 @@ def frequency(max_num, ball_list):
     print(frequency_of_balls)
 
 def convert_str_to_date(date_str):
-    formatter_string = "%d-%b-%Y" 
+    formatter_string = "%d-%b-%Y"
     date_object = datetime.datetime.strptime(date_str, formatter_string).date()
     return date_object
+
+def copy_row_data_to_lists(row):
+    print(row)
+    main_balls.append(row[1])
+    main_balls.append(row[2])
+    main_balls.append(row[3])
+    main_balls.append(row[4])
+    main_balls.append(row[5])
+    lucky_stars.append(row[6])
+    lucky_stars.append(row[7])
 
 def frequency_in_date_range(filereader, date_from_str, date_to_str):
     print("From", date_from_str, "to", date_to_str)
     date_from = convert_str_to_date(date_from_str)
     date_to = convert_str_to_date(date_to_str)
-    print("Converted: From", date_from, "to", date_to)
-    #for row in filereader:
-#        row_date = date
-#        if (row[0] )
-#            print(row)
+    # print("Converted: From", date_from, "to", date_to)
+    first_row = True
+    for row in filereader:
+        if first_row:
+            first_row = False
+            continue
+        row_date_str = str(row[0])
+        # print("row date", row_date_str)
+        row_date = convert_str_to_date(row_date_str)
+        # print("Converted: row date", row_date)
+        if (row_date >= date_from and row_date <= date_to):
+            copy_row_data_to_lists(row)
 
 def process_data(filereader):
     frequency_in_date_range(filereader, "23-Jan-2017", "23-Feb-2017")
