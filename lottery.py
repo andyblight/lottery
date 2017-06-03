@@ -5,9 +5,11 @@ TODO
 
 """
 
-import collections
 import csv
 import datetime
+
+from lottery_results import LotteryResults
+from lottery_utils import convert_str_to_date
 
 
 def frequency(max_num, ball_list):
@@ -22,13 +24,6 @@ def frequency(max_num, ball_list):
                 ball_count += 1
         frequency_of_balls.append((ball_number, ball_count))
     print(frequency_of_balls)
-
-def convert_str_to_date(date_str):
-    """ TODO """
-    print("date_str", date_str)
-    formatter_string = "%d-%b-%Y"
-    date_object = datetime.datetime.strptime(date_str, formatter_string).date()
-    return date_object
 
 def copy_row_data_to_lists(row, main_balls, lucky_stars):
     """ TODO """
@@ -60,54 +55,25 @@ def frequency_in_date_range(filereader, date_from, date_to):
     frequency(50, main_balls)
     frequency(12, lucky_stars)
 
-def get_latest_date(filereader):
-    """ The latest date is the first element on the second row"""
-    header = True
-    for row in filereader:
-        if header:
-            header = False
-            continue
-        # Second row
-        row_date_str = str(row[0])
-        # print("row date", row_date_str)
-        latest_date = convert_str_to_date(row_date_str)
-        break
-    return latest_date
-
-def process_data(filereader):
+def process_data(results):
     """ TODO """
-    latest_date = get_latest_date(filereader)
+    latest_date = results.get_latest_date()
     earliest_date = latest_date + datetime.timedelta(days=-30)
-    frequency_in_date_range(filereader, earliest_date, latest_date)
-
-def add_euro_millions_row(row):
-    """ TODO """
-    euro_millions_entry = collections.namedtuple('euro_millions_entry', \
-			['draw_date', 'main_1', 'main_2', 'main_3', 'main_4', 'main_5', \
-			'lucky_1', 'lucky_2'])
-    euro_millions_entry.draw_date = convert_str_to_date(str(row[0]))
-    euro_millions_entry.main_1 = int(row[1])
-    euro_millions_entry.main_2 = int(row[2])
-    euro_millions_entry.main_3 = int(row[3])
-    euro_millions_entry.main_4 = int(row[4])
-    euro_millions_entry.main_5 = int(row[5])
-    euro_millions_entry.lucky_1 = int(row[6])
-    euro_millions_entry.lucky_2 = int(row[7])
-    return euro_millions_entry
+    frequency_in_date_range(file_data, earliest_date, latest_date)
 
 def run(filename):
-    """ TODO """
+    """ Reads the data from the given file into the results instance """
+    results = LotteryResults()
     with open(filename, newline='') as csvfile:
         filereader = csv.reader(csvfile, delimiter=',', quotechar='|')
-        file_data = []
         ignore_header = True
         for row in filereader:
             if ignore_header:
+                results.parse_header(row)
                 ignore_header = False
                 continue
-            file_data.append(add_euro_millions_row(row))
-        print(file_data)
-        # process_data(filereader)
+            results.parse_row(row)
+    process_data(results)
 
 if __name__ == "__main__":
     # execute only if run as a script
