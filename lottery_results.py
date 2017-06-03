@@ -57,25 +57,21 @@ class LotteryResults:
 
     def get_latest_date(self):
         """ The latest date is the first element on the first row of results """
-        print("Latest: ", self.results[0].draw_date)
+        # print("Latest: ", self.results[0].draw_date)
         return self.results[0].draw_date
 
-    def get_main_balls_in_row(self, row):
-        """ TODO """
-        result = []
-        result.append(row[1])
-        result.append(row[2])
-        result.append(row[3])
-        result.append(row[4])
-        result.append(row[5])
-        return result
+    def get_main_balls_in_row(self, row, main_balls):
+        """ Appends all main balls to the given list """
+        main_balls.append(row.main_1)
+        main_balls.append(row.main_2)
+        main_balls.append(row.main_3)
+        main_balls.append(row.main_4)
+        main_balls.append(row.main_5)
 
-    def get_lucky_stars_in_row(self, row):
-        """ TODO """
-        result = []
-        result.append(row.lucky_1)
-        result.append(row.lucky_2)
-        return result
+    def get_lucky_stars_in_row(self, row, lucky_stars):
+        """ Appends all lucky star balls to the given list """
+        lucky_stars.append(row.lucky_1)
+        lucky_stars.append(row.lucky_2)
 
     def frequency_in_date_range(self, date_from, date_to):
         """ TODO """
@@ -84,7 +80,7 @@ class LotteryResults:
         lucky_stars = []
         for row in self.results:
             if row.draw_date >= date_from and row.draw_date <= date_to:
-                main_balls.append(self.get_main_balls_in_row(row))
-                lucky_stars.append(self.get_lucky_stars_in_row(row))
+                self.get_main_balls_in_row(row, main_balls)
+                self.get_lucky_stars_in_row(row, lucky_stars)
         frequency(50, main_balls)
         frequency(12, lucky_stars)
