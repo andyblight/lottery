@@ -24,17 +24,23 @@ from lottery_utils import frequency
 
 def frequency_in_date_range(results, date_from, date_to):
     """ TODO """
-    print("From", date_from, "to", date_to)
+    print("Ball frequency from", date_from, "to", date_to)
     balls = results.get_lottery().get_balls_in_date_range(date_from, date_to)
-    frequency(50, balls[0])
-    frequency(12, balls[1])
+    ball_sets = results.get_lottery().get_ball_sets()
+    ii = 0
+    for ball_set in ball_sets:
+        print("Set of balls:", ball_set.get_name())
+        num_balls = ball_set.get_num_balls()
+        frequency(num_balls, balls[ii])
+        ii += 1
 
 def process_data(results):
     """ TODO """
+    print("Lottery name:", results.get_lottery().get_name())
     date_range = results.get_lottery().get_date_range()
-    print("date_range:", date_range)
-    latest_date = date_range[1]
-    earliest_date = latest_date + datetime.timedelta(days=-60)
+    print("Results in file date range:", date_range)
+    earliest_date = date_range[0]
+    latest_date = earliest_date + datetime.timedelta(days=60)
     frequency_in_date_range(results, earliest_date, latest_date)
 
 def run(filename):

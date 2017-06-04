@@ -1,6 +1,5 @@
 #!/usr/bin/python3.6
 
-from _thread import _count
 import collections
 import csv
 import sys
@@ -10,15 +9,21 @@ from lottery_utils import convert_str_to_date, frequency
 
 class SetOfBalls:
     """ Information about the set of balls. """
-    _count = 0
+    _num_balls = 0
+    _name = ""
 
-    def __init__(self, count):
+    def __init__(self, name, num_balls):
         """ Initialises the class. """
-        _count = count
+        self._num_balls = num_balls
+        self._name = name
 
-    def get_count(self):
+    def get_num_balls(self):
         """ Return the number of balls in the set. """
-        return _count
+        return self._num_balls
+
+    def get_name(self):
+        """ Return the number of balls in the set. """
+        return self._name
 
 
 class Lottery:
@@ -36,7 +41,7 @@ class Lottery:
         self._name = 'default'
         self.results = []
         self._num_rows = 0
-        self._main_balls = SetOfBalls(10)
+        self._balls = SetOfBalls('default', 10)
 
     def get_name(self):
         """ Returns the name of the lottery. """
@@ -46,9 +51,9 @@ class Lottery:
         """ Returns True if the header row is for this lottery """
         return False
 
-    def get_set_of_balls(self):
-        """ Returns a set of balls.. """
-        return self._set_of_balls
+    def get_ball_sets(self):
+        """ Returns all sets of balls for this lottery. """
+        return (self._balls)
 
     def get_date_range(self):
         """ Returns a tuple containing the earliest and latest dates in the results. """
@@ -66,8 +71,8 @@ EuroMillionsRow = collections.namedtuple('EuroMillionsRow', \
 
 class LotteryEuroMillions(Lottery):
     """ The Euro Millions lottery. """
-    _main_balls = SetOfBalls(50)
-    _lucky_star_balls = SetOfBalls(12)
+    _main_balls = SetOfBalls("main", 50)
+    _lucky_star_balls = SetOfBalls("lucky stars", 12)
 
     def __init__(self):
         self._name = "EuroMillions"
@@ -77,8 +82,8 @@ class LotteryEuroMillions(Lottery):
         """ Returns True if the header row is for this lottery """
         return str(row[6]) == 'Lucky Star 1'
 
-    def get_balls(self):
-        """ Returns a set of balls.. """
+    def get_ball_sets(self):
+        """ Returns all sets of balls for this lottery. """
         return (self._main_balls, self._lucky_star_balls)
 
     def parse_row(self, row):
@@ -110,8 +115,8 @@ class LotteryEuroMillions(Lottery):
 
     def get_date_range(self):
         """ Returns a tuple containing the earliest and latest dates in the results. """
-        earliest = self.results[0].draw_date
-        latest = self.results[self._num_rows - 1].draw_date
+        latest = self.results[0].draw_date
+        earliest = self.results[self._num_rows - 1].draw_date
         return (earliest, latest)
 
 
