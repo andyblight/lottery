@@ -29,13 +29,13 @@ class Lottery:
     """
     _name = ""
     results = []
-    num_rows = 0
+    _num_rows = 0
 
     def __init__(self):
         """ Initialises the class. """
         self._name = 'default'
         self.results = []
-        self.num_rows = 0
+        self._num_rows = 0
         self._main_balls = SetOfBalls(10)
 
     def get_name(self):
@@ -88,7 +88,7 @@ class LotteryEuroMillions(Lottery):
                                int(row[4]), int(row[5]), int(row[6]), \
                                int(row[7]))
         self.results.append(euro)
-        self.num_rows += 1
+        self._num_rows += 1
 
     def get_balls_in_date_range(self, date_from, date_to):
         """ Gets the a tuple containing the sets of balls in the give date 
@@ -111,7 +111,7 @@ class LotteryEuroMillions(Lottery):
     def get_date_range(self):
         """ Returns a tuple containing the earliest and latest dates in the results. """
         earliest = self.results[0].draw_date
-        latest = self.results[0].draw_date
+        latest = self.results[self._num_rows - 1].draw_date
         return (earliest, latest)
 
 

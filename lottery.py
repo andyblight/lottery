@@ -32,6 +32,7 @@ def frequency_in_date_range(results, date_from, date_to):
 def process_data(results):
     """ TODO """
     date_range = results.get_lottery().get_date_range()
+    print("date_range:", date_range)
     latest_date = date_range[1]
     earliest_date = latest_date + datetime.timedelta(days=-60)
     frequency_in_date_range(results, earliest_date, latest_date)
