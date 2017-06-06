@@ -34,13 +34,13 @@ class Lottery:
     """
     _name = ""
     results = []
-    _num_rows = 0
+    _num_draws = 0
 
     def __init__(self):
         """ Initialises the class. """
         self._name = 'default'
         self.results = []
-        self._num_rows = 0
+        self._num_draws = 0
         self._balls = SetOfBalls('default', 10)
 
     def get_name(self):
@@ -60,11 +60,19 @@ class Lottery:
         return (0, 0)
 
     def get_balls_in_date_range(self, date_from, date_to):
-        """ Gets the a tuple containing the sets of balls in the give date 
+        """ Returns a tuple containing the sets of balls in the give date 
         range. """
         return (0)
 
-EuroMillionsRow = collections.namedtuple('EuroMillionsRow', \
+    def get_draws_in_date_range(self, date_from, date_to):
+        """ Returns a tuple of lottery_draws in the give date range. """
+        return (0)
+
+    def print_draw(self, draw):
+        print("TODO")
+
+
+EuroMillionsDraw = collections.namedtuple('EuroMillionsDraw', \
         ['draw_date', 'main_1', 'main_2', 'main_3', 'main_4', 'main_5', \
         'lucky_1', 'lucky_2'])
 
@@ -88,36 +96,52 @@ class LotteryEuroMillions(Lottery):
 
     def parse_row(self, row):
         """ Read row data and copy into EuroMillions tuple """
-        euro = EuroMillionsRow(convert_str_to_date(str(row[0])), \
-                               int(row[1]), int(row[2]), int(row[3]), \
-                               int(row[4]), int(row[5]), int(row[6]), \
-                               int(row[7]))
+        euro = EuroMillionsDraw(convert_str_to_date(str(row[0])), \
+                                int(row[1]), int(row[2]), int(row[3]), \
+                                int(row[4]), int(row[5]), int(row[6]), \
+                                int(row[7]))
         self.results.append(euro)
-        self._num_rows += 1
+        self._num_draws += 1
 
     def get_balls_in_date_range(self, date_from, date_to):
-        """ Gets the a tuple containing the sets of balls in the give date 
+        """ Returns a tuple containing the sets of balls in the give date 
         range. """
         main_balls = []
         lucky_stars = []
-        for row in self.results:
-            if row.draw_date >= date_from and row.draw_date <= date_to:
+        for lottery_draw in self.results:
+            if lottery_draw.draw_date >= date_from and lottery_draw.draw_date <= date_to:
                 """ Appends all main balls to the given list """
-                main_balls.append(row.main_1)
-                main_balls.append(row.main_2)
-                main_balls.append(row.main_3)
-                main_balls.append(row.main_4)
-                main_balls.append(row.main_5)
+                main_balls.append(lottery_draw.main_1)
+                main_balls.append(lottery_draw.main_2)
+                main_balls.append(lottery_draw.main_3)
+                main_balls.append(lottery_draw.main_4)
+                main_balls.append(lottery_draw.main_5)
                 """ Appends all lucky star balls to the given list """
-                lucky_stars.append(row.lucky_1)
-                lucky_stars.append(row.lucky_2)
+                lucky_stars.append(lottery_draw.lucky_1)
+                lucky_stars.append(lottery_draw.lucky_2)
         return (main_balls, lucky_stars)
 
     def get_date_range(self):
         """ Returns a tuple containing the earliest and latest dates in the results. """
         latest = self.results[0].draw_date
-        earliest = self.results[self._num_rows - 1].draw_date
+        earliest = self.results[self._num_draws - 1].draw_date
         return (earliest, latest)
+
+    def get_draws_in_date_range(self, date_from, date_to):
+        """ Returns a tuple of lottery_draws in the give date range. """
+        lottery_draws = []
+        for lottery_draw in self.results:
+            if lottery_draw.draw_date >= date_from and lottery_draw.draw_date <= date_to:
+                lottery_draws.append(lottery_draw)
+        return lottery_draws
+
+    def print_draw(self, lottery_draw):
+        """ Print the given draw. """
+        print("Date", lottery_draw.draw_date, \
+              "main", lottery_draw.main_1, lottery_draw.main_2, \
+              lottery_draw.main_3, lottery_draw.main_4, \
+              lottery_draw.main_5, "lucky stars", \
+              lottery_draw.lucky_1, lottery_draw.lucky_2)
 
 
 class LotteryResults:

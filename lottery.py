@@ -34,14 +34,26 @@ def frequency_in_date_range(results, date_from, date_to):
         frequency(num_balls, balls[ii])
         ii += 1
 
+def print_draws_in_date_range(results, date_from, date_to):
+    """ Prints the draws in the given date range. """
+    print("Draws in range from", date_from, "to", date_to)
+    lottery_draws = results.get_lottery().get_draws_in_date_range(date_from, date_to)
+    for lottery_draw in lottery_draws:
+        results.get_lottery().print_draw(lottery_draw)
+
 def process_data(results):
     """ TODO """
     print("Lottery name:", results.get_lottery().get_name())
     date_range = results.get_lottery().get_date_range()
-    print("Results in file date range:", date_range)
+    print("Results in file from", date_range[0].isoformat(), "to", date_range[1].isoformat())
+    # Print frequency of balls in range
     earliest_date = date_range[0]
-    latest_date = earliest_date + datetime.timedelta(days=60)
+    latest_date = earliest_date + datetime.timedelta(days=150)
     frequency_in_date_range(results, earliest_date, latest_date)
+    # Print draws after end of chosen range
+    draw_date_to = date_range[1]
+    draw_date_from = date_range[1] - datetime.timedelta(days=30)
+    print_draws_in_date_range(results, draw_date_from, draw_date_to)
 
 def run(filename):
     """ Reads the data from the given file into the results instance """
