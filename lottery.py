@@ -52,7 +52,7 @@ def process_data(results):
     frequency_in_date_range(results, earliest_date, latest_date)
     # Print draws after end of chosen range
     draw_date_to = date_range[1]
-    draw_date_from = date_range[1] - datetime.timedelta(days=30)
+    draw_date_from = latest_date + datetime.timedelta(days=1)
     print_draws_in_date_range(results, draw_date_from, draw_date_to)
 
 def run(filename):

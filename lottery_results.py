@@ -137,11 +137,10 @@ class LotteryEuroMillions(Lottery):
 
     def print_draw(self, lottery_draw):
         """ Print the given draw. """
-        print("Date", lottery_draw.draw_date, \
-              "main", lottery_draw.main_1, lottery_draw.main_2, \
-              lottery_draw.main_3, lottery_draw.main_4, \
-              lottery_draw.main_5, "lucky stars", \
-              lottery_draw.lucky_1, lottery_draw.lucky_2)
+        print('Date {0}  Main {1:2d} {2:2d} {3:2d} {4:2d} {5:2d}  Lucky stars {6:2d} {7:2d}'.format(\
+            lottery_draw.draw_date, lottery_draw.main_1, lottery_draw.main_2, \
+            lottery_draw.main_3, lottery_draw.main_4, lottery_draw.main_5, \
+            lottery_draw.lucky_1, lottery_draw.lucky_2))
 
 
 class LotteryResults:
