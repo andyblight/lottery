@@ -17,10 +17,40 @@ Print out the most likely numbers for the next n draws.
 
 """
 
+import copy
 import datetime
 
 from lottery_results import LotteryResults
 from lottery_utils import frequency
+
+def most_likely_balls(ball_set_in, max_balls):
+    """ Select most likely balls. """
+    expected = [(9, 12), (3, 10), (2, 10)]
+    print("expected", expected)
+    # Copy the ball set to stop the given ball set being modified
+    ball_set = copy.deepcopy(ball_set_in)
+    most = []
+    for num_balls in range(0, max_balls):
+        # Find the highest ball value in the set
+        highest_value = 0
+        highest_index = 0
+        for index in range(0, len(ball_set)):
+            ball_set_info = ball_set[index]
+            if highest_value < ball_set_info[1]:
+                highest_value < ball_set_info[1]
+                highest_index = index
+        # Found the first ball in the list with the highest value
+        print("Highest", ball_set[highest_index])
+        most.append(ball_set[highest_index])
+        del ball_set[highest_index]
+    return most
+
+def least_likely_balls(ball_set, max):
+    """ Select least likely balls. """
+    expected = [(1, 5), (7, 3), (10, 5)]
+    print("expected", expected)
+    best_list = []
+    return best_list
 
 def frequency_in_date_range(results, date_from, date_to):
     """ TODO """
@@ -31,7 +61,12 @@ def frequency_in_date_range(results, date_from, date_to):
     for ball_set in ball_sets:
         print("Set of balls:", ball_set.get_name())
         num_balls = ball_set.get_num_balls()
-        frequency(num_balls, balls[ii])
+        frequency_of_balls = frequency(num_balls, balls[ii])
+        print(frequency_of_balls)
+        most_likely = most_likely_balls(frequency_of_balls, 2)
+        print("Most likely", most_likely)
+        least_likely = least_likely_balls(frequency_of_balls, 2)
+        print("Least likely", least_likely)
         ii += 1
 
 def print_draws_in_date_range(results, date_from, date_to):

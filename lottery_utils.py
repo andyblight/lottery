@@ -23,4 +23,4 @@ def frequency(max_num, ball_list):
             if ball_number == ball:
                 ball_count += 1
         frequency_of_balls.append((ball_number, ball_count))
-    print(frequency_of_balls)
+    return frequency_of_balls
