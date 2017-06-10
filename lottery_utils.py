@@ -2,6 +2,7 @@
 Utility functions for dealing with Lottery csv files.
 """
 
+import copy
 import datetime
 
 
@@ -13,7 +14,7 @@ def convert_str_to_date(date_str):
     return date_object
 
 def frequency(max_num, ball_list):
-    """ TODO """
+    """ Creates a list of frequencies from the given ball list """
     # print(ball_list)
     frequency_of_balls = []
     for ball_number in range(1, max_num + 1):
@@ -24,3 +25,48 @@ def frequency(max_num, ball_list):
                 ball_count += 1
         frequency_of_balls.append((ball_number, ball_count))
     return frequency_of_balls
+
+def most_likely_balls(ball_set_in, max_balls):
+    """ Select most likely balls. """
+    # expected = [(9, 12), (2, 10), (3, 10)]
+    # print("expected", expected)
+    # Copy the ball set to stop the given ball set being modified
+    ball_set = copy.deepcopy(ball_set_in)
+    most = []
+    for num_balls in range(0, max_balls + 1):
+        # Find the highest ball value in the set
+        highest_value = 0
+        highest_index = 0
+        for index in range(0, len(ball_set)):
+            ball_set_info = ball_set[index]
+            if highest_value < ball_set_info[1]:
+                highest_value = ball_set_info[1]
+                highest_index = index
+        # Found the first ball in the list with the highest value
+        # print("Highest", ball_set[highest_index])
+        most.append(ball_set[highest_index])
+        del ball_set[highest_index]
+    return most
+
+def least_likely_balls(ball_set_in, max_balls):
+    """ Select least likely balls. """
+    # expected = [(1, 5), (7, 3), (10, 5)]
+    # print("expected", expected)
+    # Copy the ball set to stop the given ball set being modified
+    ball_set = copy.deepcopy(ball_set_in)
+    least_likely = []
+    for num_balls in range(0, max_balls + 1):
+        # Find the lowest ball value in the set
+        lowest_value = 1000
+        lowest_index = 0
+        for index in range(0, len(ball_set)):
+            ball_set_info = ball_set[index]
+            if lowest_value > ball_set_info[1]:
+                lowest_value = ball_set_info[1]
+                lowest_index = index
+        # Found the first ball in the list with the highest value
+        # print("Lowest", ball_set[lowest_index])
+        least_likely.append(ball_set[lowest_index])
+        del ball_set[lowest_index]
+    return least_likely
+
