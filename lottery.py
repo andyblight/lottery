@@ -25,8 +25,8 @@ from lottery_utils import frequency
 
 def most_likely_balls(ball_set_in, max_balls):
     """ Select most likely balls. """
-    expected = [(9, 12), (2, 10), (3, 10)]
-    print("expected", expected)
+    # expected = [(9, 12), (2, 10), (3, 10)]
+    # print("expected", expected)
     # Copy the ball set to stop the given ball set being modified
     ball_set = copy.deepcopy(ball_set_in)
     most = []
@@ -40,17 +40,32 @@ def most_likely_balls(ball_set_in, max_balls):
                 highest_value = ball_set_info[1]
                 highest_index = index
         # Found the first ball in the list with the highest value
-        print("Highest", ball_set[highest_index])
+        # print("Highest", ball_set[highest_index])
         most.append(ball_set[highest_index])
         del ball_set[highest_index]
     return most
 
-def least_likely_balls(ball_set, max):
+def least_likely_balls(ball_set_in, max_balls):
     """ Select least likely balls. """
-    expected = [(1, 5), (7, 3), (10, 5)]
-    print("expected", expected)
-    best_list = []
-    return best_list
+    # expected = [(1, 5), (7, 3), (10, 5)]
+    # print("expected", expected)
+    # Copy the ball set to stop the given ball set being modified
+    ball_set = copy.deepcopy(ball_set_in)
+    least_likely = []
+    for num_balls in range(0, max_balls + 1):
+        # Find the lowest ball value in the set
+        lowest_value = 1000
+        lowest_index = 0
+        for index in range(0, len(ball_set)):
+            ball_set_info = ball_set[index]
+            if lowest_value > ball_set_info[1]:
+                lowest_value = ball_set_info[1]
+                lowest_index = index
+        # Found the first ball in the list with the highest value
+        # print("Lowest", ball_set[lowest_index])
+        least_likely.append(ball_set[lowest_index])
+        del ball_set[lowest_index]
+    return least_likely
 
 def frequency_in_date_range(results, date_from, date_to):
     """ TODO """
