@@ -25,19 +25,19 @@ from lottery_utils import frequency
 
 def most_likely_balls(ball_set_in, max_balls):
     """ Select most likely balls. """
-    expected = [(9, 12), (3, 10), (2, 10)]
+    expected = [(9, 12), (2, 10), (3, 10)]
     print("expected", expected)
     # Copy the ball set to stop the given ball set being modified
     ball_set = copy.deepcopy(ball_set_in)
     most = []
-    for num_balls in range(0, max_balls):
+    for num_balls in range(0, max_balls + 1):
         # Find the highest ball value in the set
         highest_value = 0
         highest_index = 0
         for index in range(0, len(ball_set)):
             ball_set_info = ball_set[index]
             if highest_value < ball_set_info[1]:
-                highest_value < ball_set_info[1]
+                highest_value = ball_set_info[1]
                 highest_index = index
         # Found the first ball in the list with the highest value
         print("Highest", ball_set[highest_index])
