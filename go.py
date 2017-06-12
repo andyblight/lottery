@@ -23,30 +23,32 @@ import datetime
 from lottery_results import LotteryResults
 from lottery_utils import frequency, most_likely_balls, least_likely_balls
 
-def print_ticket_for_next_lottery(results):
-    """ Prints a ticket with a number of lines for the next draw. """
-    print("Ticket for next lottery:")
-    lottery = results.get_lottery()
-    lottery_draw = lottery.get_draw('12/02/2017', 1, 2, 3 ,4 , 5, 6, 7)
-    lottery.print_draw(lottery_draw)
-
-
 def ball_stats_in_date_range(results, date_from, date_to):
     """ Prints the statistics about the balls for all ball sets for the given range. """
-    print("Ball frequency from", date_from, "to", date_to)
+    # print("Ball frequency from", date_from, "to", date_to)
     balls = results.get_lottery().get_balls_in_date_range(date_from, date_to)
     ball_sets = results.get_lottery().get_ball_sets()
     ii = 0
+    ball_stats = []
     for ball_set in ball_sets:
-        print("Set of balls:", ball_set.get_name())
+        # print("Set of balls:", ball_set.get_name())
         num_balls = ball_set.get_num_balls()
         frequency_of_balls = frequency(num_balls, balls[ii])
-        print(frequency_of_balls)
+        # print(frequency_of_balls)
         most_likely = most_likely_balls(frequency_of_balls, 2)
-        print("Most likely", most_likely)
+        # print("Most likely", most_likely)
         least_likely = least_likely_balls(frequency_of_balls, 2)
-        print("Least likely", least_likely)
+        # print("Least likely", least_likely)
         ii += 1
+        ball_stats.append((ball_set, frequency_of_balls, most_likely, least_likely))
+    return ball_stats 
+
+def print_ticket_for_next_lottery(results, balls_stats):
+    """ Prints a ticket with a number of lines for the next draw. """
+    print("Ticket for next lottery:")
+    lottery = results.get_lottery()
+    ticket = lottery.generate_ticket(5, ball_stats)
+    lottery.print_ticket(ticket)
 
 def print_draws_in_date_range(results, date_from, date_to):
     """ Prints the draws in the given date range. """
@@ -63,9 +65,9 @@ def process_data(results):
     # Print ball stats of balls in range
     earliest_date = date_range[0]
     latest_date = earliest_date + datetime.timedelta(days=150)
-    ball_stats_in_date_range(results, earliest_date, latest_date)
+    ball_stats = ball_stats_in_date_range(results, earliest_date, latest_date)
     # Print numbers for tickets
-    print_ticket_for_next_lottery(results)
+    print_ticket_for_next_lottery(results, balls_stats)
     # Print draws after end of chosen range
     draw_date_to = date_range[1]
     draw_date_from = latest_date + datetime.timedelta(days=1)

@@ -14,6 +14,27 @@ class LotteryDraw:
     def get_draw(self):
         print("TODO")
         return []
+    
+class LotteryTicket:
+    """
+    """
+    _draw_date = 0
+    _lines = []
+    
+    def generate_ticket(self, draw_date, num_lines, ball_stats):
+        """ Generates a new ticket with the given number of lines. """
+        print("TODO")
+        return (_draw_date, _lines)
+
+    def print_ticket(self, ticket):
+        """ Prints the given ticket. """
+        print("Ticket date", _draw_date)
+        for line in lines:
+            print('Main {1:2d} {2:2d} {3:2d} {4:2d} {5:2d}  Lucky stars {6:2d} {7:2d}'.format( \
+                line.main_1, line.main_2, line.main_3, line.main_4, line.main_5, \
+                line.lucky_1, line.lucky_2))
+        return (0)
+    
 
 class Lottery:
     """ 
@@ -57,4 +78,11 @@ class Lottery:
         """ Returns a tuple of lottery_draws in the give date range. """
         return (0)
 
+    def generate_ticket(self, num_lines, ball_stats):
+        """ Generates a new ticket with the given number of lines. """
+        return (0)
+
+    def print_ticket(self, ticket):
+        """ Prints the given ticket. """
+        return (0)
 
