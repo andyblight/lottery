@@ -5,6 +5,24 @@ Utility functions for dealing with Lottery csv files.
 import copy
 import datetime
 
+class SetOfBalls:
+    """ Information about the set of balls. """
+    _num_balls = 0
+    _name = ""
+
+    def __init__(self, name, num_balls):
+        """ Initialises the class. """
+        self._num_balls = num_balls
+        self._name = name
+
+    def get_num_balls(self):
+        """ Return the number of balls in the set. """
+        return self._num_balls
+
+    def get_name(self):
+        """ Return the number of balls in the set. """
+        return self._name
+
 
 def convert_str_to_date(date_str):
     """ Converts a string to a date type """

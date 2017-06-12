@@ -1,6 +1,6 @@
 #!/usr/bin/python3.6
 
-from set_of_balls import SetOfBalls
+from lottery_utils import SetOfBalls
 
 class LotteryDraw:
     """

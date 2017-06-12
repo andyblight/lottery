@@ -2,8 +2,7 @@
 
 import collections
 from lottery import Lottery, LotteryDraw
-from lottery_utils import convert_str_to_date, frequency
-from set_of_balls import SetOfBalls
+from lottery_utils import SetOfBalls, convert_str_to_date, frequency
 
 EuroMillionsDraw = collections.namedtuple('EuroMillionsDraw', \
         ['draw_date', 'main_1', 'main_2', 'main_3', 'main_4', 'main_5', \
