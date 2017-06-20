@@ -41,13 +41,13 @@ def ball_stats_in_date_range(results, date_from, date_to):
         # print("Least likely", least_likely)
         ii += 1
         ball_stats.append((ball_set, frequency_of_balls, most_likely, least_likely))
-    return ball_stats 
+    return ball_stats
 
-def print_ticket_for_next_lottery(results, stats):
+def print_ticket_for_next_lottery(next_lottery_date, results, stats):
     """ Prints a ticket with a number of lines for the next draw. """
     print("Ticket for next lottery:")
     lottery = results.get_lottery()
-    ticket = lottery.generate_ticket(5, stats)
+    ticket = lottery.generate_ticket(next_lottery_date, 5, stats)
     lottery.print_ticket(ticket)
 
 def print_draws_in_date_range(results, date_from, date_to):
@@ -62,12 +62,13 @@ def process_data(results):
     print("Lottery name:", results.get_lottery().get_name())
     date_range = results.get_lottery().get_date_range()
     print("Results in file from", date_range[0].isoformat(), "to", date_range[1].isoformat())
-    # Print ball stats of balls in range
     earliest_date = date_range[0]
     latest_date = earliest_date + datetime.timedelta(days=150)
+    next_lottery_date = latest_date + datetime.timedelta(days=1)
+    # Print ball stats of balls in range
     stats = ball_stats_in_date_range(results, earliest_date, latest_date)
     # Print numbers for tickets
-    print_ticket_for_next_lottery(results, stats)
+    print_ticket_for_next_lottery(next_lottery_date, results, stats)
     # Print draws after end of chosen range
     draw_date_to = date_range[1]
     draw_date_from = latest_date + datetime.timedelta(days=1)
