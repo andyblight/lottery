@@ -85,7 +85,7 @@ class Lottery:
     def generate_ticket(self, next_lottery_date, num_lines, ball_stats):
         """ Generates a new ticket with the given number of lines. """
         print("TODO")
-        return LotteryTicket()
+        return LotteryTicket(next_lottery_date)
 
     def print_ticket(self, ticket):
         """ Prints the given ticket. """

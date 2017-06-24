@@ -3,8 +3,8 @@
 import csv
 import sys
 
+from euro_millions import LotteryEuroMillions
 from lottery import Lottery, LotteryDraw
-from euro_millions import LotteryEuroMillions, LotteryDrawEuroMillions
 
 
 class LotteryResults:

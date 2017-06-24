@@ -4,15 +4,12 @@ import collections
 from lottery import Lottery, LotteryDraw
 from lottery_utils import SetOfBalls, convert_str_to_date, frequency
 
-EuroMillionsDraw = collections.namedtuple('EuroMillionsDraw', \
+EuroMillionsLine = collections.namedtuple('EuroMillionsLine', \
+        ['main_1', 'main_2', 'main_3', 'main_4', 'main_5', 'lucky_1', 'lucky_2'])
+
+EuroMillionsCSVDraw = collections.namedtuple('EuroMillionsCSVDraw', \
         ['draw_date', 'main_1', 'main_2', 'main_3', 'main_4', 'main_5', \
         'lucky_1', 'lucky_2'])
-
-class LotteryDrawEuroMillions:
-    """
-    A lottery draw is the sets or sets of balls.
-    """
-    # def __init__(self):
 
 class LotteryTicketEuroMillions:
     """
@@ -21,10 +18,12 @@ class LotteryTicketEuroMillions:
     _lines = []
 
     def __init__(self, draw_date):
-        _draw_date = draw_date
+        # print("Set date EM", draw_date)
+        self._draw_date = draw_date
 
     def generate_lines(self, num_lines, ball_stats):
         """ Generates the given number of lines from the ball stats. """
+        print("Gen lines EM", num_lines)
         for ii in range(0, num_lines):
             main_1 = 0
             main_2 = 0
@@ -33,16 +32,14 @@ class LotteryTicketEuroMillions:
             main_5 = 0
             lucky_1 = 0
             lucky_2 = 0
-            line = EuroMillionsDraw(_draw_date, main_1, main_2, \
-                                    main_3, main_4, main_5, \
-                                    lucky_1, lucky_2)
-            _lines.append(lottery_draw)
+            line = EuroMillionsLine(main_1, main_2, main_3, main_4, main_5, lucky_1, lucky_2)
+            self._lines.append(line)
 
     def print_ticket(self):
         """ Prints the ticket. """
-        print("Ticket date", _draw_date)
-        for line in _lines:
-            print('Main {1:2d} {2:2d} {3:2d} {4:2d} {5:2d}  Lucky stars {6:2d} {7:2d}'.format(\
+        print("Ticket date EM:", self._draw_date, "Num Lines", len(self._lines))
+        for line in self._lines:
+            print('Main {0:2d} {1:2d} {2:2d} {3:2d} {4:2d}  Lucky stars {5:2d} {6:2d}'.format(\
                 line.main_1, line.main_2, line.main_3, line.main_4, line.main_5, \
                 line.lucky_1, line.lucky_2))
 
@@ -66,10 +63,10 @@ class LotteryEuroMillions(Lottery):
 
     def parse_row(self, row):
         """ Read row data and copy into EuroMillions tuple """
-        euro = EuroMillionsDraw(convert_str_to_date(str(row[0])), \
-                                int(row[1]), int(row[2]), int(row[3]), \
-                                int(row[4]), int(row[5]), int(row[6]), \
-                                int(row[7]))
+        euro = EuroMillionsCSVDraw(convert_str_to_date(str(row[0])), \
+                                    int(row[1]), int(row[2]), int(row[3]), \
+                                    int(row[4]), int(row[5]), int(row[6]), \
+                                    int(row[7]))
         self.results.append(euro)
         self._num_draws += 1
 
@@ -106,9 +103,9 @@ class LotteryEuroMillions(Lottery):
         return lottery_draws
 
     def get_draw(self, draw_date, main_1, main_2, main_3, main_4, main_5, lucky_1, lucky_2):
-        lottery_draw = EuroMillionsDraw(draw_date, main_1, main_2, \
-                                        main_3, main_4, main_5, \
-                                        lucky_1, lucky_2)
+        lottery_draw = EuroMillionsCSVDraw(draw_date, main_1, main_2, \
+                                            main_3, main_4, main_5, \
+                                            lucky_1, lucky_2)
         return lottery_draw
 
     def print_draw(self, lottery_draw):
@@ -121,6 +118,8 @@ class LotteryEuroMillions(Lottery):
     def generate_ticket(self, next_lottery_date, num_lines, ball_stats):
         """ Generates a new ticket with the given number of lines. """
         ticket = LotteryTicketEuroMillions(next_lottery_date)
+        ticket.generate_lines(num_lines, ball_stats)
+        # Add lines here
         return ticket
 
     def print_ticket(self, ticket):
