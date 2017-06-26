@@ -12,15 +12,15 @@ class LotteryResults:
     The LotteryResults class reads a lottery results CSV file into an internal 
     cache and provides methods to access the data in the internal cache. 
 .   """
-    _lottery = Lottery()
+    _lottery = None
+    _default_lottery = Lottery()
     _euro_millions = LotteryEuroMillions()
 
     def __init__(self):
-        self.type = ""
+        _lottery = None
 
     def parse_header(self, row):
         """ Parse the header row to work out the file type. """
-        self.type = ""
         if self._euro_millions.check_header(row):
             self._lottery = self._euro_millions
         elif str(row[7]) == 'Bonus Ball':
@@ -33,6 +33,8 @@ class LotteryResults:
         self._lottery.parse_row(row)
 
     def load_file(self, filename):
+        """ Load data from CSV file in the results.  The data is the file is most recent data 
+            first, so reverse order of list when loaded. """
         with open(filename, newline='') as csvfile:
             filereader = csv.reader(csvfile, delimiter=',', quotechar='|')
             ignore_header = True
@@ -42,6 +44,7 @@ class LotteryResults:
                     ignore_header = False
                     continue
                 self._lottery.parse_row(row)
+        self._lottery.reverse_results()
 
     def get_lottery(self):
         """ Returns the lottery instance. """

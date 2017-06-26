@@ -56,6 +56,10 @@ class Lottery:
         """ Returns the name of the lottery. """
         return self._name
 
+    def reverse_results(self):
+        """ Reverses the order of the results. """
+        self.results.reverse()
+
     def check_header(self, row):
         """ Returns True if the header row is for this lottery """
         print("TODO")
@@ -68,8 +72,9 @@ class Lottery:
 
     def get_date_range(self):
         """ Returns a tuple containing the earliest and latest dates in the results. """
-        print("TODO")
-        return (0, 0)
+        first_date = self.results[0].draw_date
+        last_date = self.results[self._num_draws - 1].draw_date
+        return (first_date, last_date)
 
     def get_balls_in_date_range(self, date_from, date_to):
         """ Returns a tuple containing the sets of balls in the give date 

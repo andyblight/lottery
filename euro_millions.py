@@ -23,17 +23,23 @@ class LotteryTicketEuroMillions:
 
     def generate_lines(self, num_lines, ball_stats):
         """ Generates the given number of lines from the ball stats. """
-        print("Gen lines EM", num_lines)
-        for ii in range(0, num_lines):
-            main_1 = 0
-            main_2 = 0
-            main_3 = 0
-            main_4 = 0
-            main_5 = 0
-            lucky_1 = 0
-            lucky_2 = 0
-            line = EuroMillionsLine(main_1, main_2, main_3, main_4, main_5, lucky_1, lucky_2)
-            self._lines.append(line)
+        print("Gen lines EM", num_lines, "Ignored!")
+        # for ii in range(0, num_lines):
+        main_1 = 0
+        main_2 = 0
+        main_3 = 0
+        main_4 = 0
+        main_5 = 0
+        lucky_1 = 0
+        lucky_2 = 0
+        print(ball_stats[0])
+        print(ball_stats[1])
+        print(ball_stats[2])
+        print(ball_stats[3])
+        print(ball_stats[4])
+        print(ball_stats[5])
+        line = EuroMillionsLine(main_1, main_2, main_3, main_4, main_5, lucky_1, lucky_2)
+        self._lines.append(line)
 
     def print_ticket(self):
         """ Prints the ticket. """
@@ -87,12 +93,6 @@ class LotteryEuroMillions(Lottery):
                 lucky_stars.append(lottery_draw.lucky_1)
                 lucky_stars.append(lottery_draw.lucky_2)
         return (main_balls, lucky_stars)
-
-    def get_date_range(self):
-        """ Returns a tuple containing the earliest and latest dates in the results. """
-        latest = self.results[0].draw_date
-        earliest = self.results[self._num_draws - 1].draw_date
-        return (earliest, latest)
 
     def get_draws_in_date_range(self, date_from, date_to):
         """ Returns a tuple of lottery_draws in the give date range. """
