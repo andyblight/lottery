@@ -84,8 +84,11 @@ class Lottery:
 
     def get_draws_in_date_range(self, date_from, date_to):
         """ Returns a tuple of lottery_draws in the give date range. """
-        print("TODO")
-        return (0)
+        lottery_draws = []
+        for lottery_draw in self.results:
+            if lottery_draw.draw_date >= date_from and lottery_draw.draw_date <= date_to:
+                lottery_draws.append(lottery_draw)
+        return lottery_draws
 
     def generate_ticket(self, next_lottery_date, num_lines, ball_stats):
         """ Generates a new ticket with the given number of lines. """

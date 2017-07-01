@@ -4,8 +4,27 @@ import collections
 from lottery import Lottery, LotteryDraw
 from lottery_utils import SetOfBalls, convert_str_to_date, frequency
 
-EuroMillionsLine = collections.namedtuple('EuroMillionsLine', \
-        ['main_1', 'main_2', 'main_3', 'main_4', 'main_5', 'lucky_1', 'lucky_2'])
+# TODO Add sort to this class
+# TODO Add function to compare results with ticket and produce scores.
+class EuroMillionsLine:
+    """ """
+    main_1 = 0
+    main_2 = 0
+    main_3 = 0
+    main_4 = 0
+    main_5 = 0
+    lucky_1 = 0
+    lucky_2 = 0
+
+    def __init__(self):
+        main_1 = 0
+        main_2 = 0
+        main_3 = 0
+        main_4 = 0
+        main_5 = 0
+        lucky_1 = 0
+        lucky_2 = 0
+
 
 EuroMillionsCSVDraw = collections.namedtuple('EuroMillionsCSVDraw', \
         ['draw_date', 'main_1', 'main_2', 'main_3', 'main_4', 'main_5', \
@@ -25,20 +44,49 @@ class LotteryTicketEuroMillions:
         """ Generates the given number of lines from the ball stats. """
         print("Gen lines EM", num_lines, "Ignored!")
         # for ii in range(0, num_lines):
-        main_1 = 0
-        main_2 = 0
-        main_3 = 0
-        main_4 = 0
-        main_5 = 0
-        lucky_1 = 0
-        lucky_2 = 0
         print(ball_stats[0])
         print(ball_stats[1])
         print(ball_stats[2])
         print(ball_stats[3])
         print(ball_stats[4])
         print(ball_stats[5])
-        line = EuroMillionsLine(main_1, main_2, main_3, main_4, main_5, lucky_1, lucky_2)
+        # Use least common balls
+        line = EuroMillionsLine()
+        line.main_1 = ball_stats[2][0][0]
+        line.main_2 = ball_stats[2][1][0]
+        line.main_3 = ball_stats[2][2][0]
+        line.main_4 = ball_stats[2][3][0]
+        line.main_5 = ball_stats[2][4][0]
+        line.lucky_1 = ball_stats[5][0][0]
+        line.lucky_2 = ball_stats[5][1][0]
+        self._lines.append(line)
+        line = EuroMillionsLine()
+        line.main_1 = ball_stats[2][0][0]
+        line.main_2 = ball_stats[2][1][0]
+        line.main_3 = ball_stats[2][2][0]
+        line.main_4 = ball_stats[2][3][0]
+        line.main_5 = ball_stats[2][5][0]
+        line.lucky_1 = ball_stats[5][0][0]
+        line.lucky_2 = ball_stats[5][2][0]
+        self._lines.append(line)
+        # Use most common balls
+        line = EuroMillionsLine()
+        line.main_1 = ball_stats[1][0][0]
+        line.main_2 = ball_stats[1][1][0]
+        line.main_3 = ball_stats[1][2][0]
+        line.main_4 = ball_stats[1][3][0]
+        line.main_5 = ball_stats[1][4][0]
+        line.lucky_1 = ball_stats[4][0][0]
+        line.lucky_2 = ball_stats[4][1][0]
+        self._lines.append(line)
+        line = EuroMillionsLine()
+        line.main_1 = ball_stats[1][0][0]
+        line.main_2 = ball_stats[1][1][0]
+        line.main_3 = ball_stats[1][2][0]
+        line.main_4 = ball_stats[1][3][0]
+        line.main_5 = ball_stats[1][5][0]
+        line.lucky_1 = ball_stats[4][0][0]
+        line.lucky_2 = ball_stats[4][2][0]
         self._lines.append(line)
 
     def print_ticket(self):
@@ -94,14 +142,6 @@ class LotteryEuroMillions(Lottery):
                 lucky_stars.append(lottery_draw.lucky_2)
         return (main_balls, lucky_stars)
 
-    def get_draws_in_date_range(self, date_from, date_to):
-        """ Returns a tuple of lottery_draws in the give date range. """
-        lottery_draws = []
-        for lottery_draw in self.results:
-            if lottery_draw.draw_date >= date_from and lottery_draw.draw_date <= date_to:
-                lottery_draws.append(lottery_draw)
-        return lottery_draws
-
     def get_draw(self, draw_date, main_1, main_2, main_3, main_4, main_5, lucky_1, lucky_2):
         lottery_draw = EuroMillionsCSVDraw(draw_date, main_1, main_2, \
                                             main_3, main_4, main_5, \
@@ -122,6 +162,3 @@ class LotteryEuroMillions(Lottery):
         # Add lines here
         return ticket
 
-    def print_ticket(self, ticket):
-        """ Prints the given ticket. """
-        ticket.print_ticket()

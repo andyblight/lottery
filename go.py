@@ -63,12 +63,20 @@ def print_draws_in_date_range(results, date_from, date_to):
         results.get_lottery().print_draw(lottery_draw)
 
 def process_data(results):
-    """ TODO """
+    """ 
+    Print range of  """
     print("Lottery name:", results.get_lottery().get_name())
     date_range = results.get_lottery().get_date_range()
     print("Results in file from", date_range[0].isoformat(), "to", date_range[1].isoformat())
+    # Start range
+    # 30 days gives very little data
+    # 60 days
+    # predicted the lucky stars using most likely
+    # predicted 2 of the main balls using least likely.
+    # TODO Do predictions based on based on different number of days of analysis.
+    # Auto score tickets produced against the next four draws.
     analysis_start = date_range[0]
-    analysis_last = analysis_start + datetime.timedelta(days=120)
+    analysis_last = analysis_start + datetime.timedelta(days=75)
     next_lottery_date = analysis_last + datetime.timedelta(days=1)
     # Print ball stats of balls in range
     stats = ball_stats_in_date_range(results, analysis_start, analysis_last)
