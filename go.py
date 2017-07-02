@@ -48,15 +48,23 @@ def ball_stats_in_date_range(results, date_from, date_to):
         ball_stats.append(least_likely)
     return ball_stats
 
-def print_ticket_for_next_lottery(next_lottery_date, results, stats):
+def generate_ticket_for_next_lottery(next_lottery_date, results, stats):
     """ Prints a ticket with a number of lines for the next draw. """
     print("Ticket for next lottery:")
     lottery = results.get_lottery()
-    ticket = lottery.generate_ticket(next_lottery_date, 5, stats)
+    return lottery.generate_ticket(next_lottery_date, 5, stats)
+
+def print_lottery_ticket(results, ticket):
+    """ Prints a ticket with a number of lines for the next draw. """
+    print("Ticket for next lottery:")
+    lottery = results.get_lottery()
     lottery.print_ticket(ticket)
 
-def print_draws_in_date_range(results, date_from, date_to):
-    """ Prints the draws in the given date range. """
+def print_matches_for_draws_in_date_range(results, date_from, date_to, ticket):
+    """ For each draw in the given data range,
+            prints the draw
+            prints the number of matches in each line of the ticket.
+    """
     print("Draws in range from", date_from, "to", date_to)
     lottery_draws = results.get_lottery().get_draws_in_date_range(date_from, date_to)
     for lottery_draw in lottery_draws:
@@ -81,11 +89,12 @@ def process_data(results):
     # Print ball stats of balls in range
     stats = ball_stats_in_date_range(results, analysis_start, analysis_last)
     # Print numbers for tickets
-    print_ticket_for_next_lottery(next_lottery_date, results, stats)
+    ticket = generate_ticket_for_next_lottery(next_lottery_date, results, stats)
+    print_lottery_ticket(results, ticket)
     # Print draws after end of chosen range
     draw_date_to = analysis_last + datetime.timedelta(days=15)
     draw_date_from = analysis_last + datetime.timedelta(days=1)
-    print_draws_in_date_range(results, draw_date_from, draw_date_to)
+    print_matches_for_draws_in_date_range(results, draw_date_from, draw_date_to, ticket)
 
 def run(filename):
     """ Reads the data from the given file into the results instance """

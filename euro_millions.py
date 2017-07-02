@@ -25,8 +25,8 @@ class EuroMillionsLine:
         self.main_balls.sort()
         self.lucky_stars.sort()
 
-    def compare(self, line):
-        """ Compares the given line with self.
+    def score(self, line):
+        """ Scores the given line against self.
             Returns a tuple of the number of matches for each ball set.
         """
         main_matched = 0
@@ -69,6 +69,11 @@ class LotteryTicketEuroMillions(LotteryTicket):
         line.sort()
         self._lines.append(line)
         # Use the same line but with the alternatives
+        line = EuroMillionsLine()
+        for ii in range(0, len(line.main_balls)):
+            line.main_balls[ii] = ball_stats[2][ii][0]
+        for ii in range(0, len(line.lucky_stars)):
+            line.lucky_stars[ii] = ball_stats[5][ii][0]
         line.main_balls[4] = ball_stats[2][5][0]
         line.lucky_stars[1] = ball_stats[5][2][0]
         line.sort()
@@ -82,6 +87,11 @@ class LotteryTicketEuroMillions(LotteryTicket):
         line.sort()
         self._lines.append(line)
         # Use the same line but with the alternatives
+        line = EuroMillionsLine()
+        for ii in range(0, len(line.main_balls)):
+            line.main_balls[ii] = ball_stats[1][ii][0]
+        for ii in range(0, len(line.lucky_stars)):
+            line.lucky_stars[ii] = ball_stats[4][ii][0]
         line.main_balls[4] = ball_stats[1][5][0]
         line.lucky_stars[1] = ball_stats[4][2][0]
         line.sort()
