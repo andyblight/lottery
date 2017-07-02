@@ -7,7 +7,7 @@ from lottery_utils import SetOfBalls, convert_str_to_date, frequency
 # TODO Add sort to this class
 # TODO Add function to compare results with ticket and produce scores.
 class EuroMillionsLine:
-    """ """
+    """ Represents a line of lottery numbers. """
     main_1 = 0
     main_2 = 0
     main_3 = 0
@@ -25,9 +25,40 @@ class EuroMillionsLine:
         lucky_1 = 0
         lucky_2 = 0
 
+    def sort(self):
+        """ Sorts the line into ascending numerical order. """
+        # main balls
+
+        # lucky stars
+        if lucky_1 > lucky_2:
+            temp = lucky_1
+            lukcy_1 = lucky_2
+            lucky_2 = temp
+
+    def compare(self, line):
+        """ Compares the given line with self.
+            Returns a tuple of the number of matches for each ball set.
+        """
+        main_matched = 0
+        if self.main_1 == line.main_1:
+            main_matched += 1
+        if self.main_2 == line.main_2:
+            main_matched += 1
+        if self.main_3 == line.main_3:
+            main_matched += 1
+        if self.main_4 == line.main_4:
+            main_matched += 1
+        if self.main_5 == line.main_5:
+            main_matched += 1
+        lucky_matched = 0
+        if self.lucky_1 == line.lucky_1:
+            lucky_matched += 1
+        if self.lucky_2 == line.lucky_2:
+            lucky_matched += 1
+        return (main_matched, lucky_matched)
 
 class EuroMillionsCSVDraw:
-    """ """
+    """ Groups draw date and lottery line."""
     draw_date = 0
     line = EuroMillionsLine()
 
