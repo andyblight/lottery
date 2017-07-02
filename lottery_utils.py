@@ -7,9 +7,6 @@ import datetime
 
 class SetOfBalls:
     """ Information about the set of balls. """
-    _num_balls = 0
-    _name = ""
-
     def __init__(self, name, num_balls):
         """ Initialises the class. """
         self._num_balls = num_balls

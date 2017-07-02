@@ -16,13 +16,14 @@ class LotteryDraw:
         return []
 
 class LotteryTicket:
+    """ Represents a lottery ticket.
+    Defines the API for a lottery ticket.
+    Implements all common operations for a lottery ticket.
     """
-    """
-    _draw_date = 0
-    _lines = []
-
     def __init__(self, draw_date):
-        _draw_date = draw_date
+        # print("Set date EM", draw_date)
+        self._draw_date = draw_date
+        self._lines = []
 
     def generate_lines(self, num_lines, ball_stats):
         """ Generates the given number of lines from the ball stats. """
@@ -33,7 +34,6 @@ class LotteryTicket:
         print("Ticket date", _draw_date)
         for line in _lines:
             print('Line TODO')
-
 
 class Lottery:
     """ 
