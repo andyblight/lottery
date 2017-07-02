@@ -2,19 +2,6 @@
 
 from lottery_utils import SetOfBalls
 
-class LotteryDraw:
-    """
-    A lottery draw is the sets or sets of balls.
-    """
-    # def __init__(self):
-
-    def print_draw(self, draw):
-        print("TODO")
-
-    def get_draw(self):
-        print("TODO")
-        return []
-
 class LotteryTicket:
     """ Represents a lottery ticket.
     Defines the API for a lottery ticket.
@@ -23,7 +10,7 @@ class LotteryTicket:
     def __init__(self, draw_date):
         # print("Set date EM", draw_date)
         self._draw_date = draw_date
-        self._lines = []
+        self.lines = []
 
     def generate_lines(self, num_lines, ball_stats):
         """ Generates the given number of lines from the ball stats. """
@@ -32,7 +19,7 @@ class LotteryTicket:
     def print_ticket(self):
         """ Prints the ticket. """
         print("Ticket date", _draw_date)
-        for line in _lines:
+        for line in lines:
             print('Line TODO')
 
 class Lottery:
@@ -41,10 +28,6 @@ class Lottery:
     This class implements the functions for a single set of balls (the most
     common type of lottery). 
     """
-    _name = ""
-    results = []
-    _num_draws = 0
-
     def __init__(self):
         """ Initialises the class. """
         self._name = 'default'

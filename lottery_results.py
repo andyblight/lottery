@@ -4,7 +4,7 @@ import csv
 import sys
 
 from euro_millions import LotteryEuroMillions
-from lottery import Lottery, LotteryDraw
+from lottery import Lottery
 
 
 class LotteryResults:
@@ -12,12 +12,11 @@ class LotteryResults:
     The LotteryResults class reads a lottery results CSV file into an internal 
     cache and provides methods to access the data in the internal cache. 
 .   """
-    _lottery = None
-    _default_lottery = Lottery()
-    _euro_millions = LotteryEuroMillions()
-
     def __init__(self):
-        _lottery = None
+        self._lottery = None
+        self._default_lottery = Lottery()
+        self._euro_millions = LotteryEuroMillions()
+
 
     def parse_header(self, row):
         """ Parse the header row to work out the file type. """

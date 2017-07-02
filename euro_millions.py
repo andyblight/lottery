@@ -1,7 +1,7 @@
 #!/usr/bin/python3.6
 
 import collections
-from lottery import Lottery, LotteryTicket, LotteryDraw
+from lottery import Lottery, LotteryTicket
 from lottery_utils import SetOfBalls, convert_str_to_date, frequency
 
 # TODO Add sort to this class
@@ -19,6 +19,11 @@ class EuroMillionsLine:
         self.lucky_stars = []
         self.lucky_stars.append(0)
         self.lucky_stars.append(0)
+
+    def as_string(self):
+        return 'Main {0:2d} {1:2d} {2:2d} {3:2d} {4:2d}  Lucky stars {5:2d} {6:2d}'.format(\
+        self.main_balls[0], self.main_balls[1], self.main_balls[2], self.main_balls[3], self.main_balls[4], \
+        self.lucky_stars[0], self.lucky_stars[1])
 
     def sort(self):
         """ Sorts the line into ascending numerical order. """
@@ -67,7 +72,7 @@ class LotteryTicketEuroMillions(LotteryTicket):
         for ii in range(0, len(line.lucky_stars)):
             line.lucky_stars[ii] = ball_stats[5][ii][0]
         line.sort()
-        self._lines.append(line)
+        self.lines.append(line)
         # Use the same line but with the alternatives
         line = EuroMillionsLine()
         for ii in range(0, len(line.main_balls)):
@@ -77,7 +82,7 @@ class LotteryTicketEuroMillions(LotteryTicket):
         line.main_balls[4] = ball_stats[2][5][0]
         line.lucky_stars[1] = ball_stats[5][2][0]
         line.sort()
-        self._lines.append(line)
+        self.lines.append(line)
         # Use most common balls
         line = EuroMillionsLine()
         for ii in range(0, len(line.main_balls)):
@@ -85,7 +90,7 @@ class LotteryTicketEuroMillions(LotteryTicket):
         for ii in range(0, len(line.lucky_stars)):
             line.lucky_stars[ii] = ball_stats[4][ii][0]
         line.sort()
-        self._lines.append(line)
+        self.lines.append(line)
         # Use the same line but with the alternatives
         line = EuroMillionsLine()
         for ii in range(0, len(line.main_balls)):
@@ -95,25 +100,23 @@ class LotteryTicketEuroMillions(LotteryTicket):
         line.main_balls[4] = ball_stats[1][5][0]
         line.lucky_stars[1] = ball_stats[4][2][0]
         line.sort()
-        self._lines.append(line)
+        self.lines.append(line)
 
     def print_ticket(self):
         """ Prints the ticket. """
-        print("Ticket date EM:", self._draw_date, "Num Lines", len(self._lines))
-        for line in self._lines:
-            print('Main {0:2d} {1:2d} {2:2d} {3:2d} {4:2d}  Lucky stars {5:2d} {6:2d}'.format(\
-                line.main_balls[0], line.main_balls[1], line.main_balls[2], line.main_balls[3], line.main_balls[4], \
-                line.lucky_stars[0], line.lucky_stars[1]))
-
+        print("Ticket date EM:", self._draw_date, "Num Lines", len(self.lines))
+        for line in self.lines:
+            print(line.as_string())
 
 class LotteryEuroMillions(Lottery):
     """ The Euro Millions lottery. """
-    _main_balls = SetOfBalls("main", 50)
-    _lucky_star_balls = SetOfBalls("lucky stars", 12)
-
     def __init__(self):
         self._name = "EuroMillions"
+        self.results = []
+        self._num_draws = 0
         self._sets_of_balls = 2
+        self._main_balls = SetOfBalls("main", 50)
+        self._lucky_star_balls = SetOfBalls("lucky stars", 12)
 
     def check_header(self, row):
         """ Returns True if the header row is for this lottery """
@@ -166,10 +169,7 @@ class LotteryEuroMillions(Lottery):
     def print_draw(self, lottery_draw):
         """ Print the given draw. """
         line = lottery_draw.line
-        print('Date {0}: Main {1:2d} {2:2d} {3:2d} {4:2d} {5:2d}  Lucky stars {6:2d} {7:2d}'.format(\
-            lottery_draw.draw_date, \
-            line.main_balls[0], line.main_balls[1], line.main_balls[2], line.main_balls[3], line.main_balls[4], \
-            line.lucky_stars[0], line.lucky_stars[1]))
+        print('Date', lottery_draw.draw_date, lottery_draw.line.as_string())
 
     def generate_ticket(self, next_lottery_date, num_lines, ball_stats):
         """ Generates a new ticket with the given number of lines. """
@@ -178,3 +178,8 @@ class LotteryEuroMillions(Lottery):
         # Add lines here
         return ticket
 
+    def test_draw_against_ticket(self, lottery_draw, ticket):
+        """ Prints out the number of matches for each line of the given ticket against the given draw. """
+        self.print_draw(lottery_draw)
+        for line in ticket.lines:
+            print(line.as_string())

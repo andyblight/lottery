@@ -69,6 +69,7 @@ def print_matches_for_draws_in_date_range(results, date_from, date_to, ticket):
     lottery_draws = results.get_lottery().get_draws_in_date_range(date_from, date_to)
     for lottery_draw in lottery_draws:
         results.get_lottery().print_draw(lottery_draw)
+        results.get_lottery().test_draw_against_ticket(lottery_draw, ticket)
 
 def process_data(results):
     """ 
