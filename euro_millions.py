@@ -184,13 +184,17 @@ class LotteryEuroMillions(Lottery):
         best_lines = []
         for line in ticket.lines:
             score = line.score(lottery_draw.line)
-            print(score)
+            # print(score)
             if score == best_score:
                 best_lines.append(line)
             if score[0] > best_score[0] or score[1] > best_score[1]:
                 best_score = score
                 best_lines.clear()
                 best_lines.append(line)
-        print("Best score", best_score, "for lines")
-        for line in best_lines:
-            print(line.as_string())
+        # TODO This output could do with showing the numbers that matched.
+        if best_score == (0, 0):
+            print("No matches")
+        else:
+            print("Best score", best_score, "for lines")
+            for line in best_lines:
+                print(line.as_string())

@@ -71,31 +71,45 @@ def print_matches_for_draws_in_date_range(results, date_from, date_to, ticket):
         results.get_lottery().print_draw(lottery_draw)
         results.get_lottery().test_draw_against_ticket(lottery_draw, ticket)
 
-def process_data(results):
-    """ 
-    Print range of  """
-    print("Lottery name:", results.get_lottery().get_name())
-    date_range = results.get_lottery().get_date_range()
-    print("Results in file from", date_range[0].isoformat(), "to", date_range[1].isoformat())
-    # Start range
-    # 30 days gives very little data
-    # 60 days
-    # predicted the lucky stars using most likely
-    # predicted 2 of the main balls using least likely.
-    # TODO Do predictions based on based on different number of days of analysis.
-    # Auto score tickets produced against the next four draws.
-    analysis_start = date_range[0]
-    analysis_last = analysis_start + datetime.timedelta(days=75)
-    next_lottery_date = analysis_last + datetime.timedelta(days=1)
+def process_data_in_range(results, analysis_start, analysis_end):
+    """ """
+    next_lottery_date = analysis_end + datetime.timedelta(days=1)
     # Print ball stats of balls in range
-    stats = ball_stats_in_date_range(results, analysis_start, analysis_last)
+    stats = ball_stats_in_date_range(results, analysis_start, analysis_end)
     # Print numbers for tickets
     ticket = generate_ticket_for_next_lottery(next_lottery_date, results, stats)
     print_lottery_ticket(results, ticket)
     # Print draws after end of chosen range
-    draw_date_to = analysis_last + datetime.timedelta(days=15)
-    draw_date_from = analysis_last + datetime.timedelta(days=1)
+    draw_date_to = analysis_end + datetime.timedelta(days=14)
+    draw_date_from = analysis_end + datetime.timedelta(days=1)
     print_matches_for_draws_in_date_range(results, draw_date_from, draw_date_to, ticket)
+
+def process_data(results):
+    """ Print range of  """
+    print("Lottery name:", results.get_lottery().get_name())
+    date_range = results.get_lottery().get_date_range()
+    print("Results in file from", date_range[0].isoformat(), "to", date_range[1].isoformat())
+    # Start range
+    analysis_start = date_range[0]
+    analysis_end = analysis_start + datetime.timedelta(days=90)
+    process_data_in_range(results, analysis_start, analysis_end)
+    # Start range
+    analysis_start = date_range[0] + datetime.timedelta(days=30)
+    analysis_end = analysis_start + datetime.timedelta(days=60)
+    process_data_in_range(results, analysis_start, analysis_end)
+    # Start range
+    analysis_start = date_range[0] + datetime.timedelta(days=30)
+    analysis_end = analysis_start + datetime.timedelta(days=90)
+    process_data_in_range(results, analysis_start, analysis_end)
+    # Start range
+    analysis_start = date_range[0] + datetime.timedelta(days=30)
+    analysis_end = analysis_start + datetime.timedelta(days=120)
+    process_data_in_range(results, analysis_start, analysis_end)
+    # Start range
+    analysis_start = date_range[0] + datetime.timedelta(days=60)
+    analysis_end = analysis_start + datetime.timedelta(days=100)
+    process_data_in_range(results, analysis_start, analysis_end)
+    
 
 def run(filename):
     """ Reads the data from the given file into the results instance """
