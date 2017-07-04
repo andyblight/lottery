@@ -180,6 +180,17 @@ class LotteryEuroMillions(Lottery):
 
     def test_draw_against_ticket(self, lottery_draw, ticket):
         """ Prints out the number of matches for each line of the given ticket against the given draw. """
-        self.print_draw(lottery_draw)
+        best_score = (0, 0)
+        best_lines = []
         for line in ticket.lines:
+            score = line.score(lottery_draw.line)
+            print(score)
+            if score == best_score:
+                best_lines.append(line)
+            if score[0] > best_score[0] or score[1] > best_score[1]:
+                best_score = score
+                best_lines.clear()
+                best_lines.append(line)
+        print("Best score", best_score, "for lines")
+        for line in best_lines:
             print(line.as_string())
