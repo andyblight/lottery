@@ -98,16 +98,16 @@ def process_data(results):
     analysis_end = analysis_start + datetime.timedelta(days=60)
     process_data_in_range(results, analysis_start, analysis_end)
     # Start range
-    analysis_start = date_range[0] + datetime.timedelta(days=30)
-    analysis_end = analysis_start + datetime.timedelta(days=90)
+    analysis_start = date_range[0] + datetime.timedelta(days=70)
+    analysis_end = analysis_start + datetime.timedelta(days=30)
     process_data_in_range(results, analysis_start, analysis_end)
     # Start range
-    analysis_start = date_range[0] + datetime.timedelta(days=30)
-    analysis_end = analysis_start + datetime.timedelta(days=120)
+    analysis_start = date_range[0] + datetime.timedelta(days=80)
+    analysis_end = analysis_start + datetime.timedelta(days=30)
     process_data_in_range(results, analysis_start, analysis_end)
     # Start range
-    analysis_start = date_range[0] + datetime.timedelta(days=60)
-    analysis_end = analysis_start + datetime.timedelta(days=100)
+    analysis_start = date_range[0] + datetime.timedelta(days=100)
+    analysis_end = analysis_start + datetime.timedelta(days=30)
     process_data_in_range(results, analysis_start, analysis_end)
     
 

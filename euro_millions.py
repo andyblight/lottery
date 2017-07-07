@@ -21,28 +21,48 @@ class EuroMillionsLine:
         self.lucky_stars.append(0)
 
     def as_string(self):
-        return 'Main {0:2d} {1:2d} {2:2d} {3:2d} {4:2d}  Lucky stars {5:2d} {6:2d}'.format(\
+        return 'Main {0:2d}  {1:2d}  {2:2d}  {3:2d}  {4:2d}  Lucky stars {5:2d}  {6:2d} '.format(\
         self.main_balls[0], self.main_balls[1], self.main_balls[2], self.main_balls[3], self.main_balls[4], \
         self.lucky_stars[0], self.lucky_stars[1])
+
+    def _mark_ball_in_string(self, line_string, main, lucky):
+        # return 'Main {0:2d} {1:2d} {2:2d} {3:2d} {4:2d} Lucky stars {5:2d} {6:2d}'.format(\
+        if main > -1 and main < 5:
+            index = 7 + (main * 4)
+            line_string = line_string[:index] + '*' + line_string[index + 1:]
+        if lucky > -1 and lucky < 2:
+            index = 39 + (lucky * 4)
+            line_string = line_string[:index] + '*' + line_string[index + 1:]
+        print(line_string)
+        return line_string
 
     def sort(self):
         """ Sorts the line into ascending numerical order. """
         self.main_balls.sort()
         self.lucky_stars.sort()
 
+    def _is_winner(self, main_matched, lucky_matched):
+        return False
+
     def score(self, line):
-        """ Scores the given line against self.
-            Returns a tuple of the number of matches for each ball set.
+        """ Returns a tuple containing:
+        bool - true if the given line matches 
+        line with only the winning balls in the correct places. 
+        If there are no matches, a line of zeroes is returned.
         """
         main_matched = 0
+        lucky_matched = 0
+        matching_str = line.as_string()
         for ii in range(0, len(self.main_balls)):
             if self.main_balls[ii] == line.main_balls[ii]:
                 main_matched += 1
-        lucky_matched = 0
+                matching_str = self._mark_ball_in_string(matching_str, ii, -1)
         for ii in range(0, len(self.lucky_stars)):
             if self.lucky_stars[ii] == line.lucky_stars[ii]:
                 lucky_matched += 1
-        return (main_matched, lucky_matched)
+                matching_str = self._mark_ball_in_string(matching_str, -1, ii)
+        return (main_matched, lucky_matched, \
+                self._is_winner(main_matched, lucky_matched,), matching_str)
 
 class EuroMillionsCSVDraw:
     """ Groups draw date and lottery line."""
