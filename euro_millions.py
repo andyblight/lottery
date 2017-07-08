@@ -42,7 +42,25 @@ class EuroMillionsLine:
         self.lucky_stars.sort()
 
     def _is_winner(self, main_matched, lucky_matched):
-        return False
+        """ The rules for winning are 
+        Match 5 + 2 Lucky Stars - Jackpot
+        Match 5 + 1 Lucky Star
+        Match 5
+        Match 4 + 2 Lucky Stars
+        Match 4 + 1 Lucky Star
+        Match 3 + 2 Lucky Stars
+        Match 4
+        Match 2 + 2 Lucky Stars
+        Match 3 + 1 Lucky Star
+        Match 3
+        Match 1 + 2 Lucky Stars
+        Match 2 + 1 Lucky Star
+        Match 2
+        """ 
+        result = False
+        if main_matched == 1 and lucky_matched >= 1:
+            
+        return result
 
     def score(self, line):
         """ Returns a tuple containing:
