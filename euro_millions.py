@@ -33,7 +33,7 @@ class EuroMillionsLine:
         if lucky > -1 and lucky < 2:
             index = 39 + (lucky * 4)
             line_string = line_string[:index] + '*' + line_string[index + 1:]
-        print(line_string)
+        # print(line_string)
         return line_string
 
     def sort(self):
@@ -235,8 +235,8 @@ class LotteryEuroMillions(Lottery):
         # TODO This output could do with showing the numbers that matched.
         if best_score[2] is True:
             print("WINNER!!!!")
+            print("Best score", best_score, "for lines")
+            for line in best_lines: 
+                print(line.as_string())
         else:
             print("No winners")
-        print("Best score", best_score, "for lines")
-        for line in best_lines:
-            print(line.as_string())

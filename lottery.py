@@ -68,8 +68,10 @@ class Lottery:
     def get_draws_in_date_range(self, date_from, date_to):
         """ Returns a tuple of lottery_draws in the give date range. """
         lottery_draws = []
+        # print(date_from, date_to)
         for lottery_draw in self.results:
             if lottery_draw.draw_date >= date_from and lottery_draw.draw_date <= date_to:
+                # print("Matched", lottery_draw.draw_date)
                 lottery_draws.append(lottery_draw)
         return lottery_draws
 
