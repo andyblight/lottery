@@ -6,8 +6,11 @@ from lottery_utils import SetOfBalls, convert_str_to_date, frequency
 
 # TODO Add sort to this class
 # TODO Add function to compare results with ticket and produce scores.
+
+
 class EuroMillionsLine:
     """ Represents a line of lottery numbers. """
+
     def __init__(self):
         """ Creates two sets of balls with the right number of balls. """
         self.main_balls = []
@@ -21,12 +24,13 @@ class EuroMillionsLine:
         self.lucky_stars.append(0)
 
     def as_string(self):
-        return 'Main {0:2d}  {1:2d}  {2:2d}  {3:2d}  {4:2d}  Lucky stars {5:2d}  {6:2d} '.format(\
-        self.main_balls[0], self.main_balls[1], self.main_balls[2], self.main_balls[3], self.main_balls[4], \
-        self.lucky_stars[0], self.lucky_stars[1])
+        return 'Main {0:2d}  {1:2d}  {2:2d}  {3:2d}  {4:2d}  Lucky stars {5:2d}  {6:2d} '.format(
+            self.main_balls[0], self.main_balls[1], self.main_balls[2], self.main_balls[3], self.main_balls[4],
+            self.lucky_stars[0], self.lucky_stars[1])
 
     def _mark_ball_in_string(self, line_string, main, lucky):
-        # return 'Main {0:2d} {1:2d} {2:2d} {3:2d} {4:2d} Lucky stars {5:2d} {6:2d}'.format(\
+        # return 'Main {0:2d} {1:2d} {2:2d} {3:2d} {4:2d} Lucky stars {5:2d}
+        # {6:2d}'.format(\
         if main > -1 and main < 5:
             index = 7 + (main * 4)
             line_string = line_string[:index] + '*' + line_string[index + 1:]
@@ -56,12 +60,12 @@ class EuroMillionsLine:
         Match 2 + 1 Lucky Star
         Match 2
         Match 1 + 2 Lucky Stars
-        """ 
+        """
         result = False
         if main_matched == 1 and lucky_matched == 2:
             result = True
         else:
-            if main_matched >=2:
+            if main_matched >= 2:
                 result = True
         return result
 
@@ -82,14 +86,17 @@ class EuroMillionsLine:
             if self.lucky_stars[ii] == line.lucky_stars[ii]:
                 lucky_matched += 1
                 matching_str = self._mark_ball_in_string(matching_str, -1, ii)
-        return (main_matched, lucky_matched, \
+        return (main_matched, lucky_matched,
                 self._is_winner(main_matched, lucky_matched,), matching_str)
+
 
 class EuroMillionsCSVDraw:
     """ Groups draw date and lottery line."""
+
     def __init__(self):
         self.draw_date = 0
         self.line = EuroMillionsLine()
+
 
 class LotteryTicketEuroMillions(LotteryTicket):
     """ Class representing a EuroMillionsTicket.
@@ -98,14 +105,16 @@ class LotteryTicketEuroMillions(LotteryTicket):
 
     def generate_lines(self, num_lines, ball_stats):
         """ Generates the given number of lines from the ball stats. """
-        print("Gen lines EM", num_lines, "Ignored!")
-        # for ii in range(0, num_lines):
-        print(ball_stats[0])
-        print(ball_stats[1])
-        print(ball_stats[2])
-        print(ball_stats[3])
-        print(ball_stats[4])
-        print(ball_stats[5])
+        debug_on = False
+        if debug_on is True:
+            print("Gen lines EM", num_lines, "Ignored!")
+            # for ii in range(0, num_lines):
+            print(ball_stats[0])
+            print(ball_stats[1])
+            print(ball_stats[2])
+            print(ball_stats[3])
+            print(ball_stats[4])
+            print(ball_stats[5])
         # Use least common balls
         line = EuroMillionsLine()
         for ii in range(0, len(line.main_balls)):
@@ -145,12 +154,14 @@ class LotteryTicketEuroMillions(LotteryTicket):
 
     def print_ticket(self):
         """ Prints the ticket. """
-        print("Ticket date EM:", self._draw_date, "Num Lines", len(self.lines))
+        # print("Ticket date EM:", self._draw_date, "Num Lines", len(self.lines))
         for line in self.lines:
             print(line.as_string())
 
+
 class LotteryEuroMillions(Lottery):
     """ The Euro Millions lottery. """
+
     def __init__(self):
         self._name = "EuroMillions"
         self.results = []
@@ -202,9 +213,9 @@ class LotteryEuroMillions(Lottery):
         return (main_balls, lucky_stars)
 
     def get_draw(self, draw_date, main_1, main_2, main_3, main_4, main_5, lucky_1, lucky_2):
-        lottery_draw = EuroMillionsCSVDraw(draw_date, main_1, main_2, \
-                                            main_3, main_4, main_5, \
-                                            lucky_1, lucky_2)
+        lottery_draw = EuroMillionsCSVDraw(draw_date, main_1, main_2,
+                                           main_3, main_4, main_5,
+                                           lucky_1, lucky_2)
         return lottery_draw
 
     def print_draw(self, lottery_draw):
@@ -236,7 +247,7 @@ class LotteryEuroMillions(Lottery):
         if best_score[2] is True:
             print("WINNER!!!!")
             print("Best score", best_score, "for lines")
-            for line in best_lines: 
+            for line in best_lines:
                 print(line.as_string())
         else:
             print("No winners")

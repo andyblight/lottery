@@ -2,11 +2,13 @@
 
 from lottery_utils import SetOfBalls
 
+
 class LotteryTicket:
     """ Represents a lottery ticket.
     Defines the API for a lottery ticket.
     Implements all common operations for a lottery ticket.
     """
+
     def __init__(self, draw_date):
         # print("Set date EM", draw_date)
         self._draw_date = draw_date
@@ -22,12 +24,14 @@ class LotteryTicket:
         for line in lines:
             print('Line TODO')
 
+
 class Lottery:
     """ 
     The base class for all lotteries.
     This class implements the functions for a single set of balls (the most
     common type of lottery). 
     """
+
     def __init__(self):
         """ Initialises the class. """
         self._name = 'default'
@@ -83,4 +87,3 @@ class Lottery:
     def print_ticket(self, ticket):
         """ Prints the given ticket. """
         ticket.print_ticket()
-
