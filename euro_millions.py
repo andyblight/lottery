@@ -110,11 +110,11 @@ class LotteryTicketEuroMillions(LotteryTicket):
             print("Gen lines EM", num_lines, "Ignored!")
             # for ii in range(0, num_lines):
             print(ball_stats[0])
-            print(ball_stats[1])
-            print(ball_stats[2])
+            print(ball_stats[1])  # Most
+            print(ball_stats[2])  # Least
             print(ball_stats[3])
-            print(ball_stats[4])
-            print(ball_stats[5])
+            print(ball_stats[4])  # Most
+            print(ball_stats[5])  # Least
         # Use least common balls
         line = EuroMillionsLine()
         for ii in range(0, len(line.main_balls)):

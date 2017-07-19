@@ -10,6 +10,15 @@ NOTES
 Predicting the EuroMillions lucky star balls should be simplest with a 2 out 
 of 12 choice.  Focus on that first.
 Does the EuroMillions use multiple machines/balls sets?
+
+Most likely seems to get it right more often than least likely.
+
+Implement this "Choose from the balls that haven't come up in the last 8 weeks."  
+- Ball frequency for last 8 weeks. 
+- Create list of balls that do not appear in the ball frequency list.
+- Create ticket from that list. 
+Seems to be some sort of sweet spot with delta 35-40.
+
  
 TASKS
 D Print out rolling n days frequency figures.
@@ -107,6 +116,21 @@ def process_data(results):
         analysis_start = date_range[0] + + datetime.timedelta(test_start[ii])
         analysis_end = analysis_start + datetime.timedelta(test_delta[ii])
         process_data_in_range(results, analysis_start, analysis_end)
+
+    print("Not appeared in 8 draws")
+    CHANGE TO A LOOP - PER DRAW
+    test_start = [120, 110, 100, 90, 80, 70, 60, 40, 30, 20, 10, 0]
+    # 8 draws is 4 week, 28 days. Try range between 20 and 40 days.
+    test_delta = [20, 25, 30, 35, 40, 45]
+    for start in range(0, len(test_start)):
+        for delta in range(0, len(test_delta)):
+            print()  # Blank line to separate output
+            print("Start", test_start[start], "delta", test_delta[delta])
+            analysis_start = date_range[0] + + \
+                datetime.timedelta(test_start[start])
+            analysis_end = analysis_start + \
+                datetime.timedelta(test_delta[delta])
+            process_data_in_range(results, analysis_start, analysis_end)
 
 
 def run(filename):
