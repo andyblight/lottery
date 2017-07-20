@@ -116,21 +116,18 @@ def process_data(results):
         analysis_start = date_range[0] + + datetime.timedelta(test_start[ii])
         analysis_end = analysis_start + datetime.timedelta(test_delta[ii])
         process_data_in_range(results, analysis_start, analysis_end)
-
-    print("Not appeared in 8 draws")
-    CHANGE TO A LOOP - PER DRAW
-    test_start = [120, 110, 100, 90, 80, 70, 60, 40, 30, 20, 10, 0]
-    # 8 draws is 4 week, 28 days. Try range between 20 and 40 days.
+    print("Not appeared in delta")
     test_delta = [20, 25, 30, 35, 40, 45]
-    for start in range(0, len(test_start)):
+    end_date = date_range[0] + datetime.timedelta(120)
+    analysis_start = results.get_lottery().get_first_lottery_date()
+    while analysis_start < end_date:
         for delta in range(0, len(test_delta)):
             print()  # Blank line to separate output
-            print("Start", test_start[start], "delta", test_delta[delta])
-            analysis_start = date_range[0] + + \
-                datetime.timedelta(test_start[start])
+            print("Start", analysis_start, "delta", test_delta[delta])
             analysis_end = analysis_start + \
                 datetime.timedelta(test_delta[delta])
             process_data_in_range(results, analysis_start, analysis_end)
+        analysis_start = results.get_lottery().get_next_lottery_date()
 
 
 def run(filename):

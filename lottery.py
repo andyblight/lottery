@@ -1,6 +1,7 @@
 #!/usr/bin/python3.6
 
 from lottery_utils import SetOfBalls
+from unittest import result
 
 
 class LotteryTicket:
@@ -38,6 +39,7 @@ class Lottery:
         self.results = []
         self._num_draws = 0
         self._balls = SetOfBalls('default', 10)
+        self._get_date_index = 0
 
     def get_name(self):
         """ Returns the name of the lottery. """
@@ -87,3 +89,18 @@ class Lottery:
     def print_ticket(self, ticket):
         """ Prints the given ticket. """
         ticket.print_ticket()
+
+    def get_first_lottery_date(self):
+        """ Returns the first lottery date.
+        Resets the next lottery date to the first lottery date.
+        """
+        self._get_date_index = 0
+        return self.results[0].draw_date
+
+    def get_next_lottery_date(self):
+        """ Returns the next lottery date. """
+        result = None
+        self._get_date_index += 1
+        if self._get_date_index < self._num_draws:
+            result = self.results[self._get_date_index].draw_date
+        return result
