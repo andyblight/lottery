@@ -3,34 +3,36 @@
 """
 GOAL
 Generate statistics on the balls and the draws that can be fed into an
-algorithm used to predict the next draw. 
-Use 5 months of the 6 months of data to predict the remaining months draws. 
+algorithm used to predict the next draw.
+Use 5 months of the 6 months of data to predict the remaining months draws.
 
 NOTES
-Predicting the EuroMillions lucky star balls should be simplest with a 2 out 
+Predicting the EuroMillions lucky star balls should be simplest with a 2 out
 of 12 choice.  Focus on that first.
 Does the EuroMillions use multiple machines/balls sets?
 
 Most likely seems to get it right more often than least likely.
 
-Implement this "Choose from the balls that haven't come up in the last 8 weeks."  
-- Ball frequency for last 8 weeks. 
+Implement this "Choose from the balls that haven't come up in the last 8 weeks."
+- Ball frequency for last 8 weeks.
 - Create list of balls that do not appear in the ball frequency list.
-- Create ticket from that list. 
+- Create ticket from that list.
 Seems to be some sort of sweet spot with delta 35-40.
 
- 
+
 TASKS
 D Print out rolling n days frequency figures.
-D Print out the most likely numbers for the next n draws.  
+D Print out the most likely numbers for the next n draws.
 Print out lottery ticket numbers using various different methods so they can be compared
-against the real results. 
+against the real results.
 """
 
 import datetime
 
 from lottery_results import LotteryResults
 from lottery_utils import frequency, most_common_balls, least_common_balls
+
+_winning_draws = []
 
 
 def ball_stats_in_date_range(results, date_from, date_to):
@@ -82,7 +84,18 @@ def print_matches_for_draws_in_date_range(results, date_from, date_to, ticket):
     lottery_draws = results.get_lottery().get_draws_in_date_range(date_from, date_to)
     for lottery_draw in lottery_draws:
         results.get_lottery().print_draw(lottery_draw)
-        results.get_lottery().test_draw_against_ticket(lottery_draw, ticket)
+        test_results = results.get_lottery().test_draw_against_ticket(lottery_draw, ticket)
+        best_score = test_results[0]
+        winning_lines = test_results[1]
+        draw = test_results[2]
+        if best_score[2]:
+            print("WINNER!!!!")
+            print("Best score", best_score, "for lines")
+            _winning_draws.append(draw)
+        else:
+            print("No winners")
+        for line in winning_lines:
+            print(line.as_string())
 
 
 def process_data_in_range(results, analysis_start, analysis_end):
@@ -101,13 +114,25 @@ def process_data_in_range(results, analysis_start, analysis_end):
         results, draw_date_from, draw_date_to, ticket)
 
 
+def print_summary(results):
+    """ Prints summary of results.
+    Draw dates that contain winners.
+    """
+    print()
+    print("SUMMARY")
+    print("Dates of winning draws:")
+    _draws = list(sorted(set(_winning_draws)))
+    for draw in _draws:
+        print(draw.draw_date)
+
+
 def process_data(results):
     """ Print range of  """
     print("Lottery name:", results.get_lottery().get_name())
     date_range = results.get_lottery().get_date_range()
     print("Results in file from", date_range[0].isoformat(
     ), "to", date_range[1].isoformat())
-    test_start = [100, 90, 80, 70,  60,  40]
+    test_start = [100, 90, 80, 70, 60, 40]
     test_delta = [60, 70, 80, 90, 100, 120]
     # Start range
     for ii in range(0, len(test_start)):
@@ -128,6 +153,7 @@ def process_data(results):
                 datetime.timedelta(test_delta[delta])
             process_data_in_range(results, analysis_start, analysis_end)
         analysis_start = results.get_lottery().get_next_lottery_date()
+    print_summary(results)
 
 
 def run(filename):

@@ -46,7 +46,7 @@ class EuroMillionsLine:
         self.lucky_stars.sort()
 
     def _is_winner(self, main_matched, lucky_matched):
-        """ The rules for winning are 
+        """ The rules for winning are
         Match 5 + 2 Lucky Stars - Jackpot
         Match 5 + 1 Lucky Star
         Match 5
@@ -71,9 +71,10 @@ class EuroMillionsLine:
 
     def score(self, line):
         """ Returns a tuple containing:
-        bool - true if the given line matches 
-        line with only the winning balls in the correct places. 
-        If there are no matches, a line of zeroes is returned.
+        0 - count of main ball matches
+        1 - count of lucky star matches
+        2 - True if the line is a winner.
+        3 - string of the line with the matching balls shown
         """
         main_matched = 0
         lucky_matched = 0
@@ -97,16 +98,23 @@ class EuroMillionsCSVDraw:
         self.draw_date = 0
         self.line = EuroMillionsLine()
 
+    def __lt__(self, other):
+        """ Returns True when self < other.  Test is on draw date. """
+        result = False
+        if self.draw_date < other.draw_date:
+            result = True
+        return result
+
 
 class LotteryTicketEuroMillions(LotteryTicket):
     """ Class representing a EuroMillionsTicket.
-    Only implements lottery specific functions. 
+    Only implements lottery specific functions.
     """
 
     def generate_lines(self, num_lines, ball_stats):
         """ Generates the given number of lines from the ball stats. """
         debug_on = False
-        if debug_on is True:
+        if debug_on:
             print("Gen lines EM", num_lines, "Ignored!")
             # for ii in range(0, num_lines):
             print(ball_stats[0])
@@ -195,7 +203,7 @@ class LotteryEuroMillions(Lottery):
         self._num_draws += 1
 
     def get_balls_in_date_range(self, date_from, date_to):
-        """ Returns a tuple containing the sets of balls in the give date 
+        """ Returns a tuple containing the sets of balls in the give date
         range. """
         main_balls = []
         lucky_stars = []
@@ -212,7 +220,8 @@ class LotteryEuroMillions(Lottery):
                 lucky_stars.append(lottery_draw.line.lucky_stars[1])
         return (main_balls, lucky_stars)
 
-    def get_draw(self, draw_date, main_1, main_2, main_3, main_4, main_5, lucky_1, lucky_2):
+    def get_draw(self, draw_date, main_1, main_2, main_3,
+                 main_4, main_5, lucky_1, lucky_2):
         lottery_draw = EuroMillionsCSVDraw(draw_date, main_1, main_2,
                                            main_3, main_4, main_5,
                                            lucky_1, lucky_2)
@@ -233,21 +242,15 @@ class LotteryEuroMillions(Lottery):
     def test_draw_against_ticket(self, lottery_draw, ticket):
         """ Prints out the number of matches for each line of the given ticket against the given draw. """
         best_score = (0, 0, False, [])
-        best_lines = []
+        winning_lines = []
+
         for line in ticket.lines:
             score = line.score(lottery_draw.line)
             # print(score)
             if score == best_score:
-                best_lines.append(line)
+                winning_lines.append(line)
             if score[0] > best_score[0] or score[1] > best_score[1]:
                 best_score = score
-                best_lines.clear()
-                best_lines.append(line)
-        # TODO This output could do with showing the numbers that matched.
-        if best_score[2] is True:
-            print("WINNER!!!!")
-            print("Best score", best_score, "for lines")
-            for line in best_lines:
-                print(line.as_string())
-        else:
-            print("No winners")
+                winning_lines.clear()
+                winning_lines.append(line)
+        return (best_score, winning_lines, lottery_draw)
