@@ -1,4 +1,5 @@
 #!/usr/bin/python3.6
+""" """
 
 import collections
 from lottery import Lottery, LotteryTicket
@@ -24,13 +25,13 @@ class EuroMillionsLine:
         self.lucky_stars.append(0)
 
     def as_string(self):
+        """ """
         return 'Main {0:2d}  {1:2d}  {2:2d}  {3:2d}  {4:2d}  Lucky stars {5:2d}  {6:2d} '.format(
             self.main_balls[0], self.main_balls[1], self.main_balls[2], self.main_balls[3], self.main_balls[4],
             self.lucky_stars[0], self.lucky_stars[1])
 
     def _mark_ball_in_string(self, line_string, main, lucky):
-        # return 'Main {0:2d} {1:2d} {2:2d} {3:2d} {4:2d} Lucky stars {5:2d}
-        # {6:2d}'.format(\
+        """ """
         if main > -1 and main < 5:
             index = 7 + (main * 4)
             line_string = line_string[:index] + '*' + line_string[index + 1:]

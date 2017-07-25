@@ -23,7 +23,7 @@ class LotteryTicket:
         """ Prints the ticket. """
         print("Ticket date", _draw_date)
         for line in lines:
-            print('Line TODO')
+            print('Line TODO', line)
 
 
 class Lottery:
@@ -57,10 +57,11 @@ class Lottery:
     def get_ball_sets(self):
         """ Returns all sets of balls for this lottery. """
         print("TODO")
-        return (self._balls)
+        return self._balls
 
     def get_date_range(self):
-        """ Returns a tuple containing the earliest and latest dates in the results. """
+        """ Returns a tuple containing the earliest and latest dates in the
+        results. """
         first_date = self.results[0].draw_date
         last_date = self.results[self._num_draws - 1].draw_date
         return (first_date, last_date)
@@ -69,21 +70,22 @@ class Lottery:
         """ Returns a tuple containing the sets of balls in the give date 
         range. """
         print("TODO")
-        return (0)
+        return 0
 
     def get_draws_in_date_range(self, date_from, date_to):
         """ Returns a tuple of lottery_draws in the give date range. """
         lottery_draws = []
         # print(date_from, date_to)
         for lottery_draw in self.results:
-            if lottery_draw.draw_date >= date_from and lottery_draw.draw_date <= date_to:
+            if lottery_draw.draw_date >= date_from \
+                    and lottery_draw.draw_date <= date_to:
                 # print("Matched", lottery_draw.draw_date)
                 lottery_draws.append(lottery_draw)
         return lottery_draws
 
     def generate_ticket(self, next_lottery_date, num_lines, ball_stats):
         """ Generates a new ticket with the given number of lines. """
-        print("TODO")
+        print("TODO", num_lines, ball_stats)
         return LotteryTicket(next_lottery_date)
 
     def print_ticket(self, ticket):

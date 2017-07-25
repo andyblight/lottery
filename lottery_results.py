@@ -1,7 +1,7 @@
 #!/usr/bin/python3.6
+""" STUFF!!! """
 
 import csv
-import sys
 
 from euro_millions import LotteryEuroMillions
 from lottery import Lottery
@@ -9,14 +9,14 @@ from lottery import Lottery
 
 class LotteryResults:
     """
-    The LotteryResults class reads a lottery results CSV file into an internal 
-    cache and provides methods to access the data in the internal cache. 
+    The LotteryResults class reads a lottery results CSV file into an internal
+    cache and provides methods to access the data in the internal cache.
 .   """
+
     def __init__(self):
         self._lottery = None
         self._default_lottery = Lottery()
         self._euro_millions = LotteryEuroMillions()
-
 
     def parse_header(self, row):
         """ Parse the header row to work out the file type. """
@@ -32,8 +32,9 @@ class LotteryResults:
         self._lottery.parse_row(row)
 
     def load_file(self, filename):
-        """ Load data from CSV file in the results.  The data is the file is most recent data 
-            first, so reverse order of list when loaded. """
+        """ Load data from CSV file in the results.  The data is the file is
+        most recent data first, so reverse order of list when loaded.
+        """
         with open(filename, newline='') as csvfile:
             filereader = csv.reader(csvfile, delimiter=',', quotechar='|')
             ignore_header = True
