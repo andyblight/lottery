@@ -10,6 +10,7 @@ from lottery_utils import SetOfBalls, convert_str_to_date, frequency
 
 
 class EuroMillionsLine:
+
     """ Represents a line of lottery numbers. """
 
     def __init__(self):
@@ -27,7 +28,8 @@ class EuroMillionsLine:
     def as_string(self):
         """ """
         return 'Main {0:2d}  {1:2d}  {2:2d}  {3:2d}  {4:2d}  Lucky stars {5:2d}  {6:2d} '.format(
-            self.main_balls[0], self.main_balls[1], self.main_balls[2], self.main_balls[3], self.main_balls[4],
+            self.main_balls[0], self.main_balls[1], self.main_balls[
+                2], self.main_balls[3], self.main_balls[4],
             self.lucky_stars[0], self.lucky_stars[1])
 
     def _mark_ball_in_string(self, line_string, main, lucky):
@@ -93,6 +95,7 @@ class EuroMillionsLine:
 
 
 class EuroMillionsCSVDraw:
+
     """ Groups draw date and lottery line."""
 
     def __init__(self):
@@ -108,6 +111,7 @@ class EuroMillionsCSVDraw:
 
 
 class LotteryTicketEuroMillions(LotteryTicket):
+
     """ Class representing a EuroMillionsTicket.
     Only implements lottery specific functions.
     """
@@ -163,12 +167,14 @@ class LotteryTicketEuroMillions(LotteryTicket):
 
     def print_ticket(self):
         """ Prints the ticket. """
-        # print("Ticket date EM:", self._draw_date, "Num Lines", len(self.lines))
+        # print("Ticket date EM:", self._draw_date, "Num Lines",
+        # len(self.lines))
         for line in self.lines:
             print(line.as_string())
 
 
 class LotteryEuroMillions(Lottery):
+
     """ The Euro Millions lottery. """
 
     def __init__(self):

@@ -5,8 +5,11 @@ Utility functions for dealing with Lottery csv files.
 import copy
 import datetime
 
+
 class SetOfBalls:
+
     """ Information about the set of balls. """
+
     def __init__(self, name, num_balls):
         """ Initialises the class. """
         self._num_balls = num_balls
@@ -28,6 +31,7 @@ def convert_str_to_date(date_str):
     date_object = datetime.datetime.strptime(date_str, formatter_string).date()
     return date_object
 
+
 def frequency(max_num, ball_list):
     """ Creates a list of frequencies from the given ball list """
     # print(ball_list)
@@ -40,6 +44,7 @@ def frequency(max_num, ball_list):
                 ball_count += 1
         frequency_of_balls.append((ball_number, ball_count))
     return frequency_of_balls
+
 
 def most_common_balls(ball_set_in, max_balls):
     """ Select most common balls. """
@@ -63,6 +68,7 @@ def most_common_balls(ball_set_in, max_balls):
         del ball_set[highest_index]
     return most
 
+
 def least_common_balls(ball_set_in, max_balls):
     """ Select least common balls. """
     # expected = [(1, 5), (7, 3), (10, 5)]
@@ -84,4 +90,3 @@ def least_common_balls(ball_set_in, max_balls):
         least_likely.append(ball_set[lowest_index])
         del ball_set[lowest_index]
     return least_likely
-

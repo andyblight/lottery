@@ -5,6 +5,7 @@ from unittest import result
 
 
 class LotteryTicket:
+
     """ Represents a lottery ticket.
     Defines the API for a lottery ticket.
     Implements all common operations for a lottery ticket.
@@ -27,10 +28,11 @@ class LotteryTicket:
 
 
 class Lottery:
-    """ 
+
+    """
     The base class for all lotteries.
     This class implements the functions for a single set of balls (the most
-    common type of lottery). 
+    common type of lottery).
     """
 
     def __init__(self):
@@ -67,7 +69,7 @@ class Lottery:
         return (first_date, last_date)
 
     def get_balls_in_date_range(self, date_from, date_to):
-        """ Returns a tuple containing the sets of balls in the give date 
+        """ Returns a tuple containing the sets of balls in the give date
         range. """
         print("TODO")
         return 0

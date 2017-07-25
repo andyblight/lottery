@@ -25,6 +25,12 @@ D Print out rolling n days frequency figures.
 D Print out the most likely numbers for the next n draws.
 Print out lottery ticket numbers using various different methods so they can be compared
 against the real results.
+
+Need some way to summarise the methods and plot results against those methods.
+
+NOTES
+Last two lines on ticket seem to come up more often than not.
+
 """
 
 import datetime
@@ -81,10 +87,12 @@ def print_matches_for_draws_in_date_range(results, date_from, date_to, ticket):
             prints the number of matches in each line of the ticket.
     """
     print("Draws in range from", date_from, "to", date_to)
-    lottery_draws = results.get_lottery().get_draws_in_date_range(date_from, date_to)
+    lottery_draws = results.get_lottery().get_draws_in_date_range(
+        date_from, date_to)
     for lottery_draw in lottery_draws:
         results.get_lottery().print_draw(lottery_draw)
-        test_results = results.get_lottery().test_draw_against_ticket(lottery_draw, ticket)
+        test_results = results.get_lottery().test_draw_against_ticket(
+            lottery_draw, ticket)
         best_score = test_results[0]
         winning_lines = test_results[1]
         draw = test_results[2]

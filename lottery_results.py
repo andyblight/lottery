@@ -8,6 +8,7 @@ from lottery import Lottery
 
 
 class LotteryResults:
+
     """
     The LotteryResults class reads a lottery results CSV file into an internal
     cache and provides methods to access the data in the internal cache.
