@@ -23,10 +23,19 @@ Seems to be some sort of sweet spot with delta 35-40.
 TASKS
 D Print out rolling n days frequency figures.
 D Print out the most likely numbers for the next n draws.
-Print out lottery ticket numbers using various different methods so they can be compared
+Print out lottery ticket numbers using various different methods so they can be
+compared
 against the real results.
 
 Need some way to summarise the methods and plot results against those methods.
+Store the intermediate data and analyse afterwards. 
+What info do I need?
+ Date of draw.
+ Method used to generate winning line.
+ Number of matching balls. 
+ 
+Seems like I need to create an analysis method class so I can print the method
+out.
 
 NOTES
 Last two lines on ticket seem to come up more often than not.
@@ -99,7 +108,7 @@ def print_matches_for_draws_in_date_range(results, date_from, date_to, ticket):
         if best_score[2]:
             print("WINNER!!!!")
             print("Best score", best_score, "for lines")
-            _winning_draws.append(draw)
+            _winning_draws.append((draw, best_score[3]))
         else:
             print("No winners")
         for line in winning_lines:
@@ -126,12 +135,12 @@ def print_summary(results):
     """ Prints summary of results.
     Draw dates that contain winners.
     """
+    _draws = list(sorted(set(_winning_draws)))
     print()
     print("SUMMARY")
-    print("Dates of winning draws:")
-    _draws = list(sorted(set(_winning_draws)))
+    print(len(_draws), "winning draws:")
     for draw in _draws:
-        print(draw.draw_date)
+        print(draw[0].draw_date, draw[1])
 
 
 def process_data(results):
@@ -140,17 +149,17 @@ def process_data(results):
     date_range = results.get_lottery().get_date_range()
     print("Results in file from", date_range[0].isoformat(
     ), "to", date_range[1].isoformat())
-    test_start = [100, 90, 80, 70, 60, 40]
-    test_delta = [60, 70, 80, 90, 100, 120]
+    #test_start = [100, 90, 80, 70, 60, 40]
+    #test_delta = [60, 70, 80, 90, 100, 120]
     # Start range
-    for ii in range(0, len(test_start)):
-        print()  # Blank line to separate output
-        print("Start", test_start[ii], "delta", test_delta[ii])
-        analysis_start = date_range[0] + + datetime.timedelta(test_start[ii])
-        analysis_end = analysis_start + datetime.timedelta(test_delta[ii])
-        process_data_in_range(results, analysis_start, analysis_end)
-    print("Not appeared in delta")
-    test_delta = [20, 25, 30, 35, 40, 45]
+    # for ii in range(0, len(test_start)):
+    #    print()  # Blank line to separate output
+    #    print("Start", test_start[ii], "delta", test_delta[ii])
+    #    analysis_start = date_range[0] + + datetime.timedelta(test_start[ii])
+    #    analysis_end = analysis_start + datetime.timedelta(test_delta[ii])
+    #    process_data_in_range(results, analysis_start, analysis_end)
+    #print("Not appeared in delta")
+    test_delta = [20, 25, 30, 35, 40, 45, 50, 55, 60]
     end_date = date_range[0] + datetime.timedelta(120)
     analysis_start = results.get_lottery().get_first_lottery_date()
     while analysis_start < end_date:
@@ -162,6 +171,10 @@ def process_data(results):
             process_data_in_range(results, analysis_start, analysis_end)
         analysis_start = results.get_lottery().get_next_lottery_date()
     print_summary(results)
+    # Print next ticket
+    analysis_end = date_range[1]
+    analysis_start = analysis_end - datetime.timedelta(35)
+    process_data_in_range(results, analysis_start, analysis_end)
 
 
 def run(filename):
