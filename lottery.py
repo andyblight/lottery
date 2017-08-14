@@ -56,10 +56,10 @@ class Lottery:
         print("TODO")
         return False
 
-    def get_ball_sets(self):
-        """ Returns all sets of balls for this lottery. """
+    def get_sets_of_balls(self):
+        """ Returns a list containing all sets of balls for this lottery. """
         print("TODO")
-        return self._balls
+        return [self._balls]
 
     def get_date_range(self):
         """ Returns a tuple containing the earliest and latest dates in the

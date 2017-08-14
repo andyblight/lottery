@@ -21,11 +21,11 @@ Seems to be some sort of sweet spot with delta 35-40.
 
 
 TASKS
-D Print out rolling n days frequency figures.
-D Print out the most likely numbers for the next n draws.
-Print out lottery ticket numbers using various different methods so they can be
-compared
-against the real results.
+Fix TODO!!! output.
+Route output to file instead of stdout.
+One file per lottery. 
+Do I change the script to just do one lottery at a time based on the input file?
+Wrap the tool in a bash script that captures the output.
 
 Need some way to summarise the methods and plot results against those methods.
 Store the intermediate data and analyse afterwards. 
@@ -54,12 +54,14 @@ def ball_stats_in_date_range(results, date_from, date_to):
     """ Returns the statistics about the balls for all ball sets for the given range. """
     # print("Ball frequency from", date_from, "to", date_to)
     balls = results.get_lottery().get_balls_in_date_range(date_from, date_to)
-    ball_sets = results.get_lottery().get_ball_sets()
+    sets_of_balls = results.get_lottery().get_sets_of_balls()
     ii = 0
     ball_stats = []
-    for ball_set in ball_sets:
+    print(balls)
+    for ball_set in sets_of_balls:
         # print("Set of balls:", ball_set.get_name())
         num_balls = ball_set.get_num_balls()
+        print("NUM BALLS", num_balls, "ii", ii)
         frequency_of_balls = frequency(num_balls, balls[ii])
         # print(frequency_of_balls)
         num_likley = 3
@@ -145,6 +147,7 @@ def print_summary(results):
 
 def process_data(results):
     """ Print range of  """
+    print()
     print("Lottery name:", results.get_lottery().get_name())
     date_range = results.get_lottery().get_date_range()
     print("Results in file from", date_range[0].isoformat(
@@ -187,3 +190,4 @@ def run(filename):
 if __name__ == "__main__":
     # execute only if run as a script
     run('euromillions-draw-history.csv')
+    run('lotto-draw-history.csv')

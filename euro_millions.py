@@ -189,9 +189,9 @@ class LotteryEuroMillions(Lottery):
         """ Returns True if the header row is for this lottery """
         return str(row[6]) == 'Lucky Star 1'
 
-    def get_ball_sets(self):
+    def get_sets_of_balls(self):
         """ Returns all sets of balls for this lottery. """
-        return (self._main_balls, self._lucky_star_balls)
+        return [self._main_balls, self._lucky_star_balls]
 
     def parse_row(self, row):
         """ Read row data and copy into EuroMillionsCSV class """
@@ -210,19 +210,19 @@ class LotteryEuroMillions(Lottery):
         self._num_draws += 1
 
     def get_balls_in_date_range(self, date_from, date_to):
-        """ Returns a tuple containing the sets of balls in the give date
+        """ Return a tuple containing the sets of balls in the give date
         range. """
         main_balls = []
         lucky_stars = []
         for lottery_draw in self.results:
             if lottery_draw.draw_date >= date_from and lottery_draw.draw_date <= date_to:
-                """ Appends all main balls to the given list """
+                """ Append all main balls to the given list """
                 main_balls.append(lottery_draw.line.main_balls[0])
                 main_balls.append(lottery_draw.line.main_balls[1])
                 main_balls.append(lottery_draw.line.main_balls[2])
                 main_balls.append(lottery_draw.line.main_balls[3])
                 main_balls.append(lottery_draw.line.main_balls[4])
-                """ Appends all lucky star balls to the given list """
+                """ Append all lucky star balls to the given list """
                 lucky_stars.append(lottery_draw.line.lucky_stars[0])
                 lucky_stars.append(lottery_draw.line.lucky_stars[1])
         return (main_balls, lucky_stars)

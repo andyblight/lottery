@@ -4,6 +4,7 @@
 import csv
 
 from euro_millions import LotteryEuroMillions
+from lotto import LotteryLotto
 from lottery import Lottery
 
 
@@ -18,13 +19,14 @@ class LotteryResults:
         self._lottery = None
         self._default_lottery = Lottery()
         self._euro_millions = LotteryEuroMillions()
+        self._lotto = LotteryLotto()
 
     def parse_header(self, row):
         """ Parse the header row to work out the file type. """
         if self._euro_millions.check_header(row):
             self._lottery = self._euro_millions
-        elif str(row[7]) == 'Bonus Ball':
-            print("FIXME: Using default lottery")
+        elif self._lotto.check_header(row):
+            self._lottery = self._lotto
         else:
             print("Using default lottery")
 
