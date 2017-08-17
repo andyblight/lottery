@@ -42,12 +42,28 @@ Last two lines on ticket seem to come up more often than not.
 
 """
 
+import argparse
 import datetime
 
 from lottery_results import LotteryResults
 from lottery_utils import frequency, most_common_balls, least_common_balls
 
 _winning_draws = []
+
+
+def handle_parameters():
+    """ Process the command line arguments.  Returns the values of the 
+    arguments in a argparse.Namespace object.
+    """
+    parser = argparse.ArgumentParser(
+        description=''' Generates statistics and suggests tickets to buy based
+                        on the given CSV files.''')
+    parser.add_argument('-v', '--verbose', action='count',
+                        help='''verbose output. -vv verbose plus debugging info. 
+                        -vvv verbose plus verbose debugging info.''')
+    parser.add_argument(
+        "filename", help='CSV file or files to process')
+    return parser.parse_args()
 
 
 def ball_stats_in_date_range(results, date_from, date_to):
@@ -180,14 +196,14 @@ def process_data(results):
     process_data_in_range(results, analysis_start, analysis_end)
 
 
-def run(filename):
+def run():
     """ Reads the data from the given file into the results instance """
+    args = handle_parameters()
+    print(args)
     results = LotteryResults()
-    results.load_file(filename)
+    results.load_file(args.filename)
     process_data(results)
 
 
 if __name__ == "__main__":
-    # execute only if run as a script
-    run('euromillions-draw-history.csv')
-    run('lotto-draw-history.csv')
+    run()
