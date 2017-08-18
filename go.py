@@ -44,6 +44,8 @@ Last two lines on ticket seem to come up more often than not.
 
 import argparse
 import datetime
+import logging
+import os
 
 from lottery_results import LotteryResults
 from lottery_utils import frequency, most_common_balls, least_common_balls
@@ -58,9 +60,7 @@ def handle_parameters():
     parser = argparse.ArgumentParser(
         description=''' Generates statistics and suggests tickets to buy based
                         on the given CSV files.''')
-    parser.add_argument('-v', '--verbose', action='count',
-                        help='''verbose output. -vv verbose plus debugging info. 
-                        -vvv verbose plus verbose debugging info.''')
+    parser.add_argument('-v', '--verbose', help='''verbose output.''')
     parser.add_argument(
         "filename", help='CSV file or files to process')
     return parser.parse_args()
@@ -73,11 +73,11 @@ def ball_stats_in_date_range(results, date_from, date_to):
     sets_of_balls = results.get_lottery().get_sets_of_balls()
     ii = 0
     ball_stats = []
-    print(balls)
+    logging.info(balls)
     for ball_set in sets_of_balls:
         # print("Set of balls:", ball_set.get_name())
         num_balls = ball_set.get_num_balls()
-        print("NUM BALLS", num_balls, "ii", ii)
+        logging.info("NUM BALLS", num_balls, "ii", ii)
         frequency_of_balls = frequency(num_balls, balls[ii])
         # print(frequency_of_balls)
         num_likley = 3
@@ -103,7 +103,7 @@ def generate_ticket_for_next_lottery(next_lottery_date, results, stats):
 
 def print_lottery_ticket(results, ticket):
     """ Prints a ticket with a number of lines for the next draw. """
-    print("Ticket for next lottery:")
+    logging.info("Ticket for next lottery:")
     lottery = results.get_lottery()
     lottery.print_ticket(ticket)
 
@@ -113,7 +113,8 @@ def print_matches_for_draws_in_date_range(results, date_from, date_to, ticket):
             prints the draw
             prints the number of matches in each line of the ticket.
     """
-    print("Draws in range from", date_from, "to", date_to)
+    logging.info("Draws in range from " +
+                 date_from.isoformat() + " to " + date_to.isoformat())
     lottery_draws = results.get_lottery().get_draws_in_date_range(
         date_from, date_to)
     for lottery_draw in lottery_draws:
@@ -124,13 +125,13 @@ def print_matches_for_draws_in_date_range(results, date_from, date_to, ticket):
         winning_lines = test_results[1]
         draw = test_results[2]
         if best_score[2]:
-            print("WINNER!!!!")
-            print("Best score", best_score, "for lines")
+            logging.info("WINNER!!!!")
+            logging.info("Best score", best_score, "for lines")
             _winning_draws.append((draw, best_score[3]))
         else:
-            print("No winners")
+            logging.info("No winners")
         for line in winning_lines:
-            print(line.as_string())
+            logging.info(line.as_string())
 
 
 def process_data_in_range(results, analysis_start, analysis_end):
@@ -154,19 +155,19 @@ def print_summary(results):
     Draw dates that contain winners.
     """
     _draws = list(sorted(set(_winning_draws)))
-    print()
-    print("SUMMARY")
-    print(len(_draws), "winning draws:")
+    logging.info('.')
+    logging.info("SUMMARY")
+    logging.info(len(_draws), "winning draws:")
     for draw in _draws:
-        print(draw[0].draw_date, draw[1])
+        logging.info(draw[0].draw_date, draw[1])
 
 
 def process_data(results):
     """ Print range of  """
-    print()
-    print("Lottery name:", results.get_lottery().get_name())
+    logging.info('.')
+    logging.info("Lottery name:", results.get_lottery().get_name())
     date_range = results.get_lottery().get_date_range()
-    print("Results in file from", date_range[0].isoformat(
+    logging.info("Results in file from", date_range[0].isoformat(
     ), "to", date_range[1].isoformat())
     #test_start = [100, 90, 80, 70, 60, 40]
     #test_delta = [60, 70, 80, 90, 100, 120]
@@ -183,8 +184,8 @@ def process_data(results):
     analysis_start = results.get_lottery().get_first_lottery_date()
     while analysis_start < end_date:
         for delta in range(0, len(test_delta)):
-            print()  # Blank line to separate output
-            print("Start", analysis_start, "delta", test_delta[delta])
+            logging.info('.')
+            logging.info("Start", analysis_start, "delta", test_delta[delta])
             analysis_end = analysis_start + \
                 datetime.timedelta(test_delta[delta])
             process_data_in_range(results, analysis_start, analysis_end)
@@ -199,7 +200,11 @@ def process_data(results):
 def run():
     """ Reads the data from the given file into the results instance """
     args = handle_parameters()
-    print(args)
+    split_filename = os.path.splitext(args.filename)
+    log_filename = split_filename[0] + '.log'
+    logging.basicConfig(filename=log_filename, level=logging.INFO)
+    logging.info('Started')
+    logging.info(args)
     results = LotteryResults()
     results.load_file(args.filename)
     process_data(results)
