@@ -205,12 +205,6 @@ class LotteryLotto(Lottery):
                 main_balls.append(lottery_draw.main_balls[6])
         return (main_balls, [])
 
-    def get_draw(self, draw_date, main_1, main_2, main_3,
-                 main_4, main_5, main_6, bonus_ball):
-        lottery_draw = LottoCSVDraw(draw_date, main_1, main_2, main_3, main_4,
-                                    main_5, main_6, bonus_ball)
-        return lottery_draw
-
     def print_draw(self, lottery_draw):
         """ Print the given draw. """
         print('Date', lottery_draw.draw_date, lottery_draw.as_string())

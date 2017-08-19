@@ -53,7 +53,7 @@ def most_common_balls(ball_set_in, max_balls):
     # Copy the ball set to stop the given ball set being modified
     ball_set = copy.deepcopy(ball_set_in)
     most = []
-    for num_balls in range(0, max_balls):
+    for _ in range(0, max_balls):
         # Find the highest ball value in the set
         highest_value = 0
         highest_index = 0
@@ -76,7 +76,7 @@ def least_common_balls(ball_set_in, max_balls):
     # Copy the ball set to stop the given ball set being modified
     ball_set = copy.deepcopy(ball_set_in)
     least_likely = []
-    for num_balls in range(0, max_balls):
+    for _ in range(0, max_balls):
         # Find the lowest ball value in the set
         lowest_value = 1000
         lowest_index = 0

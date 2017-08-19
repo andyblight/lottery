@@ -23,17 +23,17 @@ Seems to be some sort of sweet spot with delta 35-40.
 TASKS
 Fix TODO!!! output.
 Route output to file instead of stdout.
-One file per lottery. 
-Do I change the script to just do one lottery at a time based on the input file?
-Wrap the tool in a bash script that captures the output.
+One file per lottery.
+Do I change the script to just do one lottery at a time based on the input
+file?  Wrap the tool in a bash script that captures the output.
 
 Need some way to summarise the methods and plot results against those methods.
-Store the intermediate data and analyse afterwards. 
+Store the intermediate data and analyse afterwards.
 What info do I need?
  Date of draw.
  Method used to generate winning line.
- Number of matching balls. 
- 
+ Number of matching balls.
+
 Seems like I need to create an analysis method class so I can print the method
 out.
 
@@ -50,11 +50,9 @@ import os
 from lottery_results import LotteryResults
 from lottery_utils import frequency, most_common_balls, least_common_balls
 
-_winning_draws = []
-
 
 def handle_parameters():
-    """ Process the command line arguments.  Returns the values of the 
+    """ Process the command line arguments.  Returns the values of the
     arguments in a argparse.Namespace object.
     """
     parser = argparse.ArgumentParser(
@@ -67,18 +65,21 @@ def handle_parameters():
 
 
 def ball_stats_in_date_range(results, date_from, date_to):
-    """ Returns the statistics about the balls for all ball sets for the given range. """
+    """ Returns the statistics about the balls for all ball sets for the given
+        range.
+    """
     # print("Ball frequency from", date_from, "to", date_to)
     balls = results.get_lottery().get_balls_in_date_range(date_from, date_to)
     sets_of_balls = results.get_lottery().get_sets_of_balls()
-    ii = 0
+    iterator = 0
     ball_stats = []
     logging.info(balls)
     for ball_set in sets_of_balls:
         # print("Set of balls:", ball_set.get_name())
         num_balls = ball_set.get_num_balls()
-        logging.info("NUM BALLS", num_balls, "ii", ii)
-        frequency_of_balls = frequency(num_balls, balls[ii])
+        str_log = "NUM BALLS " + str(num_balls) + " iterator " + str(iterator)
+        logging.info(str_log)
+        frequency_of_balls = frequency(num_balls, balls[iterator])
         # print(frequency_of_balls)
         num_likley = 3
         if num_balls > 20:
@@ -87,14 +88,14 @@ def ball_stats_in_date_range(results, date_from, date_to):
         # print("Most likely", most_likely)
         least_likely = least_common_balls(frequency_of_balls, num_likley)
         # print("Least likely", least_likely)
-        ii += 1
+        iterator += 1
         ball_stats.append(frequency_of_balls)
         ball_stats.append(most_likely)
         ball_stats.append(least_likely)
     return ball_stats
 
 
-def generate_ticket_for_next_lottery(next_lottery_date, results, stats):
+def generate_ticket_next_lottery(next_lottery_date, results, stats):
     """ Prints a ticket with a number of lines for the next draw. """
     # print("Generate ticket for next lottery:")
     lottery = results.get_lottery()
@@ -108,7 +109,8 @@ def print_lottery_ticket(results, ticket):
     lottery.print_ticket(ticket)
 
 
-def print_matches_for_draws_in_date_range(results, date_from, date_to, ticket):
+def print_matches_draws_date_range(results, date_from, date_to, ticket,
+                                   winning_draws):
     """ For each draw in the given data range,
             prints the draw
             prints the number of matches in each line of the ticket.
@@ -126,35 +128,33 @@ def print_matches_for_draws_in_date_range(results, date_from, date_to, ticket):
         draw = test_results[2]
         if best_score[2]:
             logging.info("WINNER!!!!")
-            logging.info("Best score", best_score, "for lines")
-            _winning_draws.append((draw, best_score[3]))
+            logging.info("Best score" + str(best_score) + "for lines")
+            winning_draws.append((draw, best_score[3]))
         else:
             logging.info("No winners")
         for line in winning_lines:
             logging.info(line.as_string())
 
 
-def process_data_in_range(results, analysis_start, analysis_end):
-    """ """
+def process_data_in_range(results, analysis_start, analysis_end, winning_draws):
+    """ Process data in the given range. """
     next_lottery_date = analysis_end + datetime.timedelta(days=1)
     # Print ball stats of balls in range
     stats = ball_stats_in_date_range(results, analysis_start, analysis_end)
     # Print numbers for tickets
-    ticket = generate_ticket_for_next_lottery(
+    ticket = generate_ticket_next_lottery(
         next_lottery_date, results, stats)
     print_lottery_ticket(results, ticket)
     # Print draws after end of chosen range
     draw_date_to = analysis_end + datetime.timedelta(days=14)
     draw_date_from = analysis_end + datetime.timedelta(days=1)
-    print_matches_for_draws_in_date_range(
-        results, draw_date_from, draw_date_to, ticket)
+    print_matches_draws_date_range(
+        results, draw_date_from, draw_date_to, ticket, winning_draws)
 
 
-def print_summary(results):
-    """ Prints summary of results.
-    Draw dates that contain winners.
-    """
-    _draws = list(sorted(set(_winning_draws)))
+def print_summary(winning_draws):
+    """ Prints summary of winning draws. """
+    _draws = list(sorted(set(winning_draws)))
     logging.info('.')
     logging.info("SUMMARY")
     logging.info(len(_draws), "winning draws:")
@@ -164,19 +164,22 @@ def print_summary(results):
 
 def process_data(results):
     """ Print range of  """
+    winning_draws = []
     logging.info('.')
-    logging.info("Lottery name:", results.get_lottery().get_name())
+    logging.info("Lottery name:" + results.get_lottery().get_name())
     date_range = results.get_lottery().get_date_range()
-    logging.info("Results in file from", date_range[0].isoformat(
-    ), "to", date_range[1].isoformat())
+    logging.info("Results in file from" + date_range[0].isoformat() + "to" +
+                 date_range[1].isoformat())
     #test_start = [100, 90, 80, 70, 60, 40]
     #test_delta = [60, 70, 80, 90, 100, 120]
     # Start range
-    # for ii in range(0, len(test_start)):
+    # for iterator in range(0, len(test_start)):
     #    print()  # Blank line to separate output
-    #    print("Start", test_start[ii], "delta", test_delta[ii])
-    #    analysis_start = date_range[0] + + datetime.timedelta(test_start[ii])
-    #    analysis_end = analysis_start + datetime.timedelta(test_delta[ii])
+    #    print("Start", test_start[iterator], "delta", test_delta[iterator])
+    #    analysis_start = date_range[0] + \
+    #        datetime.timedelta(test_start[iterator])
+    #    analysis_end = analysis_start + \
+    #        datetime.timedelta(test_delta[iterator])
     #    process_data_in_range(results, analysis_start, analysis_end)
     #print("Not appeared in delta")
     test_delta = [20, 25, 30, 35, 40, 45, 50, 55, 60]
@@ -185,16 +188,18 @@ def process_data(results):
     while analysis_start < end_date:
         for delta in range(0, len(test_delta)):
             logging.info('.')
-            logging.info("Start", analysis_start, "delta", test_delta[delta])
+            logging.info("Start" + analysis_start.isoformat() + "delta" +
+                         test_delta[delta].isoformat())
             analysis_end = analysis_start + \
                 datetime.timedelta(test_delta[delta])
-            process_data_in_range(results, analysis_start, analysis_end)
+            process_data_in_range(results, analysis_start, analysis_end,
+                                  winning_draws)
         analysis_start = results.get_lottery().get_next_lottery_date()
-    print_summary(results)
+    print_summary(winning_draws)
     # Print next ticket
     analysis_end = date_range[1]
     analysis_start = analysis_end - datetime.timedelta(35)
-    process_data_in_range(results, analysis_start, analysis_end)
+    process_data_in_range(results, analysis_start, analysis_end, winning_draws)
 
 
 def run():
