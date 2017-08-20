@@ -197,6 +197,7 @@ def process_data(results):
         analysis_start = results.get_lottery().get_next_lottery_date()
     print_summary(winning_draws)
     # Print next ticket
+    print("NEXT TICKET")
     analysis_end = date_range[1]
     analysis_start = analysis_end - datetime.timedelta(35)
     process_data_in_range(results, analysis_start, analysis_end, winning_draws)
