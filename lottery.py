@@ -1,7 +1,8 @@
 #!/usr/bin/python3.6
 
+""" Generic lottery class """
+
 from lottery_utils import SetOfBalls
-from unittest import result
 
 
 class LotteryTicket:
@@ -22,9 +23,8 @@ class LotteryTicket:
 
     def print_ticket(self):
         """ Prints the ticket. """
-        print("Ticket date", _draw_date)
-        for line in lines:
-            print('Line TODO', line)
+        for line in self.lines:
+            print(line.as_string())
 
 
 class Lottery:
@@ -58,7 +58,6 @@ class Lottery:
 
     def get_sets_of_balls(self):
         """ Returns a list containing all sets of balls for this lottery. """
-        print("TODO")
         return [self._balls]
 
     def get_date_range(self):
@@ -103,7 +102,6 @@ class Lottery:
 
     def get_next_lottery_date(self):
         """ Returns the next lottery date. """
-        result = None
         self._get_date_index += 1
         if self._get_date_index < self._num_draws:
             result = self.results[self._get_date_index].draw_date

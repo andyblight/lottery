@@ -1,9 +1,8 @@
 #!/usr/bin/python3.6
 """ National Lottery Lotto clesses. """
 
-import collections
 from lottery import Lottery, LotteryTicket
-from lottery_utils import SetOfBalls, convert_str_to_date, frequency
+from lottery_utils import SetOfBalls, convert_str_to_date
 
 
 class LottoCSVDraw:
@@ -13,15 +12,9 @@ class LottoCSVDraw:
     def __init__(self):
         self.draw_date = 0
         self.main_balls = []
-        # 6 main balls
-        self.main_balls.append(0)
-        self.main_balls.append(0)
-        self.main_balls.append(0)
-        self.main_balls.append(0)
-        self.main_balls.append(0)
-        self.main_balls.append(0)
-        # Bonus ball
-        self.main_balls.append(0)
+        # 6 main balls + bonus ball
+        for _ in range(0, 7):
+            self.main_balls.append(0)
 
     def __lt__(self, other):
         """ Returns True when self < other.  Test is on draw date. """
@@ -31,11 +24,14 @@ class LottoCSVDraw:
         return result
 
     def as_string(self):
-        """ """
-        return '{0:10d}  {1:2d}  {2:2d}  {3:2d}  {4:2d}  {5:2d}  {6:2d}  Bonus {7:2d}'.format(
-            self.draw_date,     self.main_balls[0], self.main_balls[1],
-            self.main_balls[2], self.main_balls[3], self.main_balls[4],
-            self.main_balls[5], self.main_balls[6])
+        """ Returns this draw as a string. """
+        str1 = '{0:10d}  {1:2d}  {2:2d}  {3:2d}  '.format(
+            self.draw_date, self.main_balls[0], self.main_balls[1],
+            self.main_balls[2],)
+        str2 = '{0:2d}  {1:2d}  {2:2d}  Bonus {3:2d}'.format(
+            self.main_balls[3], self.main_balls[4], self.main_balls[5],
+            self.main_balls[6])
+        return str1 + str2
 
 
 class LottoTicketLine:
@@ -46,15 +42,12 @@ class LottoTicketLine:
         """ Creates one sets of balls with the right number of balls. """
         self.main_balls = []
         # 6 main balls
-        self.main_balls.append(0)
-        self.main_balls.append(0)
-        self.main_balls.append(0)
-        self.main_balls.append(0)
-        self.main_balls.append(0)
-        self.main_balls.append(0)
+        for _ in range(0, 6):
+            self.main_balls.append(0)
 
-    def _mark_ball_in_string(self, line_string, main, lucky):
-        """ """
+    @staticmethod
+    def _mark_ball_in_string(line_string, main):
+        """ Mark winning balls with *. """
         if main > -1 and main < 6:
             index = 7 + (main * 4)
             line_string = line_string[:index] + '*' + line_string[index + 1:]
@@ -66,22 +59,23 @@ class LottoTicketLine:
         self.main_balls.sort()
 
     def as_string(self):
-        """ """
+        """ Return this line as a string. """
         return '{0:2d}  {1:2d}  {2:2d}  {3:2d}  {4:2d}  {5:2d}'.format(
             self.main_balls[0], self.main_balls[1], self.main_balls[2],
             self.main_balls[3], self.main_balls[4], self.main_balls[5])
 
-    def _is_winner(self, main_matched):
-        """ The rules for winning are
-        TODO
+    @staticmethod
+    def _is_winner(main_matched):
+        """ The rules for winning are:
+            Match 6                 Jackpot
+            Match 5 + bonus ball
+            Match 4
+            Match 3
+            Match 2
         """
         result = False
-        print("TODO!!!")
-        # if main_matched == 1 and lucky_matched == 2:
-        #    result = True
-        # else:
-        #    if main_matched >= 2:
-        #        result = True
+        if main_matched >= 2:
+            result = True
         return result
 
     def score(self, draw):
@@ -93,17 +87,18 @@ class LottoTicketLine:
         """
         main_matched = 0
         matching_str = self.as_string()
-        for ii in range(0, len(self.main_balls)):
-            if self.main_balls[ii] == draw.main_balls[ii]:
+        for iterator in range(0, len(self.main_balls)):
+            if self.main_balls[iterator] == draw.main_balls[iterator]:
                 main_matched += 1
-                matching_str = self._mark_ball_in_string(matching_str, ii, -1)
+                matching_str = self._mark_ball_in_string(
+                    matching_str, iterator)
         return (main_matched, 0, self._is_winner(main_matched), matching_str)
 
 
 class LotteryTicketLotto(LotteryTicket):
 
     """ Class representing a LottoTicket.
-    Only implements lottery specific functions.
+        Only implements lottery specific functions.
     """
 
     def generate_lines(self, num_lines, ball_stats):
@@ -111,43 +106,36 @@ class LotteryTicketLotto(LotteryTicket):
         debug_on = True
         if debug_on:
             print("Gen lines EM", num_lines, "Ignored!")
-            # for ii in range(0, num_lines):
+            # for iterator in range(0, num_lines):
             print(ball_stats[0])
             print(ball_stats[1])  # Most
             print(ball_stats[2])  # Least
         # Use least common balls
         line = LottoTicketLine()
-        for ii in range(0, len(line.main_balls)):
-            line.main_balls[ii] = ball_stats[2][ii][0]
+        for iterator in range(0, len(line.main_balls)):
+            line.main_balls[iterator] = ball_stats[2][iterator][0]
         line.sort()
         self.lines.append(line)
         # Use the same line but with the alternatives
         line = LottoTicketLine()
-        for ii in range(0, len(line.main_balls)):
-            line.main_balls[ii] = ball_stats[2][ii][0]
+        for iterator in range(0, len(line.main_balls)):
+            line.main_balls[iterator] = ball_stats[2][iterator][0]
         line.main_balls[5] = ball_stats[2][5][0]
         line.sort()
         self.lines.append(line)
         # Use most common balls
         line = LottoTicketLine()
-        for ii in range(0, len(line.main_balls)):
-            line.main_balls[ii] = ball_stats[1][ii][0]
+        for iterator in range(0, len(line.main_balls)):
+            line.main_balls[iterator] = ball_stats[1][iterator][0]
         line.sort()
         self.lines.append(line)
         # Use the same line but with the alternatives
         line = LottoTicketLine()
-        for ii in range(0, len(line.main_balls)):
-            line.main_balls[ii] = ball_stats[1][ii][0]
+        for iterator in range(0, len(line.main_balls)):
+            line.main_balls[iterator] = ball_stats[1][iterator][0]
         line.main_balls[5] = ball_stats[1][5][0]
         line.sort()
         self.lines.append(line)
-
-    def print_ticket(self):
-        """ Prints the ticket. """
-        # print("Ticket date EM:", self._draw_date, "Num Lines",
-        # len(self.lines))
-        for line in self.lines:
-            print(line.as_string())
 
 
 class LotteryLotto(Lottery):
@@ -155,27 +143,27 @@ class LotteryLotto(Lottery):
     """ The Euro Millions lottery. """
 
     def __init__(self):
+        super(LotteryLotto, self).__init__()
         self._name = "Lotto"
-        self.results = []
-        self._num_draws = 0
         self._sets_of_balls = 1
         self._main_balls = SetOfBalls("main", 59)
 
     def check_header(self, row):
         """ Returns True if the header row is for this lottery.
-         Header row looks like this:
-         DrawDate,Ball 1,Ball 2,Ball 3,Ball 4,Ball 5,Ball 6,Bonus Ball,Ball Set,Machine,Raffles,DrawNumber
+            Distinct items are "Bonus Ball", "Ball Set", "Machine", "Raffles"
          """
         return str(row[7]) == 'Bonus Ball' and str(row[8]) == 'Ball Set'
 
     def get_sets_of_balls(self):
-        """ Returns a list containing all sets of ball info for this lottery. """
+        """ Returns a list containing all sets of ball info for this lottery.
+        """
         return [self._main_balls]
 
     def parse_row(self, row):
         """ Read row data and copy into LottoCSV class.
-        Header row looks like this:
-        DrawDate,Ball 1,Ball 2,Ball 3,Ball 4,Ball 5,Ball 6,Bonus Ball,Ball Set,Machine,Raffles,DrawNumber
+            Header row looks like this:
+            DrawDate,Ball 1,Ball 2,Ball 3,Ball 4,Ball 5,Ball 6,Bonus Ball,
+            Ball Set,Machine,Raffles,DrawNumber
         """
         draw = LottoCSVDraw()
         draw.draw_date = convert_str_to_date(str(row[0]))
@@ -191,11 +179,12 @@ class LotteryLotto(Lottery):
 
     def get_balls_in_date_range(self, date_from, date_to):
         """ Return a tuple containing the sets of balls in the give date
-        range. """
+            range.
+        """
         main_balls = []
         for lottery_draw in self.results:
-            if lottery_draw.draw_date >= date_from and lottery_draw.draw_date <= date_to:
-                """ Append all main balls to the given list """
+            if lottery_draw.draw_date >= date_from and \
+                    lottery_draw.draw_date <= date_to:
                 main_balls.append(lottery_draw.main_balls[0])
                 main_balls.append(lottery_draw.main_balls[1])
                 main_balls.append(lottery_draw.main_balls[2])
@@ -205,7 +194,8 @@ class LotteryLotto(Lottery):
                 main_balls.append(lottery_draw.main_balls[6])
         return (main_balls, [])
 
-    def print_draw(self, lottery_draw):
+    @staticmethod
+    def print_draw(lottery_draw):
         """ Print the given draw. """
         print('Date', lottery_draw.draw_date, lottery_draw.as_string())
 
@@ -216,8 +206,11 @@ class LotteryLotto(Lottery):
         # Add lines here
         return ticket
 
-    def test_draw_against_ticket(self, lottery_draw, ticket):
-        """ Prints out the number of matches for each line of the given ticket against the given draw. """
+    @staticmethod
+    def test_draw_against_ticket(lottery_draw, ticket):
+        """ Prints out the number of matches for each line of the given
+            ticket against the given draw.
+        """
         best_score = (0, 0, False, [])
         winning_lines = []
 

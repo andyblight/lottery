@@ -12,14 +12,11 @@ class EuroMillionsLine:
     def __init__(self):
         """ Creates two sets of balls with the right number of balls. """
         self.main_balls = []
-        self.main_balls.append(0)
-        self.main_balls.append(0)
-        self.main_balls.append(0)
-        self.main_balls.append(0)
-        self.main_balls.append(0)
+        for _ in range(0, 5):
+            self.main_balls.append(0)
         self.lucky_stars = []
-        self.lucky_stars.append(0)
-        self.lucky_stars.append(0)
+        for _ in range(0, 2):
+            self.lucky_stars.append(0)
 
     def as_string(self):
         """ Converts a line to a string. """
@@ -167,13 +164,6 @@ class LotteryTicketEuroMillions(LotteryTicket):
         line.sort()
         self.lines.append(line)
 
-    def print_ticket(self):
-        """ Prints the ticket. """
-        # print("Ticket date EM:", self._draw_date, "Num Lines",
-        # len(self.lines))
-        for line in self.lines:
-            print(line.as_string())
-
 
 class LotteryEuroMillions(Lottery):
 
@@ -242,6 +232,7 @@ class LotteryEuroMillions(Lottery):
         # Add lines here
         return ticket
 
+    # FIXME This is identical to Lotto except for lottery_draw.line.
     @staticmethod
     def test_draw_against_ticket(lottery_draw, ticket):
         """ Prints out the number of matches for each line of the given ticket

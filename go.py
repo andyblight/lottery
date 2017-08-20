@@ -189,7 +189,7 @@ def process_data(results):
         for delta in range(0, len(test_delta)):
             logging.info('.')
             logging.info("Start" + analysis_start.isoformat() + "delta" +
-                         test_delta[delta].isoformat())
+                         str(test_delta[delta]))
             analysis_end = analysis_start + \
                 datetime.timedelta(test_delta[delta])
             process_data_in_range(results, analysis_start, analysis_end,
