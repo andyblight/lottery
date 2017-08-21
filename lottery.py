@@ -5,6 +5,25 @@
 from lottery_utils import SetOfBalls
 
 
+class LotteryCSVDraw:
+
+    """ One draw from the CSV file. """
+
+    def __init__(self):
+        self.draw_date = 0
+
+    def __lt__(self, other):
+        """ Returns True when self < other.  Test is on draw date. """
+        result = False
+        if self.draw_date < other.draw_date:
+            result = True
+        return result
+
+    def as_string(self):
+        """ Prints the draw date """
+        return self.draw_date.isoformat()
+
+
 class LotteryTicket:
 
     """ Represents a lottery ticket.

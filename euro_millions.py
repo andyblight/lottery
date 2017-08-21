@@ -1,7 +1,7 @@
 #!/usr/bin/python3.6
 """ Implementation classes for the EuroMillions lottery. """
 
-from lottery import Lottery, LotteryTicket
+from lottery import Lottery, LotteryTicket, LotteryCSVDraw
 from lottery_utils import SetOfBalls, convert_str_to_date
 
 
@@ -93,20 +93,13 @@ class EuroMillionsLine:
                 self._is_winner(main_matched, lucky_matched,), matching_str)
 
 
-class EuroMillionsCSVDraw:
+class EuroMillionsCSVDraw(LotteryCSVDraw):
 
     """ Groups draw date and lottery line."""
 
     def __init__(self):
-        self.draw_date = 0
+        super(EuroMillionsCSVDraw, self).__init__()
         self.line = EuroMillionsLine()
-
-    def __lt__(self, other):
-        """ Returns True when self < other.  Test is on draw date. """
-        result = False
-        if self.draw_date < other.draw_date:
-            result = True
-        return result
 
 
 class LotteryTicketEuroMillions(LotteryTicket):

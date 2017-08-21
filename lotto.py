@@ -1,39 +1,36 @@
 #!/usr/bin/python3.6
-""" National Lottery Lotto classes. 
+""" National Lottery Lotto classes.
 
-NOTE: fewer winners on this lottery than Euro-millions.  
+NOTE: fewer winners on this lottery than Euro-millions.
 Consider individual ball sets?
 More data needs to be analysed to get enough statistical data.
-Possibly consider machines as well. 
+Possibly consider machines as well.
 
-1. Read ball set and machine data into the draw class. 
+1. Read ball set and machine data into the draw class. DONE.
+2. Work out how to process with the extra info.
+   a. Does the ball set make a difference?
+   b. Does the machine make a difference?
+   c. Do both the machine and the ball set make a difference?
 
 """
 
 
-from lottery import Lottery, LotteryTicket
+from lottery import Lottery, LotteryTicket, LotteryCSVDraw
 from lottery_utils import SetOfBalls, convert_str_to_date
 
 
-class LottoCSVDraw:
+class LottoCSVDraw(LotteryCSVDraw):
 
     """ Groups draw date and lottery line."""
 
     def __init__(self):
-        self.draw_date = 0
+        super(LottoCSVDraw, self).__init__()
         self.main_balls = []
         self.ball_set = 0
         self.machine = ""
         # 6 main balls + bonus ball
         for _ in range(0, 7):
             self.main_balls.append(0)
-
-    def __lt__(self, other):
-        """ Returns True when self < other.  Test is on draw date. """
-        result = False
-        if self.draw_date < other.draw_date:
-            result = True
-        return result
 
     def as_string(self):
         """ Returns this draw as a string. """
