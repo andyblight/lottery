@@ -157,9 +157,11 @@ def print_summary(winning_draws):
     _draws = list(sorted(set(winning_draws)))
     logging.info('.')
     logging.info("SUMMARY")
-    logging.info(len(_draws), "winning draws:")
+    logging.info(str(len(_draws)) + " winning draws:")
     for draw in _draws:
-        logging.info(draw[0].draw_date, draw[1])
+        log_str = draw[0].draw_date.isoformat()
+        log_str += draw[1]
+        logging.info(log_str)
 
 
 def process_data(results):

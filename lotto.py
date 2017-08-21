@@ -1,5 +1,15 @@
 #!/usr/bin/python3.6
-""" National Lottery Lotto clesses. """
+""" National Lottery Lotto classes. 
+
+NOTE: fewer winners on this lottery than Euro-millions.  
+Consider individual ball sets?
+More data needs to be analysed to get enough statistical data.
+Possibly consider machines as well. 
+
+1. Read ball set and machine data into the draw class. 
+
+"""
+
 
 from lottery import Lottery, LotteryTicket
 from lottery_utils import SetOfBalls, convert_str_to_date
@@ -12,6 +22,8 @@ class LottoCSVDraw:
     def __init__(self):
         self.draw_date = 0
         self.main_balls = []
+        self.ball_set = 0
+        self.machine = ""
         # 6 main balls + bonus ball
         for _ in range(0, 7):
             self.main_balls.append(0)
@@ -31,7 +43,9 @@ class LottoCSVDraw:
         str2 = '{0:2d}  {1:2d}  {2:2d}  Bonus {3:2d}'.format(
             self.main_balls[3], self.main_balls[4], self.main_balls[5],
             self.main_balls[6])
-        return str1 + str2
+        str3 = '  Ball set {0:1d}  Machine {1}'.format(
+            self.ball_set, self.machine)
+        return str1 + str2 + str3
 
 
 class LottoTicketLine:
@@ -174,6 +188,8 @@ class LotteryLotto(Lottery):
         draw.main_balls[4] = int(row[5])
         draw.main_balls[5] = int(row[6])
         draw.main_balls[6] = int(row[7])  # bonus ball
+        draw.ball_set = int(row[8])
+        draw.machine = row[9]
         self.results.append(draw)
         self._num_draws += 1
 
