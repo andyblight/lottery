@@ -14,6 +14,7 @@ Possibly consider machines as well.
 
 """
 
+import logging
 
 from lottery import Lottery, LotteryTicket, LotteryCSVDraw
 from lottery_utils import SetOfBalls, convert_str_to_date
@@ -62,7 +63,7 @@ class LottoTicketLine:
         if main > -1 and main < 6:
             index = 7 + (main * 4)
             line_string = line_string[:index] + '*' + line_string[index + 1:]
-        # print(line_string)
+        # logging.info(line_string)
         return line_string
 
     def sort(self):
@@ -116,11 +117,11 @@ class LotteryTicketLotto(LotteryTicket):
         """ Generates the given number of lines from the ball stats. """
         debug_on = True
         if debug_on:
-            print("Gen lines EM", num_lines, "Ignored!")
+            logging.info("Gen lines EM " + str(num_lines) + " Ignored!")
             # for iterator in range(0, num_lines):
-            print(ball_stats[0])
-            print(ball_stats[1])  # Most
-            print(ball_stats[2])  # Least
+            logging.info(ball_stats[0])
+            logging.info(ball_stats[1])  # Most
+            logging.info(ball_stats[2])  # Least
         # Use least common balls
         line = LottoTicketLine()
         for iterator in range(0, len(line.main_balls)):
@@ -210,7 +211,8 @@ class LotteryLotto(Lottery):
     @staticmethod
     def print_draw(lottery_draw):
         """ Print the given draw. """
-        print('Date', lottery_draw.draw_date, lottery_draw.as_string())
+        logging.info('Date ' + lottery_draw.draw_date.isoformat() +
+                     lottery_draw.as_string())
 
     def generate_ticket(self, next_lottery_date, num_lines, ball_stats):
         """ Generates a new ticket with the given number of lines. """
@@ -229,7 +231,7 @@ class LotteryLotto(Lottery):
 
         for line in ticket.lines:
             score = line.score(lottery_draw)
-            # print(score)
+            # logging.info(score)
             if score == best_score:
                 winning_lines.append(line)
             if score[0] > best_score[0] or score[1] > best_score[1]:

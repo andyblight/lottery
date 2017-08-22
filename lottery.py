@@ -1,6 +1,7 @@
 #!/usr/bin/python3.6
 
 """ Generic lottery class """
+import logging
 
 from lottery_utils import SetOfBalls
 
@@ -20,7 +21,7 @@ class LotteryCSVDraw:
         return result
 
     def as_string(self):
-        """ Prints the draw date """
+        """ Return the draw date as a string. """
         return self.draw_date.isoformat()
 
 
@@ -32,18 +33,18 @@ class LotteryTicket:
     """
 
     def __init__(self, draw_date):
-        # print("Set date EM", draw_date)
+        # logging.info("Set date EM", draw_date)
         self._draw_date = draw_date
         self.lines = []
 
     def generate_lines(self, num_lines, ball_stats):
         """ Generates the given number of lines from the ball stats. """
-        print('TODO')
+        logging.info('TODO')
 
     def print_ticket(self):
         """ Prints the ticket. """
         for line in self.lines:
-            print(line.as_string())
+            logging.info(line.as_string())
 
 
 class Lottery:
@@ -72,7 +73,7 @@ class Lottery:
 
     def check_header(self, row):
         """ Returns True if the header row is for this lottery """
-        print("TODO")
+        logging.info("TODO")
         return False
 
     def get_sets_of_balls(self):
@@ -89,23 +90,23 @@ class Lottery:
     def get_balls_in_date_range(self, date_from, date_to):
         """ Returns a tuple containing the sets of balls in the give date
         range. """
-        print("TODO")
+        logging.info("TODO")
         return 0
 
     def get_draws_in_date_range(self, date_from, date_to):
         """ Returns a tuple of lottery_draws in the give date range. """
         lottery_draws = []
-        # print(date_from, date_to)
+        # logging.info(date_from, date_to)
         for lottery_draw in self.results:
             if lottery_draw.draw_date >= date_from \
                     and lottery_draw.draw_date <= date_to:
-                # print("Matched", lottery_draw.draw_date)
+                # logging.info("Matched", lottery_draw.draw_date)
                 lottery_draws.append(lottery_draw)
         return lottery_draws
 
     def generate_ticket(self, next_lottery_date, num_lines, ball_stats):
         """ Generates a new ticket with the given number of lines. """
-        print("TODO", num_lines, ball_stats)
+        logging.info("TODO", num_lines, ball_stats)
         return LotteryTicket(next_lottery_date)
 
     def print_ticket(self, ticket):

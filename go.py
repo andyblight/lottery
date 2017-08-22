@@ -68,26 +68,26 @@ def ball_stats_in_date_range(results, date_from, date_to):
     """ Returns the statistics about the balls for all ball sets for the given
         range.
     """
-    # print("Ball frequency from", date_from, "to", date_to)
+    # logging.info("Ball frequency from", date_from, "to", date_to)
     balls = results.get_lottery().get_balls_in_date_range(date_from, date_to)
     sets_of_balls = results.get_lottery().get_sets_of_balls()
     iterator = 0
     ball_stats = []
     logging.info(balls)
     for ball_set in sets_of_balls:
-        # print("Set of balls:", ball_set.get_name())
+        # logging.info("Set of balls:", ball_set.get_name())
         num_balls = ball_set.get_num_balls()
         str_log = "NUM BALLS " + str(num_balls) + " iterator " + str(iterator)
         logging.info(str_log)
         frequency_of_balls = frequency(num_balls, balls[iterator])
-        # print(frequency_of_balls)
+        # logging.info(frequency_of_balls)
         num_likley = 3
         if num_balls > 20:
             num_likley = 6
         most_likely = most_common_balls(frequency_of_balls, num_likley)
-        # print("Most likely", most_likely)
+        # logging.info("Most likely", most_likely)
         least_likely = least_common_balls(frequency_of_balls, num_likley)
-        # print("Least likely", least_likely)
+        # logging.info("Least likely", least_likely)
         iterator += 1
         ball_stats.append(frequency_of_balls)
         ball_stats.append(most_likely)
@@ -97,7 +97,7 @@ def ball_stats_in_date_range(results, date_from, date_to):
 
 def generate_ticket_next_lottery(next_lottery_date, results, stats):
     """ Prints a ticket with a number of lines for the next draw. """
-    # print("Generate ticket for next lottery:")
+    # logging.info("Generate ticket for next lottery:")
     lottery = results.get_lottery()
     return lottery.generate_ticket(next_lottery_date, 5, stats)
 
@@ -176,14 +176,14 @@ def process_data(results):
     #test_delta = [60, 70, 80, 90, 100, 120]
     # Start range
     # for iterator in range(0, len(test_start)):
-    #    print()  # Blank line to separate output
-    #    print("Start", test_start[iterator], "delta", test_delta[iterator])
+    #    logging.info()  # Blank line to separate output
+    #    logging.info("Start", test_start[iterator], "delta", test_delta[iterator])
     #    analysis_start = date_range[0] + \
     #        datetime.timedelta(test_start[iterator])
     #    analysis_end = analysis_start + \
     #        datetime.timedelta(test_delta[iterator])
     #    process_data_in_range(results, analysis_start, analysis_end)
-    #print("Not appeared in delta")
+    #logging.info("Not appeared in delta")
     test_delta = [20, 25, 30, 35, 40, 45, 50, 55, 60]
     end_date = date_range[0] + datetime.timedelta(120)
     analysis_start = results.get_lottery().get_first_lottery_date()
@@ -199,7 +199,7 @@ def process_data(results):
         analysis_start = results.get_lottery().get_next_lottery_date()
     print_summary(winning_draws)
     # Print next ticket
-    print("NEXT TICKET")
+    logging.info('NEXT TICKET')
     analysis_end = date_range[1]
     analysis_start = analysis_end - datetime.timedelta(35)
     process_data_in_range(results, analysis_start, analysis_end, winning_draws)
