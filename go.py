@@ -148,7 +148,10 @@ def process_data_in_range(results, analysis_start, analysis_end, winning_draws,
     # Print numbers for tickets
     ticket = generate_ticket_next_lottery(
         next_lottery_date, results, stats)
-    print_lottery_ticket(results, ticket, printout)
+    # Always write to log
+    print_lottery_ticket(results, ticket, False)
+    if printout:
+        print_lottery_ticket(results, ticket, printout)
     if not printout:
         # Print draws after end of chosen range
         draw_date_to = analysis_end + datetime.timedelta(days=14)
