@@ -102,11 +102,14 @@ def generate_ticket_next_lottery(next_lottery_date, results, stats):
     return lottery.generate_ticket(next_lottery_date, 5, stats)
 
 
-def print_lottery_ticket(results, ticket):
+def print_lottery_ticket(results, ticket, printout):
     """ Prints a ticket with a number of lines for the next draw. """
-    logging.info("Ticket for next lottery:")
+    if printout:
+        print("Ticket for next lottery:")
+    else:
+        logging.info("Ticket for next lottery:")
     lottery = results.get_lottery()
-    lottery.print_ticket(ticket)
+    lottery.print_ticket(ticket, printout)
 
 
 def print_matches_draws_date_range(results, date_from, date_to, ticket,
@@ -136,7 +139,8 @@ def print_matches_draws_date_range(results, date_from, date_to, ticket,
             logging.info(line.as_string())
 
 
-def process_data_in_range(results, analysis_start, analysis_end, winning_draws):
+def process_data_in_range(results, analysis_start, analysis_end, winning_draws,
+                          printout):
     """ Process data in the given range. """
     next_lottery_date = analysis_end + datetime.timedelta(days=1)
     # Print ball stats of balls in range
@@ -144,12 +148,13 @@ def process_data_in_range(results, analysis_start, analysis_end, winning_draws):
     # Print numbers for tickets
     ticket = generate_ticket_next_lottery(
         next_lottery_date, results, stats)
-    print_lottery_ticket(results, ticket)
-    # Print draws after end of chosen range
-    draw_date_to = analysis_end + datetime.timedelta(days=14)
-    draw_date_from = analysis_end + datetime.timedelta(days=1)
-    print_matches_draws_date_range(
-        results, draw_date_from, draw_date_to, ticket, winning_draws)
+    print_lottery_ticket(results, ticket, printout)
+    if not printout:
+        # Print draws after end of chosen range
+        draw_date_to = analysis_end + datetime.timedelta(days=14)
+        draw_date_from = analysis_end + datetime.timedelta(days=1)
+        print_matches_draws_date_range(
+            results, draw_date_from, draw_date_to, ticket, winning_draws)
 
 
 def print_summary(winning_draws):
@@ -177,7 +182,8 @@ def process_data(results):
     # Start range
     # for iterator in range(0, len(test_start)):
     #    logging.info()  # Blank line to separate output
-    #    logging.info("Start", test_start[iterator], "delta", test_delta[iterator])
+    #    logging.info("Start", test_start[iterator], "delta",
+    #                 test_delta[iterator])
     #    analysis_start = date_range[0] + \
     #        datetime.timedelta(test_start[iterator])
     #    analysis_end = analysis_start + \
@@ -195,14 +201,14 @@ def process_data(results):
             analysis_end = analysis_start + \
                 datetime.timedelta(test_delta[delta])
             process_data_in_range(results, analysis_start, analysis_end,
-                                  winning_draws)
+                                  winning_draws, False)
         analysis_start = results.get_lottery().get_next_lottery_date()
     print_summary(winning_draws)
     # Print next ticket
-    logging.info('NEXT TICKET')
     analysis_end = date_range[1]
     analysis_start = analysis_end - datetime.timedelta(35)
-    process_data_in_range(results, analysis_start, analysis_end, winning_draws)
+    process_data_in_range(results, analysis_start, analysis_end, winning_draws,
+                          True)
 
 
 def run():

@@ -1,6 +1,7 @@
 #!/usr/bin/python3.6
 
 """ Generic lottery class """
+import datetime
 import logging
 
 from lottery_utils import SetOfBalls
@@ -11,7 +12,7 @@ class LotteryCSVDraw:
     """ One draw from the CSV file. """
 
     def __init__(self):
-        self.draw_date = 0
+        self.draw_date = datetime.date(2000, 1, 1)
 
     def __lt__(self, other):
         """ Returns True when self < other.  Test is on draw date. """
@@ -39,12 +40,15 @@ class LotteryTicket:
 
     def generate_lines(self, num_lines, ball_stats):
         """ Generates the given number of lines from the ball stats. """
-        logging.info('TODO')
+        logging.info('TODO' + str(num_lines) + str(ball_stats[0][0]))
 
-    def print_ticket(self):
+    def print_ticket(self, printout):
         """ Prints the ticket. """
         for line in self.lines:
-            logging.info(line.as_string())
+            if printout:
+                print(line.as_string())
+            else:
+                logging.info(line.as_string())
 
 
 class Lottery:
@@ -109,9 +113,9 @@ class Lottery:
         logging.info("TODO", num_lines, ball_stats)
         return LotteryTicket(next_lottery_date)
 
-    def print_ticket(self, ticket):
+    def print_ticket(self, ticket, printout):
         """ Prints the given ticket. """
-        ticket.print_ticket()
+        ticket.print_ticket(printout)
 
     def get_first_lottery_date(self):
         """ Returns the first lottery date.
