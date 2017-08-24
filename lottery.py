@@ -44,10 +44,12 @@ class LotteryTicket:
 
     def print_ticket(self, printout):
         """ Prints the ticket. """
+        logging.info('Called print_ticket')
         for line in self.lines:
             if printout:
                 print(line.as_string())
             else:
+                logging.info('print_ticket line')
                 logging.info(line.as_string())
 
 
@@ -112,10 +114,6 @@ class Lottery:
         """ Generates a new ticket with the given number of lines. """
         logging.info("TODO", num_lines, ball_stats)
         return LotteryTicket(next_lottery_date)
-
-    def print_ticket(self, ticket, printout):
-        """ Prints the given ticket. """
-        ticket.print_ticket(printout)
 
     def get_first_lottery_date(self):
         """ Returns the first lottery date.

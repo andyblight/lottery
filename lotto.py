@@ -12,6 +12,11 @@ Possibly consider machines as well.
    b. Does the machine make a difference?
    c. Do both the machine and the ball set make a difference?
 
+TODO
+Ball marking is not working right.
+Log winning lines under the line of the ticket it came from.
+
+
 """
 
 import logging
