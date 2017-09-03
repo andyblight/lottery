@@ -1,5 +1,5 @@
 #!/usr/bin/python3.6
-""" National Lottery Lotto classes.
+""" National Lottery Lotto classes. """
 
 NOTE: fewer winners on this lottery than Euro-millions.
 Consider individual ball sets?

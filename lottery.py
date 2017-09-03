@@ -6,6 +6,43 @@ import logging
 
 from lottery_utils import SetOfBalls
 
+class LotteryDraw:
+
+    """ Groups draw date and lottery line."""
+
+    def __init__(self):
+        self.draw_date = 0
+        self.main_balls = []
+
+    def __lt__(self, other):
+        """ Returns True when self < other.  Test is on draw date. """
+        result = False
+        if self.draw_date < other.draw_date:
+            result = True
+        return result
+
+    def as_string(self):
+        """ Returns this draw as a string. """
+        return 'ERROR: base class called!!!!'
+
+
+class LotteryParser:
+
+    """ Parses the CSV data.
+    There may be many parsers for each lottery.
+    Each lottery has one or more parsers.
+    """
+
+    def __init__(self):
+        self.name = 'default'
+
+    def check_header(self):
+        print("ERROR: Default check header called")
+        return False
+
+    def parse_row(self):
+        return LotteryDraw()
+
 
 class LotteryCSVDraw:
 
@@ -68,6 +105,7 @@ class Lottery:
         self._num_draws = 0
         self._balls = SetOfBalls('default', 10)
         self._get_date_index = 0
+        self._parser = 'default'
 
     def get_name(self):
         """ Returns the name of the lottery. """

@@ -4,8 +4,8 @@
 import csv
 
 from euro_millions import LotteryEuroMillions
-from lotto import LotteryLotto
 from lottery import Lottery
+from lotto import LotteryLotto
 
 
 class LotteryResults:
@@ -22,7 +22,13 @@ class LotteryResults:
         self._lotto = LotteryLotto()
 
     def parse_header(self, row):
-        """ Parse the header row to work out the file type. """
+        """ Parse the header row to work out the file type. 
+        There are two sources, national lottery and 
+        http://lottery.merseyworld.com.
+        Each has a different header row so it is easy to call the correct row
+        parser.
+        Each parser is hidden in the lottery class instance.
+        """
         if self._euro_millions.check_header(row):
             self._lottery = self._euro_millions
         elif self._lotto.check_header(row):
