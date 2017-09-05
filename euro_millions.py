@@ -169,6 +169,7 @@ class LotteryTicketEuroMillions(LotteryTicket):
         line.sort()
         self.lines.append(line)
 
+
 class LotteryParserEuromillionsNL(LotteryParser):
 
     """ Parses the CSV data from the National Lottery. """
@@ -185,6 +186,7 @@ class LotteryParserEuromillionsNL(LotteryParser):
     def parse_row(self):
         return LotteryDraw()
 
+
 class LotteryParserEuromillionsMW(LotteryParser):
 
     """ Parses the CSV data from merseyworld.com. """
@@ -200,6 +202,7 @@ class LotteryParserEuromillionsMW(LotteryParser):
 
     def parse_row(self):
         return LotteryDraw()
+
 
 class LotteryEuroMillions(Lottery):
 
@@ -228,9 +231,8 @@ class LotteryEuroMillions(Lottery):
         """ Returns all sets of balls for this lottery. """
         return [self._main_balls, self._lucky_star_balls]
 
-    def parse_row_national_lottery(self, row):
+    def parse_row_national_lottery(self, row, draw):
         """ Read row data and copy into EuroMillionsCSV class """
-        draw = EuroMillionsCSVDraw()
         draw.draw_date = convert_str_to_date(str(row[0]))
         line = EuroMillionsLine()
         line.main_balls[0] = int(row[1])
@@ -241,35 +243,38 @@ class LotteryEuroMillions(Lottery):
         line.lucky_stars[0] = int(row[6])
         line.lucky_stars[1] = int(row[7])
         draw.line = line
-        return draw
-        
-    def parse_row_merseyworld(self, row):
-        draw = EuroMillionsCSVDraw()
+
+    def parse_row_merseyworld(self, row, draw):
+        ''' Read row data and copy into EuroMillionsCSV class.
+        0  - No.,Day,DD,MMM,YYYY,
+        5  - N1,N2,N3,N4,N5,
+        10 - L1,L2,Jackpot,Wins
+        Day of week is ignored as this can be obtained from the date.
+        '''
+        draw.draw_number = int(row[0])
+        draw.draw_date.day = int(row[2])
+        draw.draw_date.month = int(row[3])
+        draw.draw_date.year = int(row[4])
+        line = EuroMillionsLine()
+        line.main_balls[0] = int(row[5])
+        line.main_balls[1] = int(row[6])
+        line.main_balls[2] = int(row[7])
+        line.main_balls[3] = int(row[8])
+        line.main_balls[4] = int(row[9])
+        line.lucky_stars[0] = int(row[10])
+        line.lucky_stars[1] = int(row[11])
+        draw.line = line
+        draw.jackpot = int(row[12])
+        draw.jackpot_wins = int(row[13])
 
     def parse_row(self, row):
         """ Read row data and copy into EuroMillionsCSV class.
         """
+        draw = EuroMillionsDraw()
         if self._parser == "National Lottery":
+            self.parse_row_national_lottery(row, draw)
         elif self._parser == "merseyworld":
-            # 0 No.,Day,DD,MMM,YYYY,
-            # 5 N1,N2,N3,N4,N5,
-            # 10 L1,L2,Jackpot,Wins
-            # Day of week is ignored as this can be obtained from the date.
-            draw.draw_number = int(row[0])
-            draw.draw_date.day = int(row[2])
-            draw.draw_date.month = int(row[3])
-            draw.draw_date.year = int(row[4])
-            line = EuroMillionsLine()
-            line.main_balls[0] = int(row[5])
-            line.main_balls[1] = int(row[6])
-            line.main_balls[2] = int(row[7])
-            line.main_balls[3] = int(row[8])
-            line.main_balls[4] = int(row[9])
-            line.lucky_stars[0] = int(row[10])
-            line.lucky_stars[1] = int(row[11])
-            draw.line = line
-            draw.jackpot = int(row[12])
-            draw.jackpot_wins = int(row[13])
+            self, parse_row_merseyworld(row, draw)
         else:
             print("ERROR: parser is", self._parser)
             sys.exit()
