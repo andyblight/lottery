@@ -2,7 +2,7 @@
 """ Implementation classes for the EuroMillions lottery. """
 import logging
 
-from datetime import date
+import datetime
 
 from lottery import Lottery, LotteryTicket, LotteryDraw, LotteryParser
 from lottery_utils import SetOfBalls, convert_str_to_date
@@ -104,7 +104,7 @@ class EuroMillionsDraw(LotteryDraw):
         """ Initialises the class. """
         super(EuroMillionsDraw, self).__init__()
         self.draw_number = 0
-        self.draw_date = date(1970, 1, 1)
+        self.draw_date = datetime.date(1970, 1, 1)
         self.line = EuroMillionsLine()
         self.jackpot = 0
         self.jackpot_wins = 0

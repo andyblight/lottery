@@ -1,7 +1,7 @@
 #!/usr/bin/python3.6
 
 """ Generic lottery class """
-from datetime import date
+import datetime
 import logging
 
 from lottery_utils import SetOfBalls
@@ -9,11 +9,10 @@ from lottery_utils import SetOfBalls
 
 class LotteryDraw:
 
-    """ Groups draw date and lottery line."""
+    """ One draw from the CSV file. """
 
     def __init__(self):
-        self.draw_date = 0
-        self.main_balls = []
+        self.draw_date = datetime.date(2000, 1, 1)
 
     def __lt__(self, other):
         """ Returns True when self < other.  Test is on draw date. """
@@ -23,8 +22,8 @@ class LotteryDraw:
         return result
 
     def as_string(self):
-        """ Returns this draw as a string. """
-        return 'ERROR: base class called!!!!'
+        """ Return the draw date as a string. """
+        return self.draw_date.isoformat()
 
 
 class LotteryParser:
@@ -43,25 +42,6 @@ class LotteryParser:
 
     def parse_row(self):
         return LotteryDraw()
-
-
-class LotteryCSVDraw:
-
-    """ One draw from the CSV file. """
-
-    def __init__(self):
-        self.draw_date = datetime.date(2000, 1, 1)
-
-    def __lt__(self, other):
-        """ Returns True when self < other.  Test is on draw date. """
-        result = False
-        if self.draw_date < other.draw_date:
-            result = True
-        return result
-
-    def as_string(self):
-        """ Return the draw date as a string. """
-        return self.draw_date.isoformat()
 
 
 class LotteryTicket:
@@ -163,7 +143,7 @@ class Lottery:
 
     def get_next_lottery_date(self):
         """ Returns the next lottery date. """
-        result = date(3000, 1, 1)  # Return out of range date!
+        result = datetime.date(3000, 1, 1)  # Return out of range date!
         self._get_date_index += 1
         if self._get_date_index < self._num_draws:
             result = self.results[self._get_date_index].draw_date
