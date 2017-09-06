@@ -2,7 +2,8 @@
 """ Implementation classes for the EuroMillions lottery. """
 import logging
 
-from lottery import Lottery, LotteryTicket, LotteryCSVDraw
+from datetime import date
+
 from lottery import Lottery, LotteryTicket, LotteryDraw, LotteryParser
 from lottery_utils import SetOfBalls, convert_str_to_date
 
@@ -103,7 +104,7 @@ class EuroMillionsDraw(LotteryDraw):
         """ Initialises the class. """
         super(EuroMillionsDraw, self).__init__()
         self.draw_number = 0
-        self.draw_date = 0
+        self.draw_date = date(1970, 1, 1)
         self.line = EuroMillionsLine()
         self.jackpot = 0
         self.jackpot_wins = 0
@@ -252,9 +253,7 @@ class LotteryEuroMillions(Lottery):
         Day of week is ignored as this can be obtained from the date.
         '''
         draw.draw_number = int(row[0])
-        draw.draw_date.day = int(row[2])
-        draw.draw_date.month = int(row[3])
-        draw.draw_date.year = int(row[4])
+        draw.draw_date.replace(year=int(row[4]), month=1, day=int(row[2]))
         line = EuroMillionsLine()
         line.main_balls[0] = int(row[5])
         line.main_balls[1] = int(row[6])
@@ -273,8 +272,8 @@ class LotteryEuroMillions(Lottery):
         draw = EuroMillionsDraw()
         if self._parser == "National Lottery":
             self.parse_row_national_lottery(row, draw)
-        elif self._parser == "merseyworld":
-            self, parse_row_merseyworld(row, draw)
+        elif self._parser == "MerseyWorld":
+            self.parse_row_merseyworld(row, draw)
         else:
             print("ERROR: parser is", self._parser)
             sys.exit()

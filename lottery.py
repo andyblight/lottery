@@ -1,10 +1,11 @@
 #!/usr/bin/python3.6
 
 """ Generic lottery class """
-import datetime
+from datetime import date
 import logging
 
 from lottery_utils import SetOfBalls
+
 
 class LotteryDraw:
 
@@ -162,6 +163,7 @@ class Lottery:
 
     def get_next_lottery_date(self):
         """ Returns the next lottery date. """
+        result = date(3000, 1, 1)  # Return out of range date!
         self._get_date_index += 1
         if self._get_date_index < self._num_draws:
             result = self.results[self._get_date_index].draw_date

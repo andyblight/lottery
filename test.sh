@@ -23,13 +23,13 @@ echo
 ./go.py euromillions-draw-history.csv
 echo 
 echo "*************************************************************************"
-echo "Lotto"
+echo "Lotto - merseyworld"
 echo "*************************************************************************"
 echo 
 ./go.py lotto-2017.csv
 echo 
 echo "*************************************************************************"
-echo "Euromillions"
+echo "Euromillions - merseyworld"
 echo "*************************************************************************"
 echo 
 ./go.py euromillions-2017.csv 
