@@ -13,6 +13,7 @@ Possibly consider machines as well.
    c. Do both the machine and the ball set make a difference?
 
 TODO
+Add parser concept.
 Ball marking is not working right.
 Log winning lines under the line of the ticket it came from.
 """
@@ -22,14 +23,15 @@ import logging
 
 from lottery import Lottery, LotteryTicket, LotteryDraw
 from lottery_utils import SetOfBalls, convert_str_to_date
+from email import header
 
 
-class LottoCSVDraw(LotteryDraw):
+class LottoDraw(LotteryDraw):
 
     """ Groups draw date and lottery line."""
 
     def __init__(self):
-        super(LottoCSVDraw, self).__init__()
+        super(LottoDraw, self).__init__()
         self.main_balls = []
         self.ball_set = 0
         self.machine = ""
@@ -181,7 +183,7 @@ class LotteryLotto(Lottery):
             DrawDate,Ball 1,Ball 2,Ball 3,Ball 4,Ball 5,Ball 6,Bonus Ball,
             Ball Set,Machine,Raffles,DrawNumber
         """
-        draw = LottoCSVDraw()
+        draw = LottoDraw()
         draw.draw_date = convert_str_to_date(str(row[0]))
         draw.main_balls[0] = int(row[1])
         draw.main_balls[1] = int(row[2])

@@ -104,7 +104,6 @@ class EuroMillionsDraw(LotteryDraw):
         """ Initialises the class. """
         super(EuroMillionsDraw, self).__init__()
         self.draw_number = 0
-        self.draw_date = datetime.date(1970, 1, 1)
         self.line = EuroMillionsLine()
         self.jackpot = 0
         self.jackpot_wins = 0
@@ -180,59 +179,12 @@ class LotteryParserEuromillionsNL(LotteryParser):
         super(LotteryParserEuromillionsNL, self).__init__()
         self.name = 'EuroMillions National Lottery'
 
-    def check_header(self):
-        print("ERROR: Default check header called")
-        return False
+    @staticmethod
+    def check_header(row):
+        return str(row[6]) == 'Lucky Star 1'
 
-    def parse_row(self):
-        return LotteryDraw()
-
-
-class LotteryParserEuromillionsMW(LotteryParser):
-
-    """ Parses the CSV data from merseyworld.com. """
-
-    def __init__(self):
-        """ Initialises the class. """
-        super(LotteryParserEuromillionsMW, self).__init__()
-        self.name = 'EuroMillions Mersey World'
-
-    def check_header(self):
-        print("ERROR: Default check header called")
-        return False
-
-    def parse_row(self):
-        return LotteryDraw()
-
-
-class LotteryEuroMillions(Lottery):
-
-    """ The Euro Millions lottery. """
-
-    def __init__(self):
-        """ Initialises the class. """
-        super(LotteryEuroMillions, self).__init__()
-        self._name = "EuroMillions"
-        self._sets_of_balls = 2
-        self._main_balls = SetOfBalls("main", 50)
-        self._lucky_star_balls = SetOfBalls("lucky stars", 12)
-
-    def check_header(self, row):
-        """ Returns True if the header row is for this lottery """
-        result = True
-        if str(row[6]) == 'Lucky Star 1':
-            self._parser = "National Lottery"
-        elif str(row[10]) == 'L1':
-            self._parser = "MerseyWorld"
-        else:
-            result = False
-        return result
-
-    def get_sets_of_balls(self):
-        """ Returns all sets of balls for this lottery. """
-        return [self._main_balls, self._lucky_star_balls]
-
-    def parse_row_national_lottery(self, row, draw):
+    @staticmethod
+    def parse_row(row, draw):
         """ Read row data and copy into EuroMillionsCSV class """
         draw.draw_date = convert_str_to_date(str(row[0]))
         line = EuroMillionsLine()
@@ -245,7 +197,22 @@ class LotteryEuroMillions(Lottery):
         line.lucky_stars[1] = int(row[7])
         draw.line = line
 
-    def parse_row_merseyworld(self, row, draw):
+
+class LotteryParserEuromillionsMW(LotteryParser):
+
+    """ Parses the CSV data from merseyworld.com. """
+
+    def __init__(self):
+        """ Initialises the class. """
+        super(LotteryParserEuromillionsMW, self).__init__()
+        self.name = 'EuroMillions MerseyWorld'
+
+    @staticmethod
+    def check_header(row):
+        return str(row[10]) == 'L1'
+
+    @staticmethod
+    def parse_row(row, draw):
         ''' Read row data and copy into EuroMillionsCSV class.
         0  - No.,Day,DD,MMM,YYYY,
         5  - N1,N2,N3,N4,N5,
@@ -266,14 +233,43 @@ class LotteryEuroMillions(Lottery):
         draw.jackpot = int(row[12])
         draw.jackpot_wins = int(row[13])
 
+
+class LotteryEuroMillions(Lottery):
+
+    """ The Euro Millions lottery. """
+
+    def __init__(self):
+        """ Initialises the class. """
+        super(LotteryEuroMillions, self).__init__()
+        self._name = "EuroMillions"
+        self._sets_of_balls = 2
+        self._main_balls = SetOfBalls("main", 50)
+        self._lucky_star_balls = SetOfBalls("lucky stars", 12)
+        self._parser = None
+        self._available_parsers = []
+        self._available_parsers.append(LotteryParserEuromillionsNL())
+        self._available_parsers.append(LotteryParserEuromillionsMW())
+
+    def check_header(self, row):
+        """ Returns True if the header row is for this lottery. """
+        result = False
+        for parser in self._available_parsers:
+            if parser.check_header(row):
+                self._parser = parser
+                result = True
+                break
+        logging.info("Parser " + self._parser.name)
+        return result
+
+    def get_sets_of_balls(self):
+        """ Returns all sets of balls for this lottery. """
+        return [self._main_balls, self._lucky_star_balls]
+
     def parse_row(self, row):
-        """ Read row data and copy into EuroMillionsCSV class.
-        """
+        """ Read row data and copy into EuroMillionsCSV class. """
         draw = EuroMillionsDraw()
-        if self._parser == "National Lottery":
-            self.parse_row_national_lottery(row, draw)
-        elif self._parser == "MerseyWorld":
-            self.parse_row_merseyworld(row, draw)
+        if self._parser:
+            self._parser.parse_row(row, draw)
         else:
             print("ERROR: parser is", self._parser)
             sys.exit()
