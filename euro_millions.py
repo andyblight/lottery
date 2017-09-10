@@ -1,8 +1,8 @@
 #!/usr/bin/python3.6
 """ Implementation classes for the EuroMillions lottery. """
 import logging
-
 import datetime
+import sys
 
 from lottery import Lottery, LotteryTicket, LotteryDraw, LotteryParser
 from lottery_utils import SetOfBalls, convert_str_to_date
@@ -245,21 +245,8 @@ class LotteryEuroMillions(Lottery):
         self._sets_of_balls = 2
         self._main_balls = SetOfBalls("main", 50)
         self._lucky_star_balls = SetOfBalls("lucky stars", 12)
-        self._parser = None
-        self._available_parsers = []
         self._available_parsers.append(LotteryParserEuromillionsNL())
         self._available_parsers.append(LotteryParserEuromillionsMW())
-
-    def check_header(self, row):
-        """ Returns True if the header row is for this lottery. """
-        result = False
-        for parser in self._available_parsers:
-            if parser.check_header(row):
-                self._parser = parser
-                result = True
-                break
-        logging.info("Parser " + self._parser.name)
-        return result
 
     def get_sets_of_balls(self):
         """ Returns all sets of balls for this lottery. """

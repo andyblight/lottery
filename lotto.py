@@ -13,7 +13,6 @@ Possibly consider machines as well.
    c. Do both the machine and the ball set make a difference?
 
 TODO
-Add parser concept.
 Ball marking is not working right.
 Log winning lines under the line of the ticket it came from.
 """
@@ -21,7 +20,7 @@ Log winning lines under the line of the ticket it came from.
 from datetime import date
 import logging
 
-from lottery import Lottery, LotteryTicket, LotteryDraw
+from lottery import Lottery, LotteryTicket, LotteryDraw, LotteryParser
 from lottery_utils import SetOfBalls, convert_str_to_date
 from email import header
 
@@ -156,34 +155,30 @@ class LotteryTicketLotto(LotteryTicket):
         self.lines.append(line)
 
 
-class LotteryLotto(Lottery):
+class LotteryParserLottoNL(LotteryParser):
 
-    """ The Euro Millions lottery. """
+    """ Parses the CSV data from the National Lottery. """
 
     def __init__(self):
-        super(LotteryLotto, self).__init__()
-        self._name = "Lotto"
-        self._sets_of_balls = 1
-        self._main_balls = SetOfBalls("main", 59)
+        """ Initialises the class. """
+        super(LotteryParserLottoNL, self).__init__()
+        self.name = 'Lotto National Lottery'
 
-    def check_header(self, row):
+    @staticmethod
+    def check_header(row):
         """ Returns True if the header row is for this lottery.
             Distinct items are "Bonus Ball", "Ball Set", "Machine", "Raffles"
          """
+        logging.info("Lotto NL" + str(row[7]) + str(row[8]))
         return str(row[7]) == 'Bonus Ball' and str(row[8]) == 'Ball Set'
 
-    def get_sets_of_balls(self):
-        """ Returns a list containing all sets of ball info for this lottery.
-        """
-        return [self._main_balls]
-
-    def parse_row(self, row):
-        """ Read row data and copy into LottoCSV class.
+    @staticmethod
+    def parse_row(row, draw):
+        """ Read row data and copy into the LottoDraw class.
             Header row looks like this:
             DrawDate,Ball 1,Ball 2,Ball 3,Ball 4,Ball 5,Ball 6,Bonus Ball,
             Ball Set,Machine,Raffles,DrawNumber
         """
-        draw = LottoDraw()
         draw.draw_date = convert_str_to_date(str(row[0]))
         draw.main_balls[0] = int(row[1])
         draw.main_balls[1] = int(row[2])
@@ -194,8 +189,79 @@ class LotteryLotto(Lottery):
         draw.main_balls[6] = int(row[7])  # bonus ball
         draw.ball_set = int(row[8])
         draw.machine = row[9]
+
+
+class LotteryParserLottoMW(LotteryParser):
+
+    """ Parses the CSV data from merseyworld.com. """
+
+    def __init__(self):
+        """ Initialises the class. """
+        super(LotteryParserLottoMW, self).__init__()
+        self.name = 'Lotto MerseyWorld'
+
+    @staticmethod
+    def check_header(row):
+        """ Returns True if this is merseyworld lotto. 
+        Unique values are Draw number and N1. """
+        logging.info("Lotto MW" + str(row[0]) + str(row[5]))
+        return str(row[0]) == 'No.' and str(row[5]) == 'N1'
+
+    @staticmethod
+    def parse_row(row, draw):
+        ''' Read row data and copy into LottoDraw class.
+        0  - No.,Day,DD,MMM,YYYY,
+        5  - N1,N2,N3,N4,N5,
+        10 - N6,BN,Jackpot,Wins,Machine,
+        15 - Set
+        Day of week is ignored as this can be obtained from the date.
+        '''
+        draw.draw_number = int(row[0])
+        draw.draw_date.replace(year=int(row[4]), month=1, day=int(row[2]))
+        line = EuroMillionsLine()
+        line.main_balls[0] = int(row[5])
+        line.main_balls[1] = int(row[6])
+        line.main_balls[2] = int(row[7])
+        line.main_balls[3] = int(row[8])
+        line.main_balls[4] = int(row[9])
+        line.lucky_stars[0] = int(row[10])
+        line.lucky_stars[1] = int(row[11])
+        draw.line = line
+        draw.jackpot = int(row[12])
+        draw.jackpot_wins = int(row[13])
+
+
+class LotteryLotto(Lottery):
+
+    """ The Euro Millions lottery. """
+
+    def __init__(self):
+        super(LotteryLotto, self).__init__()
+        self._name = "Lotto"
+        self._sets_of_balls = 1
+        self._main_balls = SetOfBalls("main", 59)
+        self._available_parsers.append(LotteryParserLottoNL())
+        self._available_parsers.append(LotteryParserLottoMW())
+
+    def parse_row(self, row):
+        """ Read row data and copy into LottoCSV class.
+            Header row looks like this:
+            DrawDate,Ball 1,Ball 2,Ball 3,Ball 4,Ball 5,Ball 6,Bonus Ball,
+            Ball Set,Machine,Raffles,DrawNumber
+        """
+        draw = LottoDraw()
+        if self._parser:
+            self._parser.parse_row(row, draw)
+        else:
+            print("ERROR: parser is", self._parser)
+            sys.exit()
         self.results.append(draw)
         self._num_draws += 1
+
+    def get_sets_of_balls(self):
+        """ Returns a list containing all sets of ball info for this lottery.
+        """
+        return [self._main_balls]
 
     def get_balls_in_date_range(self, date_from, date_to):
         """ Return a tuple containing the sets of balls in the give date

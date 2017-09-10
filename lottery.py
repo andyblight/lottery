@@ -3,6 +3,7 @@
 """ Generic lottery class """
 import datetime
 import logging
+import sys
 
 from lottery_utils import SetOfBalls
 
@@ -37,10 +38,12 @@ class LotteryParser:
         self.name = 'default'
 
     def check_header(self):
+        """ Prints error and returns False. """
         print("ERROR: Default check header called")
         return False
 
     def parse_row(self):
+        """ Returns empty draw. """
         return LotteryDraw()
 
 
@@ -86,7 +89,8 @@ class Lottery:
         self._num_draws = 0
         self._balls = SetOfBalls('default', 10)
         self._get_date_index = 0
-        self._parser = 'default'
+        self._parser = None
+        self._available_parsers = []
 
     def get_name(self):
         """ Returns the name of the lottery. """
@@ -97,9 +101,20 @@ class Lottery:
         self.results.reverse()
 
     def check_header(self, row):
-        """ Returns True if the header row is for this lottery """
-        logging.info("TODO")
-        return False
+        """ Returns True if the header row is for this lottery. """
+        result = False
+        for parser in self._available_parsers:
+            logging.info("Checking parser " + parser.name)
+            if parser.check_header(row):
+                self._parser = parser
+                result = True
+                break
+        if self._parser:
+            logging.info("Parser " + self._parser.name)
+        else:
+            print("ERROR: Lottery.check_header found no parser.")
+            sys.exit()
+        return result
 
     def get_sets_of_balls(self):
         """ Returns a list containing all sets of balls for this lottery. """
