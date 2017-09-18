@@ -2,6 +2,7 @@
 """ STUFF!!! """
 
 import csv
+import logging
 
 from euro_millions import LotteryEuroMillions
 from lottery import Lottery
@@ -17,9 +18,14 @@ class LotteryResults:
 
     def __init__(self):
         self._lottery = None
-        self._default_lottery = Lottery()
-        self._euro_millions = LotteryEuroMillions()
-        self._lotto = LotteryLotto()
+        logging.info("Lottery.__init__")
+        self._available_lotteries = []
+        self._available_lotteries.append(LotteryEuroMillions())
+        self._available_lotteries.append(LotteryLotto())
+        # Debug
+        logging.info("Initialised lotteries:")
+        for lottery in self._available_lotteries:
+            logging.info(lottery.get_name())
 
     def parse_header(self, row):
         """ Parse the header row to work out the file type. 
@@ -29,12 +35,13 @@ class LotteryResults:
         parser.
         Each parser is hidden in the lottery class instance.
         """
-        if self._euro_millions.check_header(row):
-            self._lottery = self._euro_millions
-        elif self._lotto.check_header(row):
-            self._lottery = self._lotto
-        else:
-            print("Using default lottery")
+        for lottery in self._available_lotteries:
+            logging.info("Checking lottery " + lottery.get_name())
+            if lottery.check_header(row):
+                self._lottery = lottery
+                break
+        if self._lottery == None:
+            logging.info("Using default lottery")
 
     def parse_row(self, row):
         """ Parse row data and append """

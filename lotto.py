@@ -164,12 +164,11 @@ class LotteryParserLottoNL(LotteryParser):
         super(LotteryParserLottoNL, self).__init__()
         self.name = 'Lotto National Lottery'
 
-    @staticmethod
-    def check_header(row):
+    def check_header(self, row):
         """ Returns True if the header row is for this lottery.
             Distinct items are "Bonus Ball", "Ball Set", "Machine", "Raffles"
          """
-        logging.info("Lotto NL" + str(row[7]) + str(row[8]))
+        logging.info(self.name() + str(row[7]) + str(row[8]))
         return str(row[7]) == 'Bonus Ball' and str(row[8]) == 'Ball Set'
 
     @staticmethod
@@ -200,11 +199,10 @@ class LotteryParserLottoMW(LotteryParser):
         super(LotteryParserLottoMW, self).__init__()
         self.name = 'Lotto MerseyWorld'
 
-    @staticmethod
-    def check_header(row):
+    def check_header(self, row):
         """ Returns True if this is merseyworld lotto. 
         Unique values are Draw number and N1. """
-        logging.info("Lotto MW" + str(row[0]) + str(row[5]))
+        logging.info(self.name + str(row[0]) + str(row[5]))
         return str(row[0]) == 'No.' and str(row[5]) == 'N1'
 
     @staticmethod
@@ -237,11 +235,32 @@ class LotteryLotto(Lottery):
 
     def __init__(self):
         super(LotteryLotto, self).__init__()
-        self._name = "Lotto"
+        self.name = "Lotto"
         self._sets_of_balls = 1
         self._main_balls = SetOfBalls("main", 59)
         self._available_parsers.append(LotteryParserLottoNL())
         self._available_parsers.append(LotteryParserLottoMW())
+        # Debug
+        logging.info("Initialised parsers:")
+        for parser in self._available_parsers:
+            logging.info(parser.name)
+
+    def check_header(self, row):
+        """ Returns True if the header row is for this lottery. """
+        logging.info("called lotto ch")
+        result = False
+        for parser in self._available_parsers:
+            logging.info("Checking parser " + parser.name)
+            if parser.check_header(row):
+                self._parser = parser
+                result = True
+                break
+        if self._parser:
+            logging.info("Selected parser " + self._parser.name)
+        else:
+            print("ERROR: Lottery.check_header found no parser.")
+            sys.exit()
+        return result
 
     def parse_row(self, row):
         """ Read row data and copy into LottoCSV class.

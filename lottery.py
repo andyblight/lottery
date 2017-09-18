@@ -96,25 +96,14 @@ class Lottery:
         """ Returns the name of the lottery. """
         return self._name
 
+    def check_header(self):
+        """ Returns False """
+        logging.info("called lottery ch")
+        return False
+
     def reverse_results(self):
         """ Reverses the order of the results. """
         self.results.reverse()
-
-    def check_header(self, row):
-        """ Returns True if the header row is for this lottery. """
-        result = False
-        for parser in self._available_parsers:
-            logging.info("Checking parser " + parser.name)
-            if parser.check_header(row):
-                self._parser = parser
-                result = True
-                break
-        if self._parser:
-            logging.info("Parser " + self._parser.name)
-        else:
-            print("ERROR: Lottery.check_header found no parser.")
-            sys.exit()
-        return result
 
     def get_sets_of_balls(self):
         """ Returns a list containing all sets of balls for this lottery. """
