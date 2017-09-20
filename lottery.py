@@ -96,10 +96,19 @@ class Lottery:
         """ Returns the name of the lottery. """
         return self._name
 
-    def check_header(self):
-        """ Returns False """
-        logging.info("called lottery ch")
-        return False
+    def check_header(self, row):
+        """ Returns True if the header row is for this lottery. """
+        logging.info("Called Lottery ch. Num parsers " +
+                     str(len(self._available_parsers)))
+        result = False
+        for parser in self._available_parsers:
+            logging.info("Checking parser " + parser.name)
+            if parser.check_header(row):
+                self._parser = parser
+                logging.info("Selected " + parser.name)
+                result = True
+                break
+        return result
 
     def reverse_results(self):
         """ Reverses the order of the results. """

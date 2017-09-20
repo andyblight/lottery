@@ -13,7 +13,7 @@ class LotteryResults:
 
     """
     The LotteryResults class reads a lottery results CSV file into an internal
-    cache and provides methods to access the data in the internal cache.
+    lotter instance and provides methods to access the data in the Lottery.
 .   """
 
     def __init__(self):
@@ -37,7 +37,10 @@ class LotteryResults:
         """
         for lottery in self._available_lotteries:
             logging.info("Checking lottery " + lottery.get_name())
-            if lottery.check_header(row):
+            result = lottery.check_header(row)
+            logging.info("Result " + str(result))
+            if result:
+                logging.info("Found parser in " + lottery.get_name())
                 self._lottery = lottery
                 break
         if self._lottery == None:

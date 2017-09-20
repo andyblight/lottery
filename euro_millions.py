@@ -181,7 +181,7 @@ class LotteryParserEuromillionsNL(LotteryParser):
 
     def check_header(self, row):
         """ Returns True if the header matches """
-        logging.info(self.name + str(row[6]))
+        logging.info(self.name + " " + str(row[6]))
         return str(row[6]) == 'Lucky Star 1'
 
     @staticmethod
@@ -210,7 +210,7 @@ class LotteryParserEuromillionsMW(LotteryParser):
 
     def check_header(self, row):
         """ Returns True if the header matches """
-        logging.info(self.name + str(row[10]))
+        logging.info(self.name + " " + str(row[10]))
         return str(row[10]) == 'L1'
 
     @staticmethod
@@ -243,7 +243,7 @@ class LotteryEuroMillions(Lottery):
     def __init__(self):
         """ Initialises the class. """
         super(LotteryEuroMillions, self).__init__()
-        self.name = "EuroMillions"
+        self._name = "EuroMillions"
         self._sets_of_balls = 2
         self._main_balls = SetOfBalls("main", 50)
         self._lucky_star_balls = SetOfBalls("lucky stars", 12)
@@ -257,23 +257,6 @@ class LotteryEuroMillions(Lottery):
     def get_sets_of_balls(self):
         """ Returns all sets of balls for this lottery. """
         return [self._main_balls, self._lucky_star_balls]
-
-    def check_header(self, row):
-        """ Returns True if the header row is for this lottery. """
-        logging.info("called eu ch")
-        result = False
-        for parser in self._available_parsers:
-            logging.info("Checking parser " + parser.name)
-            if parser.check_header(row):
-                self._parser = parser
-                result = True
-                break
-        if self._parser:
-            logging.info("Selected parser " + self._parser.name)
-        else:
-            print("ERROR: Lottery.check_header found no parser.")
-            sys.exit()
-        return result
 
     def parse_row(self, row):
         """ Read row data and copy into EuroMillionsCSV class. """
