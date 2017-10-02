@@ -221,8 +221,9 @@ class LotteryParserEuromillionsMW(LotteryParser):
         10 - L1,L2,Jackpot,Wins
         Day of week is ignored as this can be obtained from the date.
         '''
-        draw.draw_number = int(row[0])
-        draw.draw_date.replace(year=int(row[4]), month=1, day=int(row[2]))
+        month_num = list(calendar.month_abbr).index(row[3])
+        draw.draw_date.replace(
+            year=int(row[4]), month=month_num, day=int(row[2]))
         line = EuroMillionsLine()
         line.main_balls[0] = int(row[5])
         line.main_balls[1] = int(row[6])

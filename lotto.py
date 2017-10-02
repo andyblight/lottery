@@ -19,6 +19,7 @@ Log winning lines under the line of the ticket it came from.
 
 from datetime import date
 import logging
+import calendar
 
 from lottery import Lottery, LotteryTicket, LotteryDraw, LotteryParser
 from lottery_utils import SetOfBalls, convert_str_to_date
@@ -202,8 +203,8 @@ class LotteryParserLottoMW(LotteryParser):
     def check_header(self, row):
         """ Returns True if this is merseyworld lotto. 
         Unique values are Draw number and N1. """
-        logging.info(self.name + " " + row[0] + row[5])
-        return row[0] == 'No.' and row[5] == 'N1'
+        logging.info(self.name + " '" + row[0] + "'" + row[5] + "'")
+        return row[0] == 'No.' and row[5] == ' N1'
 
     @staticmethod
     def parse_row(row, draw):
@@ -215,18 +216,20 @@ class LotteryParserLottoMW(LotteryParser):
         Day of week is ignored as this can be obtained from the date.
         '''
         draw.draw_number = int(row[0])
-        draw.draw_date.replace(year=int(row[4]), month=1, day=int(row[2]))
-        line = EuroMillionsLine()
-        line.main_balls[0] = int(row[5])
-        line.main_balls[1] = int(row[6])
-        line.main_balls[2] = int(row[7])
-        line.main_balls[3] = int(row[8])
-        line.main_balls[4] = int(row[9])
-        line.lucky_stars[0] = int(row[10])
-        line.lucky_stars[1] = int(row[11])
-        draw.line = line
+        month_num = list(calendar.month_abbr).index(row[3])
+        draw.draw_date.replace(
+            year=int(row[4]), month=month_num, day=int(row[2]))
+        draw.main_balls[0] = int(row[5])
+        draw.main_balls[1] = int(row[6])
+        draw.main_balls[2] = int(row[7])
+        draw.main_balls[3] = int(row[8])
+        draw.main_balls[4] = int(row[9])
+        draw.main_balls[5] = int(row[10])
+        draw.main_balls[6] = int(row[11])  # bonus ball
         draw.jackpot = int(row[12])
         draw.jackpot_wins = int(row[13])
+        draw.machine = row[14]
+        draw.ball_set = int(row[15])
 
 
 class LotteryLotto(Lottery):
