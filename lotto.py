@@ -18,6 +18,7 @@ Log winning lines under the line of the ticket it came from.
 """
 
 import calendar
+import datetime
 import logging
 
 from lottery import Lottery, LotteryTicket, LotteryDraw, LotteryParser
@@ -191,7 +192,7 @@ class LotteryParserLottoNL(LotteryParser):
 
 class LotteryParserLottoMW(LotteryParser):
 
-    """ Parses the CSV data from merseyworld.com. """
+    """ Parses the CSV data from http://lottery.merseyworld.com/Winning_index.html. """
 
     def __init__(self):
         """ Initialises the class. """
@@ -214,9 +215,11 @@ class LotteryParserLottoMW(LotteryParser):
         Day of week is ignored as this can be obtained from the date.
         '''
         draw.draw_number = int(row[0])
+        day_num = int(row[2])
         month_num = list(calendar.month_abbr).index(row[3])
-        draw.draw_date.replace(
-            year=int(row[4]), month=month_num, day=int(row[2]))
+        year_num = int(row[4])
+        draw.draw_date = datetime.date(year_num, month_num, day_num)
+        # print("AJB: " + draw.draw_date.isoformat())
         draw.main_balls[0] = int(row[5])
         draw.main_balls[1] = int(row[6])
         draw.main_balls[2] = int(row[7])

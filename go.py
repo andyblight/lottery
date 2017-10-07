@@ -182,10 +182,10 @@ def process_data(results):
     logging.info('.')
     logging.info("Lottery name:" + results.get_lottery().get_name())
     date_range = results.get_lottery().get_date_range()
-    logging.info("Results in file from" + date_range[0].isoformat() + "to" +
+    logging.info("Results in file from " + date_range[0].isoformat() + " to " +
                  date_range[1].isoformat())
-    #test_start = [100, 90, 80, 70, 60, 40]
-    #test_delta = [60, 70, 80, 90, 100, 120]
+    # test_start = [100, 90, 80, 70, 60, 40]
+    # test_delta = [60, 70, 80, 90, 100, 120]
     # Start range
     # for iterator in range(0, len(test_start)):
     #    logging.info()  # Blank line to separate output
@@ -196,14 +196,14 @@ def process_data(results):
     #    analysis_end = analysis_start + \
     #        datetime.timedelta(test_delta[iterator])
     #    process_data_in_range(results, analysis_start, analysis_end)
-    #logging.info("Not appeared in delta")
+    # logging.info("Not appeared in delta")
     test_delta = [20, 25, 30, 35, 40, 45, 50, 55, 60]
     end_date = date_range[0] + datetime.timedelta(120)
     analysis_start = results.get_lottery().get_first_lottery_date()
     while analysis_start < end_date:
         for delta in range(0, len(test_delta)):
             logging.info('.')
-            logging.info("Start" + analysis_start.isoformat() + "delta" +
+            logging.info("Start " + analysis_start.isoformat() + ", delta " +
                          str(test_delta[delta]))
             analysis_end = analysis_start + \
                 datetime.timedelta(test_delta[delta])

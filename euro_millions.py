@@ -1,8 +1,8 @@
 #!/usr/bin/python3.6
 """ Implementation classes for the EuroMillions lottery. """
 import calendar
+import datetime
 import logging
-import sys
 
 from lottery import Lottery, LotteryTicket, LotteryDraw, LotteryParser
 from lottery_utils import SetOfBalls, convert_str_to_date
@@ -201,7 +201,7 @@ class LotteryParserEuromillionsNL(LotteryParser):
 
 class LotteryParserEuromillionsMW(LotteryParser):
 
-    """ Parses the CSV data from merseyworld.com. """
+    """ Parses the CSV data from http://lottery.merseyworld.com/Euro/Winning_index.html. """
 
     def __init__(self):
         """ Initialises the class. """
@@ -221,9 +221,10 @@ class LotteryParserEuromillionsMW(LotteryParser):
         10 - L1,L2,Jackpot,Wins
         Day of week is ignored as this can be obtained from the date.
         '''
+        day_num = int(row[2])
         month_num = list(calendar.month_abbr).index(row[3])
-        draw.draw_date.replace(
-            year=int(row[4]), month=month_num, day=int(row[2]))
+        year_num = int(row[4])
+        draw.draw_date = datetime.date(year_num, month_num, day_num)
         line = EuroMillionsLine()
         line.main_balls[0] = int(row[5])
         line.main_balls[1] = int(row[6])
