@@ -1,7 +1,6 @@
 #!/usr/bin/python3.6
 """ Implementation classes for the EuroMillions lottery. """
 import calendar
-import datetime
 import logging
 import sys
 

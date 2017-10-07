@@ -17,13 +17,11 @@ Ball marking is not working right.
 Log winning lines under the line of the ticket it came from.
 """
 
-from datetime import date
-import logging
 import calendar
+import logging
 
 from lottery import Lottery, LotteryTicket, LotteryDraw, LotteryParser
 from lottery_utils import SetOfBalls, convert_str_to_date
-from email import header
 
 
 class LottoDraw(LotteryDraw):
