@@ -9,10 +9,10 @@ at your own risk.
 
 
 ## TODO
-Add feedback that allows learning of patterns.
- * Score for each line on each ticket.  The higher the better.
- * Compare scores against methods.
-
+Create new ticket generation class.
+ * Create several different ticket generation methods to evaluate using the
+   scores.
+ 
 Create more analysis tools to improve ticket generation.
  * Things to try:
    * Look at short term (less than n) results to pick up "hot" numbers.
@@ -20,19 +20,18 @@ Create more analysis tools to improve ticket generation.
      up in a long time.
    * Look at winning results and look for patterns in previous draws.
 
-Create new ticket generation class.
- * Create several different ticket generation methods to evaluate using the
-   scores.
- 
 Focus efforts on Euromillions main balls as there appears to be only one set
-of balls.  Then roll out to Lucky Stars and Lotto.
+of balls and one machine (less variables to consider).  Then roll out to Lucky
+Stars and Lotto.
 
 
 ## Future
-Read merseyworld.co.uk website data using mini-app.
+Read merseyworld.com website data using another app to update the CSV files.
 Pages are:
 http://lottery.merseyworld.com/cgi-bin/lottery?days=2&Machine=Z&Ballset=0&order=1&show=1&year=-1&display=CSV
 http://lottery.merseyworld.com/cgi-bin/lottery?days=19&Machine=Z&Ballset=0&order=1&show=1&year=-1&display=CSV
+Needs something clever to get the data.  wget doesn't work properly.
+
 
 
 ## Bugs

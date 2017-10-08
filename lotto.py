@@ -34,9 +34,10 @@ class LottoDraw(LotteryDraw):
         self.main_balls = []
         self.ball_set = 0
         self.machine = ""
-        # 6 main balls + bonus ball
-        for _ in range(0, 7):
+        # 6 main balls
+        for _ in range(0, 6):
             self.main_balls.append(0)
+        self.bonus_ball = 0;
 
     def as_string(self):
         """ Returns this draw as a string. """
@@ -45,7 +46,7 @@ class LottoDraw(LotteryDraw):
             self.main_balls[2],)
         str2 = '{0:2d}  {1:2d}  {2:2d}  Bonus {3:2d}'.format(
             self.main_balls[3], self.main_balls[4], self.main_balls[5],
-            self.main_balls[6])
+            self.bonus_ball)
         str3 = '  Ball set {0:1d}  Machine {1}'.format(
             self.ball_set, self.machine)
         return str1 + str2 + str3
@@ -97,6 +98,8 @@ class LottoTicketLine:
 
     def score(self, draw):
         """ Returns a tuple containing:
+        The bonus ball is only used when 5 main balls are matched.
+        https://www.national-lottery.co.uk/games/lotto/game-procedures#int_prizes
         0 - count of main ball matches
         1 - 0 as not applicable
         2 - True if the line is a winner.
@@ -109,6 +112,13 @@ class LottoTicketLine:
                 main_matched += 1
                 matching_str = self._mark_ball_in_string(
                     matching_str, iterator)
+        # Deal with bonus ball, the last ball in the draw
+        if main_matched == 5:
+            for iterator in range(0, len(self.main_balls)):
+                if self.main_balls[iterator] == draw.bonus_ball:
+                    main_matched += 1
+                    matching_str = self._mark_ball_in_string(
+                        matching_str, iterator)
         return (main_matched, 0, self._is_winner(main_matched), matching_str)
 
 
@@ -185,7 +195,7 @@ class LotteryParserLottoNL(LotteryParser):
         draw.main_balls[3] = int(row[4])
         draw.main_balls[4] = int(row[5])
         draw.main_balls[5] = int(row[6])
-        draw.main_balls[6] = int(row[7])  # bonus ball
+        draw.bonus_ball = int(row[7])
         draw.ball_set = int(row[8])
         draw.machine = row[9]
 
@@ -226,7 +236,7 @@ class LotteryParserLottoMW(LotteryParser):
         draw.main_balls[3] = int(row[8])
         draw.main_balls[4] = int(row[9])
         draw.main_balls[5] = int(row[10])
-        draw.main_balls[6] = int(row[11])  # bonus ball
+        draw.bonus_ball = int(row[11])
         draw.jackpot = int(row[12])
         draw.jackpot_wins = int(row[13])
         draw.machine = row[14]
@@ -251,9 +261,6 @@ class LotteryLotto(Lottery):
 
     def parse_row(self, row):
         """ Read row data and copy into LottoCSV class.
-            Header row looks like this:
-            DrawDate,Ball 1,Ball 2,Ball 3,Ball 4,Ball 5,Ball 6,Bonus Ball,
-            Ball Set,Machine,Raffles,DrawNumber
         """
         draw = LottoDraw()
         if self._parser:
@@ -272,6 +279,9 @@ class LotteryLotto(Lottery):
     def get_balls_in_date_range(self, date_from, date_to):
         """ Return a tuple containing the sets of balls in the give date
             range.
+            This info is used for frequency analysis.  The bonus ball is 
+            selected using the same machine and is the last one selected.
+            Therefore there is nothing special about the bonus ball.
         """
         main_balls = []
         for lottery_draw in self.results:
@@ -283,7 +293,7 @@ class LotteryLotto(Lottery):
                 main_balls.append(lottery_draw.main_balls[3])
                 main_balls.append(lottery_draw.main_balls[4])
                 main_balls.append(lottery_draw.main_balls[5])
-                main_balls.append(lottery_draw.main_balls[6])
+                main_balls.append(lottery_draw.bonus_ball)
         return (main_balls, [])
 
     @staticmethod
@@ -301,8 +311,8 @@ class LotteryLotto(Lottery):
 
     @staticmethod
     def test_draw_against_ticket(lottery_draw, ticket):
-        """ Prints out the number of matches for each line of the given
-            ticket against the given draw.
+        """ Returns the number of matches for each line of the given ticket
+            against the given draw.
         """
         best_score = (0, 0, False, [])
         winning_lines = []
