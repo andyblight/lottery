@@ -41,15 +41,12 @@ class LottoDraw(LotteryDraw):
 
     def as_string(self):
         """ Returns this draw as a string. """
-        str1 = '{0:10d}  {1:2d}  {2:2d}  {3:2d}  '.format(
-            self.draw_date, self.main_balls[0], self.main_balls[1],
-            self.main_balls[2],)
-        str2 = '{0:2d}  {1:2d}  {2:2d}  Bonus {3:2d}'.format(
-            self.main_balls[3], self.main_balls[4], self.main_balls[5],
-            self.bonus_ball)
-        str3 = '  Ball set {0:1d}  Machine {1}'.format(
-            self.ball_set, self.machine)
-        return str1 + str2 + str3
+        str1 = '{0:2d}  {1:2d}  {2:2d}  {3:2d}  {4:2d}  {5:2d}'.format(
+            self.main_balls[0], self.main_balls[1], self.main_balls[2],
+            self.main_balls[3], self.main_balls[4], self.main_balls[5])
+        str2 = 'Bonus ball {0:2d}  Ball set {1:2d}  Machine {2}'.format(
+            self.bonus_ball, self.ball_set, self.machine)
+        return self.draw_date.isoformat() + ' Main balls: ' + str1 + '  ' + str2
 
 
 class LottoTicketLine:
@@ -64,10 +61,11 @@ class LottoTicketLine:
             self.main_balls.append(0)
 
     @staticmethod
-    def _mark_ball_in_string(line_string, main):
+    def _mark_ball(line_string, main):
         """ Mark winning balls with *. """
-        if main > -1 and main < 6:
-            index = 7 + (main * 4)
+        main_ball_offset = 8
+        if main >= 0 and main <= 5:
+            index = main_ball_offset + (main * 4)
             line_string = line_string[:index] + '*' + line_string[index + 1:]
         # logging.info(line_string)
         return line_string
@@ -78,7 +76,7 @@ class LottoTicketLine:
 
     def as_string(self):
         """ Return this line as a string. """
-        return '{0:2d}  {1:2d}  {2:2d}  {3:2d}  {4:2d}  {5:2d}'.format(
+        return 'Line: {0:2d}  {1:2d}  {2:2d}  {3:2d}  {4:2d}  {5:2d}'.format(
             self.main_balls[0], self.main_balls[1], self.main_balls[2],
             self.main_balls[3], self.main_balls[4], self.main_balls[5])
 
@@ -110,15 +108,13 @@ class LottoTicketLine:
         for iterator in range(0, len(self.main_balls)):
             if self.main_balls[iterator] == draw.main_balls[iterator]:
                 main_matched += 1
-                matching_str = self._mark_ball_in_string(
-                    matching_str, iterator)
+                matching_str = self._mark_ball(matching_str, iterator)
         # Deal with bonus ball, the last ball in the draw
         if main_matched == 5:
             for iterator in range(0, len(self.main_balls)):
                 if self.main_balls[iterator] == draw.bonus_ball:
                     main_matched += 1
-                    matching_str = self._mark_ball_in_string(
-                        matching_str, iterator)
+                    matching_str = self._mark_ball(matching_str, iterator)
         return (main_matched, 0, self._is_winner(main_matched), matching_str)
 
 
@@ -127,6 +123,48 @@ class LotteryTicketLotto(LotteryTicket):
     """ Class representing a LottoTicket.
         Only implements lottery specific functions.
     """
+    def generate_line_most_frequent_main(self, ball_stats):
+        """ Generates one line from the ball stats.
+            Uses the most frequently occurring balls.
+        """
+        line = LottoTicketLine()
+        for iterator in range(0, len(line.main_balls)):
+            line.main_balls[iterator] = ball_stats[1][iterator][0]
+        line.sort()
+        return line
+
+    def generate_line_most_frequent_alternate(self, ball_stats):
+        """ Generates one line from the ball stats.
+            Uses the most frequently occurring balls.
+        """
+        line = LottoTicketLine()
+        for iterator in range(0, len(line.main_balls)):
+            line.main_balls[iterator] = ball_stats[1][iterator][0]
+        line.main_balls[5] = ball_stats[1][5][0]
+        line.sort()
+        return line
+
+    def generate_line_least_frequent_main(self, ball_stats):
+        """ Generates one line from the ball stats.
+        Uses the least frequently occurring balls.
+        """
+        # Use least common balls
+        line = LottoTicketLine()
+        for iterator in range(0, len(line.main_balls)):
+            line.main_balls[iterator] = ball_stats[2][iterator][0]
+        line.sort()
+        return line
+
+    def generate_line_least_frequent_alternate(self, ball_stats):
+        """ Generates one line from the ball stats.
+        Uses the least frequently occurring balls with an alternate.
+        """
+        line = LottoTicketLine()
+        for iterator in range(0, len(line.main_balls)):
+            line.main_balls[iterator] = ball_stats[2][iterator][0]
+        line.main_balls[5] = ball_stats[2][5][0]
+        line.sort()
+        return line
 
     def generate_lines(self, num_lines, ball_stats):
         """ Generates the given number of lines from the ball stats. """
@@ -137,32 +175,10 @@ class LotteryTicketLotto(LotteryTicket):
             logging.info(ball_stats[0])
             logging.info(ball_stats[1])  # Most
             logging.info(ball_stats[2])  # Least
-        # Use least common balls
-        line = LottoTicketLine()
-        for iterator in range(0, len(line.main_balls)):
-            line.main_balls[iterator] = ball_stats[2][iterator][0]
-        line.sort()
-        self.lines.append(line)
-        # Use the same line but with the alternatives
-        line = LottoTicketLine()
-        for iterator in range(0, len(line.main_balls)):
-            line.main_balls[iterator] = ball_stats[2][iterator][0]
-        line.main_balls[5] = ball_stats[2][5][0]
-        line.sort()
-        self.lines.append(line)
-        # Use most common balls
-        line = LottoTicketLine()
-        for iterator in range(0, len(line.main_balls)):
-            line.main_balls[iterator] = ball_stats[1][iterator][0]
-        line.sort()
-        self.lines.append(line)
-        # Use the same line but with the alternatives
-        line = LottoTicketLine()
-        for iterator in range(0, len(line.main_balls)):
-            line.main_balls[iterator] = ball_stats[1][iterator][0]
-        line.main_balls[5] = ball_stats[1][5][0]
-        line.sort()
-        self.lines.append(line)
+        self.lines.append(self.generate_line_most_frequent_main(ball_stats))
+        self.lines.append(self.generate_line_most_frequent_alternate(ball_stats))
+        self.lines.append(self.generate_line_least_frequent_main(ball_stats))
+        self.lines.append(self.generate_line_least_frequent_alternate(ball_stats))
 
 
 class LotteryParserLottoNL(LotteryParser):
@@ -295,12 +311,6 @@ class LotteryLotto(Lottery):
                 main_balls.append(lottery_draw.main_balls[5])
                 main_balls.append(lottery_draw.bonus_ball)
         return (main_balls, [])
-
-    @staticmethod
-    def print_draw(lottery_draw):
-        """ Print the given draw. """
-        logging.info('Date ' + lottery_draw.draw_date.isoformat() +
-                     lottery_draw.as_string())
 
     def generate_ticket(self, next_lottery_date, num_lines, ball_stats):
         """ Generates a new ticket with the given number of lines. """

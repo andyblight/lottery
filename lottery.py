@@ -22,11 +22,6 @@ class LotteryDraw:
             result = True
         return result
 
-    def as_string(self):
-        """ Return the draw date as a string. """
-        return self.draw_date.isoformat()
-
-
 class LotteryParser:
 
     """ Parses the CSV data.
@@ -161,3 +156,9 @@ class Lottery:
         if self._get_date_index < self._num_draws:
             result = self.results[self._get_date_index].draw_date
         return result
+
+    @staticmethod
+    def print_draw(lottery_draw):
+        """ Print the given draw. """
+        logging.info('Draw: ' + lottery_draw.as_string())
+

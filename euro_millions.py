@@ -23,21 +23,23 @@ class EuroMillionsLine:
 
     def as_string(self):
         """ Converts a line to a string. """
-        main_str = 'Main {0:2d}  {1:2d}  {2:2d}  {3:2d}  {4:2d}  '.format(
+        main_str = 'Main balls: {0:2d}  {1:2d}  {2:2d}  {3:2d}  {4:2d}  '.format(
             self.main_balls[0], self.main_balls[1], self.main_balls[
                 2], self.main_balls[3], self.main_balls[4])
-        lucky_str = 'Lucky stars {0:2d}  {1:2d} '.format(
+        lucky_str = 'Lucky stars: {0:2d}  {1:2d} '.format(
             self.lucky_stars[0], self.lucky_stars[1])
         return main_str + lucky_str
 
     @staticmethod
-    def _mark_ball_in_string(line_string, main, lucky):
+    def _mark_ball(line_string, main, lucky):
         """ Mark winning balls with *. """
+        main_balls_offset = 14
+        lucky_stars_offset = main_balls_offset + 33
         if main > -1 and main < 5:
-            index = 7 + (main * 4)
+            index = main_balls_offset + (main * 4)
             line_string = line_string[:index] + '*' + line_string[index + 1:]
         if lucky > -1 and lucky < 2:
-            index = 39 + (lucky * 4)
+            index = lucky_stars_offset + (lucky * 4)
             line_string = line_string[:index] + '*' + line_string[index + 1:]
         logging.info(line_string)
         return line_string
@@ -85,12 +87,12 @@ class EuroMillionsLine:
         for iterator in range(0, len(self.main_balls)):
             if self.main_balls[iterator] == line.main_balls[iterator]:
                 main_matched += 1
-                matching_str = self._mark_ball_in_string(
+                matching_str = self._mark_ball(
                     matching_str, iterator, -1)
         for iterator in range(0, len(self.lucky_stars)):
             if self.lucky_stars[iterator] == line.lucky_stars[iterator]:
                 lucky_matched += 1
-                matching_str = self._mark_ball_in_string(
+                matching_str = self._mark_ball(
                     matching_str, -1, iterator)
         return (main_matched, lucky_matched,
                 self._is_winner(main_matched, lucky_matched,), matching_str)
@@ -114,6 +116,10 @@ class EuroMillionsDraw(LotteryDraw):
         if self.draw_date < other.draw_date:
             result = True
         return result
+
+    def as_string(self):
+        """ Return the draw date and line as a string. """
+        return self.draw_date.isoformat() + ' ' + self.line.as_string()
 
 
 class LotteryTicketEuroMillions(LotteryTicket):
@@ -287,14 +293,7 @@ class LotteryEuroMillions(Lottery):
                 main_balls.append(lottery_draw.line.main_balls[4])
                 # Append all lucky star balls to the given list
                 lucky_stars.append(lottery_draw.line.lucky_stars[0])
-                lucky_stars.append(lottery_draw.line.lucky_stars[1])
         return (main_balls, lucky_stars)
-
-    @staticmethod
-    def print_draw(lottery_draw):
-        """ Print the given draw. """
-        logging.info('Date' + lottery_draw.draw_date.isoformat() +
-                     lottery_draw.line.as_string())
 
     def generate_ticket(self, next_lottery_date, num_lines, ball_stats):
         """ Generates a new ticket with the given number of lines. """

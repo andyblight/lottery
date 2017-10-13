@@ -14,6 +14,7 @@ Create new ticket generation class.
    scores.
  
 Create more analysis tools to improve ticket generation.
+ * Use each generator to create more than one line.
  * Things to try:
    * Look at short term (less than n) results to pick up "hot" numbers.
    * Look at longer term (more than n) results for numbers that haven't come
@@ -31,7 +32,6 @@ Pages are:
 http://lottery.merseyworld.com/cgi-bin/lottery?days=2&Machine=Z&Ballset=0&order=1&show=1&year=-1&display=CSV
 http://lottery.merseyworld.com/cgi-bin/lottery?days=19&Machine=Z&Ballset=0&order=1&show=1&year=-1&display=CSV
 Needs something clever to get the data.  wget doesn't work properly.
-
 
 
 ## Bugs
