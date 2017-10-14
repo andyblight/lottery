@@ -7,6 +7,7 @@ import sys
 
 from lottery_utils import SetOfBalls
 
+logger = logging.getLogger('Lottery')
 
 class LotteryDraw:
 
@@ -50,23 +51,23 @@ class LotteryTicket:
     """
 
     def __init__(self, draw_date):
-        # logging.info("Set date EM", draw_date)
+        # logger.info("Set date EM", draw_date)
         self._draw_date = draw_date
         self.lines = []
 
     def generate_lines(self, num_lines, ball_stats):
         """ Generates the given number of lines from the ball stats. """
-        logging.info('TODO' + str(num_lines) + str(ball_stats[0][0]))
+        logger.info('TODO' + str(num_lines) + str(ball_stats[0][0]))
 
     def print_ticket(self, printout):
         """ Prints the ticket. """
-        logging.info('Called print_ticket')
+        logger.info('Called print_ticket')
         for line in self.lines:
             if printout:
                 print(line.as_string())
             else:
-                logging.info('print_ticket line')
-                logging.info(line.as_string())
+                logger.info('print_ticket line')
+                logger.info(line.as_string())
 
 
 class Lottery:
@@ -93,14 +94,14 @@ class Lottery:
 
     def check_header(self, row):
         """ Returns True if the header row is for this lottery. """
-        logging.info("Called Lottery ch. Num parsers " +
+        logger.info("Called Lottery ch. Num parsers " +
                      str(len(self._available_parsers)))
         result = False
         for parser in self._available_parsers:
-            logging.info("Checking parser " + parser.name)
+            logger.info("Checking parser " + parser.name)
             if parser.check_header(row):
                 self._parser = parser
-                logging.info("Selected " + parser.name)
+                logger.info("Selected " + parser.name)
                 result = True
                 break
         return result
@@ -123,23 +124,23 @@ class Lottery:
     def get_balls_in_date_range(self, date_from, date_to):
         """ Returns a tuple containing the sets of balls in the give date
         range. """
-        logging.info("TODO")
+        logger.info("TODO")
         return 0
 
     def get_draws_in_date_range(self, date_from, date_to):
         """ Returns a tuple of lottery_draws in the give date range. """
         lottery_draws = []
-        # logging.info(date_from, date_to)
+        # logger.info(date_from, date_to)
         for lottery_draw in self.results:
             if lottery_draw.draw_date >= date_from \
                     and lottery_draw.draw_date <= date_to:
-                # logging.info("Matched", lottery_draw.draw_date)
+                # logger.info("Matched", lottery_draw.draw_date)
                 lottery_draws.append(lottery_draw)
         return lottery_draws
 
     def generate_ticket(self, next_lottery_date, num_lines, ball_stats):
         """ Generates a new ticket with the given number of lines. """
-        logging.info("TODO", num_lines, ball_stats)
+        logger.info("TODO", num_lines, ball_stats)
         return LotteryTicket(next_lottery_date)
 
     def get_first_lottery_date(self):
@@ -160,5 +161,5 @@ class Lottery:
     @staticmethod
     def print_draw(lottery_draw):
         """ Print the given draw. """
-        logging.info('Draw: ' + lottery_draw.as_string())
+        logger.info('Draw: ' + lottery_draw.as_string())
 

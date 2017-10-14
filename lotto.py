@@ -24,6 +24,7 @@ import logging
 from lottery import Lottery, LotteryTicket, LotteryDraw, LotteryParser
 from lottery_utils import SetOfBalls, convert_str_to_date
 
+logger = logging.getLogger('Lotto')
 
 class LottoDraw(LotteryDraw):
 
@@ -67,7 +68,7 @@ class LottoTicketLine:
         if main >= 0 and main <= 5:
             index = main_ball_offset + (main * 4)
             line_string = line_string[:index] + '*' + line_string[index + 1:]
-        # logging.info(line_string)
+        # logger.info(line_string)
         return line_string
 
     def sort(self):
@@ -170,11 +171,11 @@ class LotteryTicketLotto(LotteryTicket):
         """ Generates the given number of lines from the ball stats. """
         debug_on = True
         if debug_on:
-            logging.info("Gen lines EM " + str(num_lines) + " Ignored!")
+            logger.info("Gen lines EM " + str(num_lines) + " Ignored!")
             # for iterator in range(0, num_lines):
-            logging.info(ball_stats[0])
-            logging.info(ball_stats[1])  # Most
-            logging.info(ball_stats[2])  # Least
+            logger.info(ball_stats[0])
+            logger.info(ball_stats[1])  # Most
+            logger.info(ball_stats[2])  # Least
         self.lines.append(self.generate_line_most_frequent_main(ball_stats))
         self.lines.append(self.generate_line_most_frequent_alternate(ball_stats))
         self.lines.append(self.generate_line_least_frequent_main(ball_stats))
@@ -194,7 +195,7 @@ class LotteryParserLottoNL(LotteryParser):
         """ Returns True if the header row is for this lottery.
             Distinct items are "Bonus Ball", "Ball Set", "Machine", "Raffles"
          """
-        logging.info(self.name + row[7])
+        logger.info(self.name + row[7])
         return row[7] == 'Bonus Ball'
 
     @staticmethod
@@ -228,7 +229,7 @@ class LotteryParserLottoMW(LotteryParser):
     def check_header(self, row):
         """ Returns True if this is merseyworld lotto. 
         Unique values are Draw number and N1. """
-        logging.info(self.name + " '" + row[0] + "'" + row[5] + "'")
+        logger.info(self.name + " '" + row[0] + "'" + row[5] + "'")
         return row[0] == 'No.' and row[5] == ' N1'
 
     @staticmethod
@@ -271,9 +272,9 @@ class LotteryLotto(Lottery):
         self._available_parsers.append(LotteryParserLottoNL())
         self._available_parsers.append(LotteryParserLottoMW())
         # Debug
-        logging.info("Initialised parsers:")
+        logger.info("Initialised parsers:")
         for parser in self._available_parsers:
-            logging.info(parser.name)
+            logger.info(parser.name)
 
     def parse_row(self, row):
         """ Read row data and copy into LottoCSV class.
@@ -329,7 +330,7 @@ class LotteryLotto(Lottery):
 
         for line in ticket.lines:
             score = line.score(lottery_draw)
-            # logging.info(score)
+            # logger.info(score)
             if score == best_score:
                 winning_lines.append(line)
             if score[0] > best_score[0] or score[1] > best_score[1]:

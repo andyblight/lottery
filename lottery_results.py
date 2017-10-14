@@ -8,6 +8,7 @@ from euro_millions import LotteryEuroMillions
 from lottery import Lottery
 from lotto import LotteryLotto
 
+logger = logging.getLogger('LotteryResults')
 
 class LotteryResults:
 
@@ -18,14 +19,14 @@ class LotteryResults:
 
     def __init__(self):
         self._lottery = None
-        logging.info("Lottery.__init__")
+        logger.info("Lottery.__init__")
         self._available_lotteries = []
         self._available_lotteries.append(LotteryEuroMillions())
         self._available_lotteries.append(LotteryLotto())
         # Debug
-        logging.info("Initialised lotteries:")
+        logger.info("Initialised lotteries:")
         for lottery in self._available_lotteries:
-            logging.info(lottery.get_name())
+            logger.info(lottery.get_name())
 
     def parse_header(self, row):
         """ Parse the header row to work out the file type. 
@@ -36,15 +37,15 @@ class LotteryResults:
         Each parser is hidden in the lottery class instance.
         """
         for lottery in self._available_lotteries:
-            logging.info("Checking lottery " + lottery.get_name())
+            logger.info("Checking lottery " + lottery.get_name())
             result = lottery.check_header(row)
-            logging.info("Result " + str(result))
+            logger.info("Result " + str(result))
             if result:
-                logging.info("Found parser in " + lottery.get_name())
+                logger.info("Found parser in " + lottery.get_name())
                 self._lottery = lottery
                 break
         if self._lottery == None:
-            logging.info("Using default lottery")
+            logger.info("Using default lottery")
 
     def parse_row(self, row):
         """ Parse row data and append """

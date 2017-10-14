@@ -7,6 +7,7 @@ import logging
 from lottery import Lottery, LotteryTicket, LotteryDraw, LotteryParser
 from lottery_utils import SetOfBalls, convert_str_to_date
 
+logger = logging.getLogger('EuroMillions')
 
 class EuroMillionsLine:
 
@@ -41,7 +42,7 @@ class EuroMillionsLine:
         if lucky > -1 and lucky < 2:
             index = lucky_stars_offset + (lucky * 4)
             line_string = line_string[:index] + '*' + line_string[index + 1:]
-        logging.info(line_string)
+        logger.info(line_string)
         return line_string
 
     def sort(self):
@@ -130,14 +131,14 @@ class LotteryTicketEuroMillions(LotteryTicket):
 
     def generate_lines(self, num_lines, ball_stats):
         """ Generates the given number of lines from the ball stats. """
-        logging.info("Gen lines EM" + str(num_lines) + "Ignored!")
+        logger.info("Gen lines EM" + str(num_lines) + "Ignored!")
         # for iterator in range(0, num_lines):
-        logging.info(ball_stats[0])
-        logging.info(ball_stats[1])  # Most
-        logging.info(ball_stats[2])  # Least
-        logging.info(ball_stats[3])
-        logging.info(ball_stats[4])  # Most
-        logging.info(ball_stats[5])  # Least
+        logger.info(ball_stats[0])
+        logger.info(ball_stats[1])  # Most
+        logger.info(ball_stats[2])  # Least
+        logger.info(ball_stats[3])
+        logger.info(ball_stats[4])  # Most
+        logger.info(ball_stats[5])  # Least
         # Use least common balls
         line = EuroMillionsLine()
         for iterator in range(0, len(line.main_balls)):
@@ -187,7 +188,7 @@ class LotteryParserEuromillionsNL(LotteryParser):
 
     def check_header(self, row):
         """ Returns True if the header matches """
-        logging.info(self.name + " " + str(row[6]))
+        logger.info(self.name + " " + str(row[6]))
         return str(row[6]) == 'Lucky Star 1'
 
     @staticmethod
@@ -216,7 +217,7 @@ class LotteryParserEuromillionsMW(LotteryParser):
 
     def check_header(self, row):
         """ Returns True if the header matches """
-        logging.info(self.name + " " + str(row[10]))
+        logger.info(self.name + " " + str(row[10]))
         return str(row[10]) == 'L1'
 
     @staticmethod
@@ -258,9 +259,9 @@ class LotteryEuroMillions(Lottery):
         self._available_parsers.append(LotteryParserEuromillionsNL())
         self._available_parsers.append(LotteryParserEuromillionsMW())
         # Debug
-        logging.info("Initialised parsers:")
+        logger.info("Initialised parsers:")
         for parser in self._available_parsers:
-            logging.info(parser.name)
+            logger.info(parser.name)
 
     def get_sets_of_balls(self):
         """ Returns all sets of balls for this lottery. """
@@ -313,7 +314,7 @@ class LotteryEuroMillions(Lottery):
 
         for line in ticket.lines:
             score = line.score(lottery_draw.line)
-            logging.info(score)
+            logger.info(score)
             if score == best_score:
                 winning_lines.append(line)
             if score[0] > best_score[0] or score[1] > best_score[1]:
