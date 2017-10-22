@@ -25,6 +25,12 @@ Focus efforts on Euromillions main balls as there appears to be only one set
 of balls and one machine (less variables to consider).  Then roll out to Lucky
 Stars and Lotto.
 
+Looking at this problem from the other direction.
+- Generate stats on a block of results.
+- Use the results of the next draw to evaluate the stats generation methods. 
+- Use the results of the evaluation to improve the stats generation methods.
+
+
 
 ## Future
 Read merseyworld.com website data using another app to update the CSV files.
