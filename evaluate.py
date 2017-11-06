@@ -172,11 +172,10 @@ def generate_date_ranges(results):
                       tests.
         long_range = The date longest in the past.  Used for least often tests.
     The number of tuples returned depends on the number of results given.  
-
-    FIXME Each lottery may need different settings.
     """
     date_ranges = []
     excluded_draws = 4
+    # FIXME Each lottery may need different settings.
     short_range_offset = 4  # 2 draws per week * 2 weeks
     long_range_offset = 40  # 2 draws per week * 20 weeks
     # Generate list of lottery dates
@@ -204,6 +203,21 @@ def generate_stats(range):
     return []
 
 
+def generate_ticket_1(stats):
+    """ TODO """
+    return []
+
+
+def generate_ticket_2(stats):
+    """ TODO """
+    return []
+
+
+def evaluate_ticket(lottery_results, ticket):
+    """ TODO """
+    return []
+
+
 def setup_logging(args):
     """ Set up logging. """
     split_filename = os.path.splitext(args.filename)
@@ -221,7 +235,7 @@ def log_results_info(results):
                  date_range[1].isoformat())
 
 
-def generate_and_evaluate(results):
+def generate_and_evaluate(lottery_results):
     """ Execute the different evaluation methods.
     for each date in date ranges
         generate stats
@@ -230,12 +244,18 @@ def generate_and_evaluate(results):
             evaluate results
     """
     evaluation_results = []
-    date_ranges = generate_date_ranges(results)
+    date_ranges = generate_date_ranges(lottery_results)
     for date_range in date_ranges:
         eval_results = []
         stats = generate_stats(date_range)
         for j in range(0, 2):
-            eval_results.append(("name", "score", j))
+            # FIXME Should use index or list of generation methods.
+            ticket = generate_tickets_1(stats)
+            results = evaluate_tickets(lottery_results, ticket)
+            eval_results.append(results)
+            ticket = generate_tickets_2(stats)
+            results = evaluate_tickets(lottery_results, ticket)
+            eval_results.append(results)
         evaluation_results.append(("range", range, eval_results))
     return evaluation_results
 
