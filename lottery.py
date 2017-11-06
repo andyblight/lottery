@@ -9,6 +9,7 @@ from lottery_utils import SetOfBalls
 
 logger = logging.getLogger('Lottery')
 
+
 class LotteryDraw:
 
     """ One draw from the CSV file. """
@@ -22,6 +23,7 @@ class LotteryDraw:
         if self.draw_date < other.draw_date:
             result = True
         return result
+
 
 class LotteryParser:
 
@@ -95,7 +97,7 @@ class Lottery:
     def check_header(self, row):
         """ Returns True if the header row is for this lottery. """
         logger.info("Called Lottery ch. Num parsers " +
-                     str(len(self._available_parsers)))
+                    str(len(self._available_parsers)))
         result = False
         for parser in self._available_parsers:
             logger.info("Checking parser " + parser.name)
@@ -162,4 +164,3 @@ class Lottery:
     def print_draw(lottery_draw):
         """ Print the given draw. """
         logger.info('Draw: ' + lottery_draw.as_string())
-

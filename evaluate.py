@@ -155,6 +155,55 @@ def process_data(results):
     process_data_in_range(results, analysis_start, analysis_end, winning_draws,
                           True)
 
+
+## OLD CODE ABOVE ############################################################
+
+def generate_date_ranges(results):
+    """ Returns the range of dates to use for stats generation.
+
+    The most recent 4 draws are excluded to allow evaluation of the stats 
+    and generation methods.
+    The range of dates has the format: 
+        [(most_recent, short_range, long_range), ...]
+    where:
+        most_recent = The date of the most "recent" draw.  This date moves from 
+                      the past to the future to simulate real life. 
+        short_range = The date in the last few weeks.  Used for most often 
+                      tests.
+        long_range = The date longest in the past.  Used for least often tests.
+    The number of tuples returned depends on the number of results given.  
+
+    FIXME Each lottery may need different settings.
+    """
+    date_ranges = []
+    excluded_draws = 4
+    short_range_offset = 4  # 2 draws per week * 2 weeks
+    long_range_offset = 40  # 2 draws per week * 20 weeks
+    # Generate list of lottery dates
+    lottery_dates = []
+    results_range = results.get_lottery().get_date_range()
+    date_iterator = results.get_lottery().get_next_lottery_date()
+    logging.info('Generating dates from ' + date_iterator.isoformat() +
+                 ' to ' + results_range[1].isoformat())
+    while date_iterator < results_range[1]:
+        lottery_dates.append(date_iterator)
+        date_iterator = results.get_lottery().get_next_lottery_date()
+    # Generate date tuples
+    end_index = len(lottery_dates) - long_range_offset
+    for i in range(end_index):
+        most_recent = lottery_dates[i + long_range_offset]
+        short_range = lottery_dates[i + long_range_offset - short_range_offset]
+        long_range = lottery_dates[i]
+        date_ranges.append((most_recent, short_range, long_range))
+    # print("HACK", date_ranges)
+    return date_ranges
+
+
+def generate_stats(range):
+    """ TODO """
+    return []
+
+
 def setup_logging(args):
     """ Set up logging. """
     split_filename = os.path.splitext(args.filename)
@@ -172,25 +221,27 @@ def log_results_info(results):
                  date_range[1].isoformat())
 
 
-def generate_and_evaluate(results, evaluation_results):
-    """ Generate stats for a range of dates.  
-    foreach range of dates
-        foreach type of stats generation
-            generate stats
-            evaluate these stats
+def generate_and_evaluate(results):
+    """ Execute the different evaluation methods.
+    for each date in date ranges
+        generate stats
+        for each method in generation methods
+            run method
+            evaluate results
     """
-    print("gae")
-    for i in range(0, 2):
+    evaluation_results = []
+    date_ranges = generate_date_ranges(results)
+    for date_range in date_ranges:
         eval_results = []
+        stats = generate_stats(date_range)
         for j in range(0, 2):
             eval_results.append(("name", "score", j))
-        evaluation_results.append(("range", i, eval_results))
+        evaluation_results.append(("range", range, eval_results))
+    return evaluation_results
 
 
 def print_evaluation_results(evaluation_results):
-    """ Print out the evaluation results. 
-    """
-    print("per")
+    """ Print out the evaluation results. """
     for eval_results in evaluation_results:
         logging.info("Date range: " + eval_results[0])
         logging.info("loop: " + str(eval_results[1]))
@@ -207,9 +258,9 @@ def run():
     results = LotteryResults()
     results.load_file(args.filename)
     log_results_info(results)
-    evaluation_results = []
-    generate_and_evaluate(results, evaluation_results)
+    evaluation_results = generate_and_evaluate(results)
     print_evaluation_results(evaluation_results)
+
 
 if __name__ == "__main__":
     run()

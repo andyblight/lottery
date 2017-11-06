@@ -10,11 +10,12 @@ from lotto import LotteryLotto
 
 logger = logging.getLogger('LotteryResults')
 
+
 class LotteryResults:
 
     """
     The LotteryResults class reads a lottery results CSV file into an internal
-    lotter instance and provides methods to access the data in the Lottery.
+    lottery instance and provides methods to access the data in the Lottery.
 .   """
 
     def __init__(self):
