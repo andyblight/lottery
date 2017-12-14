@@ -4,10 +4,11 @@ import calendar
 import datetime
 import logging
 
-from lottery import Lottery, LotteryTicket, LotteryDraw, LotteryParser
+from lottery import Lottery, LotteryTicket, LotteryDraw, LotteryParser, LotteryTicketGenerationMethod, LotteryStatsGenerationMethod
 from lottery_utils import SetOfBalls, convert_str_to_date
 
 logger = logging.getLogger('EuroMillions')
+
 
 class EuroMillionsLine:
 
@@ -123,58 +124,76 @@ class EuroMillionsDraw(LotteryDraw):
         return self.draw_date.isoformat() + ' ' + self.line.as_string()
 
 
-class LotteryTicketEuroMillions(LotteryTicket):
-
-    """ Class representing a EuroMillionsTicket.
-    Only implements lottery specific functions.
+class LotteryTicketGenerationMethodEuro1:
+    """ Ticket generation method concrete class.
+    Use most common stats.
     """
 
-    def generate_lines(self, num_lines, ball_stats):
-        """ Generates the given number of lines from the ball stats. """
-        logger.info("Gen lines EM" + str(num_lines) + "Ignored!")
-        # for iterator in range(0, num_lines):
-        logger.info(ball_stats[0])
-        logger.info(ball_stats[1])  # Most
-        logger.info(ball_stats[2])  # Least
-        logger.info(ball_stats[3])
-        logger.info(ball_stats[4])  # Most
-        logger.info(ball_stats[5])  # Least
-        # Use least common balls
-        line = EuroMillionsLine()
-        for iterator in range(0, len(line.main_balls)):
-            line.main_balls[iterator] = ball_stats[2][iterator][0]
-        for iterator in range(0, len(line.lucky_stars)):
-            line.lucky_stars[iterator] = ball_stats[5][iterator][0]
-        line.sort()
-        self.lines.append(line)
-        # Use the same line but with the alternatives
-        line = EuroMillionsLine()
-        for iterator in range(0, len(line.main_balls)):
-            line.main_balls[iterator] = ball_stats[2][iterator][0]
-        for iterator in range(0, len(line.lucky_stars)):
-            line.lucky_stars[iterator] = ball_stats[5][iterator][0]
-        line.main_balls[4] = ball_stats[2][5][0]
-        line.lucky_stars[1] = ball_stats[5][2][0]
-        line.sort()
-        self.lines.append(line)
-        # Use most common balls
-        line = EuroMillionsLine()
-        for iterator in range(0, len(line.main_balls)):
-            line.main_balls[iterator] = ball_stats[1][iterator][0]
-        for iterator in range(0, len(line.lucky_stars)):
-            line.lucky_stars[iterator] = ball_stats[4][iterator][0]
-        line.sort()
-        self.lines.append(line)
-        # Use the same line but with the alternatives
-        line = EuroMillionsLine()
-        for iterator in range(0, len(line.main_balls)):
-            line.main_balls[iterator] = ball_stats[1][iterator][0]
-        for iterator in range(0, len(line.lucky_stars)):
-            line.lucky_stars[iterator] = ball_stats[4][iterator][0]
-        line.main_balls[4] = ball_stats[1][5][0]
-        line.lucky_stars[1] = ball_stats[4][2][0]
-        line.sort()
-        self.lines.append(line)
+    def __init__(self):
+        self.name = "Euro1"
+
+    def generate(self, draw_date, num_lines, ball_stats):
+        """ """
+        # HACK
+        if num_lines != 2:
+            num_lines = 2
+        ticket = LotteryTicket(draw_date)
+        # Debug
+        logger.info("TGM1: " + str(num_lines))
+        most_probable = ball_stats.get_most_probable()
+        logger.info(most_probable[0])
+        logger.info(most_probable[1])
+        for num_lines_it in range(0, num_lines):
+            line = EuroMillionsLine()
+            print(num_lines_it)
+            num_main_balls = len(line.main_balls)
+            num_lucky_stars = len(line.lucky_stars)
+            for iterator in range(0, num_main_balls):
+                print(iterator)
+                line.main_balls[iterator] = most_probable[0][iterator]
+            for iterator in range(0, num_lucky_stars):
+                line.lucky_stars[iterator] = most_probable[1][iterator]
+            # Use alternate numbers for second line
+            if num_lines_it == 1:
+                line.main_balls[4] = most_probable[0][num_main_balls]
+                line.lucky_stars[1] = most_probable[1][num_lucky_stars]
+            line.sort()
+            ticket.lines.append(line)
+        return ticket
+
+
+class LotteryTicketGenerationMethodEuro2:
+    """ Ticket generation method concrete class.
+    Use least common balls.
+     """
+
+    def __init__(self):
+        self.name = "Euro2"
+
+    def generate(self, draw_date, num_lines, ball_stats):
+        """ """
+        # HACK
+        if num_lines != 2:
+            num_lines = 2
+        ticket = LotteryTicket(draw_date)
+        # Debug
+        logger.info("TGM1: " + str(num_lines))
+        least_probable = ball_stats.get_least_probable()
+        logger.info(least_probable[0])
+        logger.info(least_probable[1])
+        for num_lines_it in range(0, num_lines):
+            line = EuroMillionsLine()
+            for iterator in range(0, len(line.main_balls)):
+                line.main_balls[iterator] = ball_stats[2][iterator][0]
+            for iterator in range(0, len(line.lucky_stars)):
+                line.lucky_stars[iterator] = ball_stats[5][iterator][0]
+            # Use alternate numbers for second line
+            if num_lines_it == 1:
+                line.main_balls[4] = ball_stats[2][5][0]
+                line.lucky_stars[1] = ball_stats[5][2][0]
+            line.sort()
+            ticket.lines.append(line)
+        return ticket
 
 
 class LotteryParserEuromillionsNL(LotteryParser):
@@ -245,6 +264,46 @@ class LotteryParserEuromillionsMW(LotteryParser):
         draw.jackpot_wins = int(row[13])
 
 
+class LotteryStatsGenerationMethodEuro1:
+    """ """
+
+    def __init__(self):
+        LotteryTicketGenerationMethod.__init__(self, "Euro1")
+        self._most_probable = []
+
+    def analyse(self, lottery_results, date_range):
+        """ """
+        logger.info("TODO")
+
+    def get_most_probable(self):
+        """ Returns a tuple of (main ball_stats, lucky_star_stats) """
+        return ([1, 2, 3, 4, 5, 6], [1, 2, 3])
+
+    def get_least_probable(self):
+        """ Returns a tuple of (main ball_stats, lucky_star_stats) """
+        return ([1, 2, 3, 4, 5, 6], [1, 2, 3])
+
+
+class LotteryStatsGenerationMethodEuro2:
+    """ """
+
+    def __init__(self):
+        LotteryTicketGenerationMethod.__init__(self, "Euro2")
+        self._most_probable = []
+
+    def analyse(self, lottery_results, date_range):
+        """ """
+        logger.info("TODO")
+
+    def get_most_probable(self):
+        """ Returns a tuple of (main ball_stats, lucky_star_stats) """
+        return ([1, 2, 3, 4, 5], [1, 2])
+
+    def get_least_probable(self):
+        """ Returns a tuple of (main ball_stats, lucky_star_stats) """
+        return ([1, 2, 3, 4, 5], [1, 2])
+
+
 class LotteryEuroMillions(Lottery):
 
     """ The Euro Millions lottery. """
@@ -258,6 +317,10 @@ class LotteryEuroMillions(Lottery):
         self._lucky_star_balls = SetOfBalls("lucky stars", 12)
         self._available_parsers.append(LotteryParserEuromillionsNL())
         self._available_parsers.append(LotteryParserEuromillionsMW())
+        self._ticket_generation_methods.append(LotteryTicketGenerationMethodEuro1())
+        self._ticket_generation_methods.append(LotteryTicketGenerationMethodEuro2())
+        self._stats_generation_methods.append(LotteryStatsGenerationMethodEuro1())
+        self._stats_generation_methods.append(LotteryStatsGenerationMethodEuro2())
         # Debug
         logger.info("Initialised parsers:")
         for parser in self._available_parsers:

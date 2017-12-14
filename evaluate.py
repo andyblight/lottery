@@ -1,8 +1,8 @@
 #!/usr/bin/python3.6
 
 """
-This file generates statistics about range of results and evaluates the 
-effectiveness of the generation methods by comparing against future results. 
+This file generates statistics about range of results and evaluates the
+effectiveness of the generation methods by comparing against future results.
 
 """
 
@@ -13,6 +13,20 @@ import os
 
 from lottery_results import LotteryResults
 from lottery_utils import frequency, most_common_balls, least_common_balls
+
+
+class EvaluationResult:
+    """ Info about how each method performed. """
+
+    def __init__(self):
+        self.name = ""
+        self.score = 0
+        self.loop = 0
+
+    def __init__(self, name, score, loop):
+        self.name = name
+        self.score = score
+        self.loop = loop
 
 
 def handle_parameters():
@@ -155,23 +169,23 @@ def process_data(results):
     process_data_in_range(results, analysis_start, analysis_end, winning_draws,
                           True)
 
-
 ## OLD CODE ABOVE ############################################################
+
 
 def generate_date_ranges(results):
     """ Returns the range of dates to use for stats generation.
 
-    The most recent 4 draws are excluded to allow evaluation of the stats 
+    The most recent 4 draws are excluded to allow evaluation of the stats
     and generation methods.
-    The range of dates has the format: 
+    The range of dates has the format:
         [(most_recent, short_range, long_range), ...]
     where:
-        most_recent = The date of the most "recent" draw.  This date moves from 
-                      the past to the future to simulate real life. 
-        short_range = The date in the last few weeks.  Used for most often 
+        most_recent = The date of the most "recent" draw.  This date moves from
+                      the past to the future to simulate real life.
+        short_range = The date in the last few weeks.  Used for most often
                       tests.
         long_range = The date longest in the past.  Used for least often tests.
-    The number of tuples returned depends on the number of results given.  
+    The number of tuples returned depends on the number of results given.
     """
     date_ranges = []
     excluded_draws = 4
@@ -198,24 +212,10 @@ def generate_date_ranges(results):
     return date_ranges
 
 
-def generate_stats(range):
-    """ TODO """
-    return []
-
-
-def generate_ticket_1(stats):
-    """ TODO """
-    return []
-
-
-def generate_ticket_2(stats):
-    """ TODO """
-    return []
-
-
-def evaluate_ticket(lottery_results, ticket):
-    """ TODO """
-    return []
+def evaluate_ticket(method, ticket, lottery_results):
+    """ Evaluates one ticket against the next four draws. """
+    eval_result = EvaluationResult(method.name, 1, 0)
+    return eval_result
 
 
 def setup_logging(args):
@@ -247,15 +247,16 @@ def generate_and_evaluate(lottery_results):
     date_ranges = generate_date_ranges(lottery_results)
     for date_range in date_ranges:
         eval_results = []
-        stats = generate_stats(date_range)
-        for j in range(0, 2):
-            # FIXME Should use index or list of generation methods.
-            ticket = generate_tickets_1(stats)
-            results = evaluate_tickets(lottery_results, ticket)
-            eval_results.append(results)
-            ticket = generate_tickets_2(stats)
-            results = evaluate_tickets(lottery_results, ticket)
-            eval_results.append(results)
+        # TODO Implement get_stats_generation_methods() and stats class
+        stats_methods = lottery_results.get_lottery().get_stats_generation_methods()
+        for stats_method in stats_methods:
+            stats_method.analyse(lottery_results, date_range)
+            num_lines = 4  ## HACK!!!!
+            ticket_methods = lottery_results.get_lottery().get_ticket_generation_methods()
+            for ticket_method in ticket_methods:
+                ticket = ticket_method.generate(date_range[0], num_lines, stats_method)
+                results = evaluate_ticket(method, ticket, lottery_results)
+                eval_results.append(results)
         evaluation_results.append(("range", range, eval_results))
     return evaluation_results
 
@@ -266,9 +267,8 @@ def print_evaluation_results(evaluation_results):
         logging.info("Date range: " + eval_results[0])
         logging.info("loop: " + str(eval_results[1]))
         for method in eval_results[2]:
-            logging.info("  Method name: " + method[0])
-            logging.info("  Score: " + method[1])
-            logging.info("  loop: " + str(method[2]))
+            logging.info("  Method name: " + method.name)
+            logging.info("  Score: " + str(method.score))
 
 
 def run():
@@ -283,4 +283,5 @@ def run():
 
 
 if __name__ == "__main__":
+
     run()

@@ -57,10 +57,6 @@ class LotteryTicket:
         self._draw_date = draw_date
         self.lines = []
 
-    def generate_lines(self, num_lines, ball_stats):
-        """ Generates the given number of lines from the ball stats. """
-        logger.info('TODO' + str(num_lines) + str(ball_stats[0][0]))
-
     def print_ticket(self, printout):
         """ Prints the ticket. """
         logger.info('Called print_ticket')
@@ -70,6 +66,37 @@ class LotteryTicket:
             else:
                 logger.info('print_ticket line')
                 logger.info(line.as_string())
+
+
+class LotteryTicketGenerationMethod:
+    """ Ticket generation method base class """
+
+    def __init__(self, name):
+        self.name = ""
+
+    def generate(self, draw_date, num_lines, ball_stats):
+        """ """
+        logger.info('TODO' + str(num_lines) + str(ball_stats[0][0]))
+        return LotteryTicket(draw_date)
+
+
+class LotteryStatsGenerationMethod:
+    """ Statistics generation method base class """
+
+    def __init__(self):
+        self.name = "Base class"
+
+    def analyse(self, lottery_results, date_range):
+        """ """
+        logger.info("TODO")
+
+    def get_most_probable(self):
+        """ """
+        return []
+
+    def get_least_probable(self):
+        """ """
+        return []
 
 
 class Lottery:
@@ -89,6 +116,9 @@ class Lottery:
         self._get_date_index = 0
         self._parser = None
         self._available_parsers = []
+        # Generation methods are added by the concrete classes.
+        self._ticket_generation_methods = []
+        self._stats_generation_methods = []
 
     def get_name(self):
         """ Returns the name of the lottery. """
@@ -140,10 +170,13 @@ class Lottery:
                 lottery_draws.append(lottery_draw)
         return lottery_draws
 
-    def generate_ticket(self, next_lottery_date, num_lines, ball_stats):
-        """ Generates a new ticket with the given number of lines. """
-        logger.info("TODO", num_lines, ball_stats)
-        return LotteryTicket(next_lottery_date)
+    def get_ticket_generation_methods(self):
+        """ Returns the list of ticket generation methods owned by this class. """
+        return self._ticket_generation_methods
+
+    def get_stats_generation_methods(self):
+        """ Returns the list of ticket generation methods owned by this class. """
+        return self._stats_generation_methods
 
     def get_first_lottery_date(self):
         """ Returns the first lottery date.
