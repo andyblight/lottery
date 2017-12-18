@@ -255,7 +255,7 @@ def generate_and_evaluate(lottery_results):
             ticket_methods = lottery_results.get_lottery().get_ticket_generation_methods()
             for ticket_method in ticket_methods:
                 ticket = ticket_method.generate(date_range[0], num_lines, stats_method)
-                results = evaluate_ticket(method, ticket, lottery_results)
+                results = evaluate_ticket(ticket_method, ticket, lottery_results)
                 eval_results.append(results)
         evaluation_results.append(("range", range, eval_results))
     return evaluation_results

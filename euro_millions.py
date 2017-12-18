@@ -155,6 +155,9 @@ class LotteryTicketGenerationMethodEuro1:
                 line.lucky_stars[iterator] = most_probable[1][iterator]
             # Use alternate numbers for second line
             if num_lines_it == 1:
+                print(num_main_balls, num_lucky_stars)
+                print(most_probable[0])
+                print(len(line.main_balls), len(most_probable), len(most_probable[0]))
                 line.main_balls[4] = most_probable[0][num_main_balls]
                 line.lucky_stars[1] = most_probable[1][num_lucky_stars]
             line.sort()
@@ -183,14 +186,19 @@ class LotteryTicketGenerationMethodEuro2:
         logger.info(least_probable[1])
         for num_lines_it in range(0, num_lines):
             line = EuroMillionsLine()
-            for iterator in range(0, len(line.main_balls)):
-                line.main_balls[iterator] = ball_stats[2][iterator][0]
-            for iterator in range(0, len(line.lucky_stars)):
-                line.lucky_stars[iterator] = ball_stats[5][iterator][0]
+            print(num_lines_it)
+            num_main_balls = len(line.main_balls)
+            num_lucky_stars = len(line.lucky_stars)
+            for iterator in range(0, num_main_balls):
+                print(iterator)
+                line.main_balls[iterator] = least_probable[0][iterator]
+            for iterator in range(0, num_lucky_stars):
+                line.lucky_stars[iterator] = least_probable[1][iterator]
             # Use alternate numbers for second line
             if num_lines_it == 1:
-                line.main_balls[4] = ball_stats[2][5][0]
-                line.lucky_stars[1] = ball_stats[5][2][0]
+                print(len(line.main_balls), len(least_probable), len(least_probable[0]))
+                line.main_balls[4] = least_probable[0][num_main_balls]
+                line.lucky_stars[1] = least_probable[1][num_lucky_stars]
             line.sort()
             ticket.lines.append(line)
         return ticket
@@ -277,10 +285,12 @@ class LotteryStatsGenerationMethodEuro1:
 
     def get_most_probable(self):
         """ Returns a tuple of (main ball_stats, lucky_star_stats) """
+        # NOTE Must return list of at least 6 and at least 3 for ticket generation methods to work.
         return ([1, 2, 3, 4, 5, 6], [1, 2, 3])
 
     def get_least_probable(self):
         """ Returns a tuple of (main ball_stats, lucky_star_stats) """
+        # NOTE Must return list of at least 6 and at least 3 for ticket generation methods to work.
         return ([1, 2, 3, 4, 5, 6], [1, 2, 3])
 
 
@@ -297,11 +307,13 @@ class LotteryStatsGenerationMethodEuro2:
 
     def get_most_probable(self):
         """ Returns a tuple of (main ball_stats, lucky_star_stats) """
-        return ([1, 2, 3, 4, 5], [1, 2])
+        # NOTE Must return list of at least 6 and at least 3 for ticket generation methods to work.
+        return ([1, 2, 3, 4, 5, 6], [1, 2, 3])
 
     def get_least_probable(self):
         """ Returns a tuple of (main ball_stats, lucky_star_stats) """
-        return ([1, 2, 3, 4, 5], [1, 2])
+        # NOTE Must return list of at least 6 and at least 3 for ticket generation methods to work.
+        return ([1, 2, 3, 4, 5, 6], [1, 2, 3])
 
 
 class LotteryEuroMillions(Lottery):
