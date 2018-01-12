@@ -277,21 +277,59 @@ class LotteryStatsGenerationMethodEuro1:
 
     def __init__(self):
         LotteryTicketGenerationMethod.__init__(self, "Euro1")
-        self._most_probable = []
+        self._main_balls_most_probable = []
+        self._main_balls_least_probable = []
+        self._lucky_stars_most_probable = []
+        self._lucky_stars_least_probable = []
 
     def analyse(self, lottery_results, date_range):
-        """ """
+        """ Sets internal stores of information from the given results in the
+            given date range.
+        """
+        #    def ball_stats_in_date_range(results, date_from, date_to):
+        # """ Returns the statistics about the balls for all ball sets for the given
+        #    range.
+        # """
+        logging.debug("Ball frequency from", date_from, "to", date_to)
+        balls = results.get_lottery().get_balls_in_date_range(date_from, date_to)
+        sets_of_balls = results.get_lottery().get_sets_of_balls()
+        iterator = 0
+        ball_stats = []
+        logging.info(balls)
+        for ball_set in sets_of_balls:
+            logging.debug("Set of balls:", ball_set.get_name())
+            num_balls = ball_set.get_num_balls()
+            str_log = "NUM BALLS " + str(num_balls) + " iterator " + str(iterator)
+            logging.info(str_log)
+            frequency_of_balls = frequency(num_balls, balls[iterator])
+            logging.debug(frequency_of_balls)
+            num_likley = 3
+            if num_balls > 20:
+                num_likley = 6
+            most_likely = most_common_balls(frequency_of_balls, num_likley)
+            logging.debug("Most likely", most_likely)
+            least_likely = least_common_balls(frequency_of_balls, num_likley)
+            logging.debug("Least likely", least_likely)
+            iterator += 1
+            ball_stats.append(frequency_of_balls)
+            ball_stats.append(most_likely)
+            ball_stats.append(least_likely)
+        # TODO FIX THE ABOVE TO SET THESE
         logger.info("TODO")
+        self._main_balls_most_probable = []
+        self._main_balls_least_probable = []
+        self._lucky_stars_most_probable = []
+        self._lucky_stars_least_probable = []
 
     def get_most_probable(self):
         """ Returns a tuple of (main ball_stats, lucky_star_stats) """
         # NOTE Must return list of at least 6 and at least 3 for ticket generation methods to work.
-        return ([1, 2, 3, 4, 5, 6], [1, 2, 3])
+        return (self._main_balls_most_probable, self._lucky_stars_most_probable)
 
     def get_least_probable(self):
         """ Returns a tuple of (main ball_stats, lucky_star_stats) """
         # NOTE Must return list of at least 6 and at least 3 for ticket generation methods to work.
-        return ([1, 2, 3, 4, 5, 6], [1, 2, 3])
+        return (self._main_balls_least_probable, self._lucky_stars_least_probable)
 
 
 class LotteryStatsGenerationMethodEuro2:
