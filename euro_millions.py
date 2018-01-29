@@ -4,8 +4,10 @@ import calendar
 import datetime
 import logging
 
-from lottery import Lottery, LotteryTicket, LotteryDraw, LotteryParser, LotteryTicketGenerationMethod, LotteryStatsGenerationMethod
-from lottery_utils import SetOfBalls, convert_str_to_date
+from lottery import Lottery, LotteryTicket, LotteryDraw, LotteryParser, \
+    LotteryTicketGenerationMethod, LotteryStatsGenerationMethod
+from lottery_utils import SetOfBalls, convert_str_to_date, frequency, \
+    most_common_balls, least_common_balls
 
 logger = logging.getLogger('EuroMillions')
 
@@ -100,6 +102,13 @@ class EuroMillionsLine:
                 self._is_winner(main_matched, lucky_matched,), matching_str)
 
 
+class LotteryTicketEuroMillions(LotteryTicket):
+    """ TODO """
+
+    def __init__(self, draw_date):
+        self._draw_date = draw_date
+
+
 class EuroMillionsDraw(LotteryDraw):
 
     """ Groups draw date and lottery line."""
@@ -134,34 +143,30 @@ class LotteryTicketGenerationMethodEuro1:
 
     def generate(self, draw_date, num_lines, ball_stats):
         """ """
-        # HACK
+        # TODO HACK
         if num_lines != 2:
             num_lines = 2
         ticket = LotteryTicket(draw_date)
         # Debug
         logger.info("TGM1: " + str(num_lines))
         most_probable = ball_stats.get_most_probable()
-        logger.info(most_probable[0])
-        logger.info(most_probable[1])
-        for num_lines_it in range(0, num_lines):
-            line = EuroMillionsLine()
-            print(num_lines_it)
-            num_main_balls = len(line.main_balls)
-            num_lucky_stars = len(line.lucky_stars)
-            for iterator in range(0, num_main_balls):
-                print(iterator)
-                line.main_balls[iterator] = most_probable[0][iterator]
-            for iterator in range(0, num_lucky_stars):
-                line.lucky_stars[iterator] = most_probable[1][iterator]
-            # Use alternate numbers for second line
-            if num_lines_it == 1:
-                print(num_main_balls, num_lucky_stars)
-                print(most_probable[0])
-                print(len(line.main_balls), len(most_probable), len(most_probable[0]))
-                line.main_balls[4] = most_probable[0][num_main_balls]
-                line.lucky_stars[1] = most_probable[1][num_lucky_stars]
-            line.sort()
-            ticket.lines.append(line)
+        if len(most_probable[0]) != 0 and len(most_probable[1]) != 0:
+            for num_lines_it in range(0, num_lines):
+                line = EuroMillionsLine()
+                num_main_balls = len(line.main_balls)
+                num_lucky_stars = len(line.lucky_stars)
+                for iterator in range(0, num_main_balls):
+                    line.main_balls[iterator] = most_probable[0][iterator]
+                for iterator in range(0, num_lucky_stars):
+                    line.lucky_stars[iterator] = most_probable[1][iterator]
+                # Use alternate numbers for second line
+                if num_lines_it == 1:
+                    line.main_balls[4] = most_probable[0][num_main_balls]
+                    line.lucky_stars[1] = most_probable[1][num_lucky_stars]
+                line.sort()
+                ticket.lines.append(line)
+        else:
+            print("ERROR probable is empty")
         return ticket
 
 
@@ -286,20 +291,21 @@ class LotteryStatsGenerationMethodEuro1:
         """ Sets internal stores of information from the given results in the
             given date range.
         """
-        #    def ball_stats_in_date_range(results, date_from, date_to):
-        # """ Returns the statistics about the balls for all ball sets for the given
-        #    range.
-        # """
-        logging.debug("Ball frequency from", date_from, "to", date_to)
-        balls = results.get_lottery().get_balls_in_date_range(date_from, date_to)
-        sets_of_balls = results.get_lottery().get_sets_of_balls()
+        logging.debug("analyse1:", date_range)
+        # A date range is (most_recent, short_range, long_range)
+        date_from = date_range[0]
+        date_to = date_range[2]  # FIXME What about short_range???
+        balls = lottery_results.get_lottery().get_balls_in_date_range(date_from,
+                                                                      date_to)
+        sets_of_balls = lottery_results.get_lottery().get_sets_of_balls()
         iterator = 0
         ball_stats = []
         logging.info(balls)
         for ball_set in sets_of_balls:
             logging.debug("Set of balls:", ball_set.get_name())
             num_balls = ball_set.get_num_balls()
-            str_log = "NUM BALLS " + str(num_balls) + " iterator " + str(iterator)
+            str_log = "NUM BALLS " + str(num_balls) + " iterator " + \
+                str(iterator)
             logging.info(str_log)
             frequency_of_balls = frequency(num_balls, balls[iterator])
             logging.debug(frequency_of_balls)
@@ -311,25 +317,28 @@ class LotteryStatsGenerationMethodEuro1:
             least_likely = least_common_balls(frequency_of_balls, num_likley)
             logging.debug("Least likely", least_likely)
             iterator += 1
-            ball_stats.append(frequency_of_balls)
-            ball_stats.append(most_likely)
-            ball_stats.append(least_likely)
-        # TODO FIX THE ABOVE TO SET THESE
-        logger.info("TODO")
-        self._main_balls_most_probable = []
-        self._main_balls_least_probable = []
-        self._lucky_stars_most_probable = []
-        self._lucky_stars_least_probable = []
+            if "main" == ball_set.get_name():
+                self._main_balls_most_probable = most_likely
+                self._main_balls_least_probable = least_likely
+            else:
+                self._lucky_stars_most_probable = most_likely
+                self._lucky_stars_least_probable = least_likely
 
     def get_most_probable(self):
-        """ Returns a tuple of (main ball_stats, lucky_star_stats) """
-        # NOTE Must return list of at least 6 and at least 3 for ticket generation methods to work.
-        return (self._main_balls_most_probable, self._lucky_stars_most_probable)
+        """ Returns a tuple of (main ball_stats, lucky_star_stats).
+            NOTE: Must return list of at least 6 and at least 3 for ticket
+            generation methods to work.
+        """
+        return (self._main_balls_most_probable,
+                self._lucky_stars_most_probable)
 
     def get_least_probable(self):
-        """ Returns a tuple of (main ball_stats, lucky_star_stats) """
-        # NOTE Must return list of at least 6 and at least 3 for ticket generation methods to work.
-        return (self._main_balls_least_probable, self._lucky_stars_least_probable)
+        """ Returns a tuple of (main ball_stats, lucky_star_stats).
+            NOTE: Must return list of at least 6 and at least 3 for ticket
+            generation methods to work.
+        """
+        return (self._main_balls_least_probable,
+                self._lucky_stars_least_probable)
 
 
 class LotteryStatsGenerationMethodEuro2:
@@ -337,21 +346,55 @@ class LotteryStatsGenerationMethodEuro2:
 
     def __init__(self):
         LotteryTicketGenerationMethod.__init__(self, "Euro2")
-        self._most_probable = []
+        self._main_balls_most_probable = []
+        self._main_balls_least_probable = []
+        self._lucky_stars_most_probable = []
+        self._lucky_stars_least_probable = []
 
     def analyse(self, lottery_results, date_range):
         """ """
-        logger.info("TODO")
+        logging.debug("analyse2:", date_range)
+        # A date range is (most_recent, short_range, long_range)
+        date_from = date_range[0]
+        date_to = date_range[2]  # FIXME What about short_range???
+        balls = \
+            lottery_results.get_lottery().get_balls_in_date_range(date_from,
+                                                                  date_to)
+        sets_of_balls = lottery_results.get_lottery().get_sets_of_balls()
+        iterator = 0
+        ball_stats = []
+        logging.info(balls)
+        for ball_set in sets_of_balls:
+            logging.debug("Set of balls:", ball_set.get_name())
+            num_balls = ball_set.get_num_balls()
+            str_log = "NUM BALLS " + str(num_balls) + " iterator " + \
+                str(iterator)
+            logging.info(str_log)
+            frequency_of_balls = frequency(num_balls, balls[iterator])
+            logging.debug(frequency_of_balls)
+            if "main" == ball_set.get_name():
+                num_likley = 6
+                self._main_balls_least_probable = least_common_balls(frequency_of_balls, num_likley)
+            else:
+                num_likley = 3
+                self._lucky_stars_least_probable = least_common_balls(frequency_of_balls, num_likley)
+            iterator += 1
 
     def get_most_probable(self):
-        """ Returns a tuple of (main ball_stats, lucky_star_stats) """
-        # NOTE Must return list of at least 6 and at least 3 for ticket generation methods to work.
-        return ([1, 2, 3, 4, 5, 6], [1, 2, 3])
+        """ Returns a tuple of (main ball_stats, lucky_star_stats).
+            NOTE: Must return list of at least 6 and at least 3 for ticket
+            generation methods to work.
+        """
+        return (self._main_balls_most_probable,
+                self._lucky_stars_most_probable)
 
     def get_least_probable(self):
-        """ Returns a tuple of (main ball_stats, lucky_star_stats) """
-        # NOTE Must return list of at least 6 and at least 3 for ticket generation methods to work.
-        return ([1, 2, 3, 4, 5, 6], [1, 2, 3])
+        """ Returns a tuple of (main ball_stats, lucky_star_stats).
+            NOTE: Must return list of at least 6 and at least 3 for ticket
+            generation methods to work.
+        """
+        return (self._main_balls_least_probable,
+                self._lucky_stars_least_probable)
 
 
 class LotteryEuroMillions(Lottery):
@@ -413,7 +456,7 @@ class LotteryEuroMillions(Lottery):
         """ Generates a new ticket with the given number of lines. """
         ticket = LotteryTicketEuroMillions(next_lottery_date)
         ticket.generate_lines(num_lines, ball_stats)
-        # Add lines here
+        # FIXME Add lines here
         return ticket
 
     # FIXME This is identical to Lotto except for lottery_draw.line.
