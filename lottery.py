@@ -3,7 +3,6 @@
 """ Generic lottery class """
 import datetime
 import logging
-import sys
 
 from lottery_utils import SetOfBalls
 

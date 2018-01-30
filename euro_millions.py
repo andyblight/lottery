@@ -102,12 +102,6 @@ class EuroMillionsLine:
                 self._is_winner(main_matched, lucky_matched,), matching_str)
 
 
-class LotteryTicketEuroMillions(LotteryTicket):
-    """ TODO """
-
-    def __init__(self, draw_date):
-        self._draw_date = draw_date
-
 
 class EuroMillionsDraw(LotteryDraw):
 
@@ -291,7 +285,7 @@ class LotteryStatsGenerationMethodEuro1:
         """ Sets internal stores of information from the given results in the
             given date range.
         """
-        logging.debug("analyse1:", date_range)
+        #logging.debug("analyse1: ", date_range)
         # A date range is (most_recent, short_range, long_range)
         date_from = date_range[0]
         date_to = date_range[2]  # FIXME What about short_range???
@@ -302,7 +296,7 @@ class LotteryStatsGenerationMethodEuro1:
         ball_stats = []
         logging.info(balls)
         for ball_set in sets_of_balls:
-            logging.debug("Set of balls:", ball_set.get_name())
+            logging.debug("Set of balls: %s", ball_set.get_name())
             num_balls = ball_set.get_num_balls()
             str_log = "NUM BALLS " + str(num_balls) + " iterator " + \
                 str(iterator)
@@ -453,9 +447,10 @@ class LotteryEuroMillions(Lottery):
         return (main_balls, lucky_stars)
 
     def generate_ticket(self, next_lottery_date, num_lines, ball_stats):
-        """ Generates a new ticket with the given number of lines. """
-        ticket = LotteryTicketEuroMillions(next_lottery_date)
-        ticket.generate_lines(num_lines, ball_stats)
+        """ Generates a new tic0ket with the given number of lines. """
+        ticket = LotteryTicket(next_lottery_date)
+        # FIXME This functio n  is probably dead. 
+        # ticket.generate_lines(num_lines, ball_stats)
         # FIXME Add lines here
         return ticket
 
