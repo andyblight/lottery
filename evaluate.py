@@ -57,13 +57,13 @@ def generate_date_ranges(results):
     long_range_offset = 40  # 2 draws per week * 20 weeks
     # Generate list of lottery dates
     lottery_dates = []
-    results_range = results.get_lottery().get_date_range()
-    date_iterator = results.get_lottery().get_next_lottery_date()
-    logging.info('Generating dates from ' + date_iterator.isoformat() +
-                 ' to ' + results_range[1].isoformat())
-    while date_iterator < results_range[1]:
-        lottery_dates.append(date_iterator)
-        date_iterator = results.get_lottery().get_next_lottery_date()
+    results_full_range = results.get_lottery().get_date_range()
+    logging.info('Generating dates from ' + results_full_range[0].isoformat() +
+                 ' to ' + results_full_range[1].isoformat())
+    draws_in_range = results.get_lottery().get_draws_in_date_range(results_full_range[0],
+                                                                   results_full_range[1])
+    for lottery_draw in draws_in_range:
+        lottery_dates.append(lottery_draw.draw_date)
     # Generate date tuples
     end_index = len(lottery_dates) - long_range_offset
     for i in range(end_index):

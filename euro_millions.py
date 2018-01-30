@@ -3,6 +3,7 @@
 import calendar
 import datetime
 import logging
+import sys
 
 from lottery import Lottery, LotteryTicket, LotteryDraw, LotteryParser, \
     LotteryTicketGenerationMethod, LotteryStatsGenerationMethod
@@ -142,9 +143,9 @@ class LotteryTicketGenerationMethodEuro1:
             num_lines = 2
         ticket = LotteryTicket(draw_date)
         # Debug
-        logger.info("TGM1: " + str(num_lines))
+        logger.info("TGM1: %d", num_lines)
         most_probable = ball_stats.get_most_probable()
-        if len(most_probable[0]) != 0 and len(most_probable[1]) != 0:
+        if most_probable[0]and most_probable[1]:
             for num_lines_it in range(0, num_lines):
                 line = EuroMillionsLine()
                 num_main_balls = len(line.main_balls)
@@ -218,8 +219,9 @@ class LotteryParserEuromillionsNL(LotteryParser):
         return str(row[6]) == 'Lucky Star 1'
 
     @staticmethod
-    def parse_row(row, draw):
+    def parse_row(row):
         """ Read row data and copy into EuroMillionsCSV class """
+        draw = EuroMillionsDraw()
         draw.draw_date = convert_str_to_date(str(row[0]))
         line = EuroMillionsLine()
         line.main_balls[0] = int(row[1])
@@ -230,11 +232,13 @@ class LotteryParserEuromillionsNL(LotteryParser):
         line.lucky_stars[0] = int(row[6])
         line.lucky_stars[1] = int(row[7])
         draw.line = line
+        return draw
 
 
 class LotteryParserEuromillionsMW(LotteryParser):
-
-    """ Parses the CSV data from http://lottery.merseyworld.com/Euro/Winning_index.html. """
+    """ Parses the CSV data from
+        http://lottery.merseyworld.com/Euro/Winning_index.html.
+    """
 
     def __init__(self):
         """ Initialises the class. """
@@ -424,7 +428,7 @@ class LotteryEuroMillions(Lottery):
             self._parser.parse_row(row, draw)
         else:
             print("ERROR: parser is", self._parser)
-            sys.exit()
+            sys.exit(1)
         self.results.append(draw)
         self._num_draws += 1
 
@@ -449,7 +453,7 @@ class LotteryEuroMillions(Lottery):
     def generate_ticket(self, next_lottery_date, num_lines, ball_stats):
         """ Generates a new tic0ket with the given number of lines. """
         ticket = LotteryTicket(next_lottery_date)
-        # FIXME This functio n  is probably dead. 
+        # FIXME This functio n  is probably dead.
         # ticket.generate_lines(num_lines, ball_stats)
         # FIXME Add lines here
         return ticket

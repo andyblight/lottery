@@ -39,16 +39,17 @@ class LotteryParser:
         print("ERROR: Default check header called")
         return False
 
-    def parse_row(self):
+    @staticmethod
+    def parse_row(row):
         """ Returns empty draw. """
-        return LotteryDraw()
+        draw = LotteryDraw()
+        return draw
 
 
 class LotteryTicket:
 
     """ Represents a lottery ticket.
-    Defines the API for a lottery ticket.
-    Implements all common operations for a lottery ticket.
+        Implements all common operations for a lottery ticket.
     """
 
     def __init__(self, draw_date):
@@ -56,7 +57,7 @@ class LotteryTicket:
         self._draw_date = draw_date
         self.lines = []
 
-    def print_ticket(self, printout):
+    def print(self, printout):
         """ Prints the ticket. """
         logger.info('Called print_ticket')
         for line in self.lines:
@@ -71,7 +72,7 @@ class LotteryTicketGenerationMethod:
     """ Ticket generation method base class """
 
     def __init__(self, name):
-        self.name = ""
+        self.name = name
 
     def generate(self, draw_date, num_lines, ball_stats):
         """ """
@@ -100,10 +101,9 @@ class LotteryStatsGenerationMethod:
 
 class Lottery:
 
-    """
-    The base class for all lotteries.
-    This class implements the functions for a single set of balls (the most
-    common type of lottery).
+    """ The base class for all lotteries.
+        This class implements the functions for a single set of balls (the most
+        common type of lottery).
     """
 
     def __init__(self):
@@ -125,14 +125,14 @@ class Lottery:
 
     def check_header(self, row):
         """ Returns True if the header row is for this lottery. """
-        logger.info("Called Lottery ch. Num parsers " +
-                    str(len(self._available_parsers)))
+        logger.info("Called Lottery ch. Num parsers %d",
+                    len(self._available_parsers))
         result = False
         for parser in self._available_parsers:
-            logger.info("Checking parser " + parser.name)
+            logger.info("Checking parser %s", parser.name)
             if parser.check_header(row):
                 self._parser = parser
-                logger.info("Selected " + parser.name)
+                logger.info("Selected %s", parser.name)
                 result = True
                 break
         return result
@@ -154,8 +154,9 @@ class Lottery:
 
     def get_balls_in_date_range(self, date_from, date_to):
         """ Returns a tuple containing the sets of balls in the give date
-        range. """
-        logger.info("TODO")
+            range. 
+        """
+        logger.debug("TODO, %s, %s", date_from, date_to)
         return 0
 
     def get_draws_in_date_range(self, date_from, date_to):
@@ -170,29 +171,11 @@ class Lottery:
         return lottery_draws
 
     def get_ticket_generation_methods(self):
-        """ Returns the list of ticket generation methods owned by this class. """
+        """ Returns the list of ticket generation methods owned by this class. 
+        """
         return self._ticket_generation_methods
 
     def get_stats_generation_methods(self):
-        """ Returns the list of ticket generation methods owned by this class. """
-        return self._stats_generation_methods
-
-    def get_first_lottery_date(self):
-        """ Returns the first lottery date.
-        Resets the next lottery date to the first lottery date.
+        """ Returns the list of ticket generation methods owned by this class. 
         """
-        self._get_date_index = 0
-        return self.results[0].draw_date
-
-    def get_next_lottery_date(self):
-        """ Returns the next lottery date. """
-        result = datetime.date(3000, 1, 1)  # Return out of range date!
-        self._get_date_index += 1
-        if self._get_date_index < self._num_draws:
-            result = self.results[self._get_date_index].draw_date
-        return result
-
-    @staticmethod
-    def print_draw(lottery_draw):
-        """ Print the given draw. """
-        logger.info('Draw: ' + lottery_draw.as_string())
+        return self._stats_generation_methods
