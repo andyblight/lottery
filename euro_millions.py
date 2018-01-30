@@ -307,9 +307,9 @@ class LotteryStatsGenerationMethodEuro1:
             if num_balls > 20:
                 num_likley = 6
             most_likely = most_common_balls(frequency_of_balls, num_likley)
-            logging.debug("Most likely", most_likely)
+            #logging.debug("Most likely", most_likely)
             least_likely = least_common_balls(frequency_of_balls, num_likley)
-            logging.debug("Least likely", least_likely)
+            #logging.debug("Least likely", least_likely)
             iterator += 1
             if "main" == ball_set.get_name():
                 self._main_balls_most_probable = most_likely
@@ -347,7 +347,7 @@ class LotteryStatsGenerationMethodEuro2:
 
     def analyse(self, lottery_results, date_range):
         """ """
-        logging.debug("analyse2:", date_range)
+        #logging.debug("analyse2:", date_range)
         # A date range is (most_recent, short_range, long_range)
         date_from = date_range[0]
         date_to = date_range[2]  # FIXME What about short_range???
@@ -359,7 +359,7 @@ class LotteryStatsGenerationMethodEuro2:
         ball_stats = []
         logging.info(balls)
         for ball_set in sets_of_balls:
-            logging.debug("Set of balls:", ball_set.get_name())
+            #logging.debug("Set of balls:", ball_set.get_name())
             num_balls = ball_set.get_num_balls()
             str_log = "NUM BALLS " + str(num_balls) + " iterator " + \
                 str(iterator)
