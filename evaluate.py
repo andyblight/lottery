@@ -51,7 +51,6 @@ def generate_date_ranges(results):
     The number of tuples returned depends on the number of results given.
     """
     date_ranges = []
-    excluded_draws = 4
     # FIXME Each lottery may need different settings.
     short_range_offset = 4  # 2 draws per week * 2 weeks
     long_range_offset = 40  # 2 draws per week * 20 weeks
@@ -92,7 +91,7 @@ def setup_logging(args):
 
 def log_results_info(results):
     """ Logs information about the results. """
-    logging.info("Lottery name:" + results.get_lottery().get_name())
+    logging.info("Lottery name: %s", results.get_lottery().get_name())
     date_range = results.get_lottery().get_date_range()
     logging.info("Results in file from " + date_range[0].isoformat() + " to " +
                  date_range[1].isoformat())

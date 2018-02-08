@@ -12,7 +12,7 @@ at your own risk.
 Create new ticket generation class.
  * Create several different ticket generation methods to evaluate using the
    scores.
- 
+
 Create more analysis tools to improve ticket generation.
  * Use each generator to create more than one line.
  * Things to try:
@@ -27,7 +27,7 @@ Stars and Lotto.
 
 Looking at this problem from the other direction.
 - Generate stats on a block of results.
-- Use the results of the next draw to evaluate the stats generation methods. 
+- Use the results of the next draw to evaluate the stats generation methods.
 - Use the results of the evaluation to improve the stats generation methods.
 
 
@@ -41,5 +41,18 @@ Needs something clever to get the data.  wget doesn't work properly.
 
 
 ## Bugs
-None.
+20180131 Lots.  Nothing works just now.
+Fix ERROR probable ...
+ball_stats.get_most_probable() returning empty.
+
+Look at the way date ranges are generated.  For the EuroMillions lottery, the
+date ranges may need to be generated per ball set, so generating a range of
+dates first thing may be wrong.  Certainly, I need to set a start date, so I
+can use past data sets to test prediction methods.  How far to go back
+depends on each lottery and each set of balls.
+
+
+
+
+
 

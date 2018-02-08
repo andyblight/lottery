@@ -215,6 +215,7 @@ class LotteryParserLottoNL(LotteryParser):
         draw.bonus_ball = int(row[7])
         draw.ball_set = int(row[8])
         draw.machine = row[9]
+        return draw
 
 
 class LotteryParserLottoMW(LotteryParser):
@@ -227,7 +228,7 @@ class LotteryParserLottoMW(LotteryParser):
         self.name = 'Lotto MerseyWorld'
 
     def check_header(self, row):
-        """ Returns True if this is merseyworld lotto. 
+        """ Returns True if this is merseyworld lotto.
         Unique values are Draw number and N1. """
         logger.info(self.name + " '" + row[0] + "'" + row[5] + "'")
         return row[0] == 'No.' and row[5] == ' N1'
@@ -258,7 +259,7 @@ class LotteryParserLottoMW(LotteryParser):
         draw.jackpot_wins = int(row[13])
         draw.machine = row[14]
         draw.ball_set = int(row[15])
-
+        return draw
 
 class LotteryLotto(Lottery):
 
@@ -279,14 +280,14 @@ class LotteryLotto(Lottery):
     def parse_row(self, row):
         """ Read row data and copy into LottoCSV class.
         """
-        draw = LottoDraw()
         if self._parser:
-            self._parser.parse_row(row, draw)
+            draw = LottoDraw()
+            draw = self._parser.parse_row(row, draw)
+            self.results.append(draw)
+            self._num_draws += 1
         else:
             print("ERROR: parser is", self._parser)
             sys.exit()
-        self.results.append(draw)
-        self._num_draws += 1
 
     def get_sets_of_balls(self):
         """ Returns a list containing all sets of ball info for this lottery.
@@ -296,7 +297,7 @@ class LotteryLotto(Lottery):
     def get_balls_in_date_range(self, date_from, date_to):
         """ Return a tuple containing the sets of balls in the give date
             range.
-            This info is used for frequency analysis.  The bonus ball is 
+            This info is used for frequency analysis.  The bonus ball is
             selected using the same machine and is the last one selected.
             Therefore there is nothing special about the bonus ball.
         """

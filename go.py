@@ -72,7 +72,7 @@ def ball_stats_in_date_range(results, date_from, date_to):
     """ Returns the statistics about the balls for all ball sets for the given
         range.
     """
-    logging.debug("Ball frequency from", date_from, "to", date_to)
+    logging.debug("bsidr", date_from, "to", date_to)
     balls = results.get_lottery().get_balls_in_date_range(date_from, date_to)
     sets_of_balls = results.get_lottery().get_sets_of_balls()
     iterator = 0
