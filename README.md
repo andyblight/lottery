@@ -41,9 +41,13 @@ Needs something clever to get the data.  wget doesn't work properly.
 
 
 ## Bugs
+Both stats methods are identical!!!
+20180214 Tickets beign generated but not scored.
+Fixed stats generation problem.
 20180131 Lots.  Nothing works just now.
 Fix ERROR probable ...
 ball_stats.get_most_probable() returning empty.
+
 
 Look at the way date ranges are generated.  For the EuroMillions lottery, the
 date ranges may need to be generated per ball set, so generating a range of

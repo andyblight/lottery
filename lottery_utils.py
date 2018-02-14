@@ -47,8 +47,9 @@ def frequency(max_num, ball_list):
 
 
 def most_common_balls(ball_set_in, max_balls):
-    """ Select most common balls. """
-    # expected = [(9, 12), (2, 10), (3, 10)]
+    """ Select most common balls.
+        Returns something like this [(9, 12), (2, 10), (3, 10)] when max_balls = 3.
+    """
     # print("max_balls", max_balls)
     # Copy the ball set to stop the given ball set being modified
     ball_set = copy.deepcopy(ball_set_in)

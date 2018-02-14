@@ -113,12 +113,13 @@ def generate_and_evaluate(lottery_results):
             lottery_results.get_lottery().get_stats_generation_methods()
         print("gae", stats_methods)
         for stats_method in stats_methods:
-            logging.debug("gae: " + stats_method.name)
+            logging.debug("gae: stats %s", stats_method.name)
             stats_method.analyse(lottery_results, date_range)
             num_lines = 4  ## FIXME HACK!!!!
             ticket_methods = \
                 lottery_results.get_lottery().get_ticket_generation_methods()
             for ticket_method in ticket_methods:
+                logging.debug("gae: ticket %s", ticket_method.name)
                 ticket = ticket_method.generate(date_range[0], num_lines,
                                                 stats_method)
                 results = evaluate_ticket(ticket_method, ticket,
