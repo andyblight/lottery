@@ -7,6 +7,7 @@ effectiveness of the generation methods by comparing against future results.
 """
 
 import argparse
+import datetime
 import logging
 import os
 
@@ -16,11 +17,11 @@ from lottery_results import LotteryResults
 class EvaluationResult:
     """ Info about how each method performed. """
 
-    def __init__(self, name="", score=0, loop=0):
-        self.name = name
+    def __init__(self, stats_method="", ticket_method="", draw=(), score=()):
+        self.stats_method = stats_method
+        self.ticket_method = ticket_method
+        self.draw = draw
         self.score = score
-        self.loop = loop
-
 
 def handle_parameters():
     """ Process the command line arguments.  Returns the values of the
@@ -74,17 +75,29 @@ def generate_date_ranges(results):
     return date_ranges
 
 
-def evaluate_ticket(method, ticket, lottery_results):
+def evaluate_ticket(stats_method, ticket_method, ticket, lottery_results):
     """ Evaluates one ticket against the next four draws. """
-    eval_result = EvaluationResult(method.name, 1, 0)
-    return eval_result
+    eval_results = []
+    start_date = ticket.draw_date
+    # FIXME Hardcoded 4 weeks
+    end_date = start_date + datetime.timedelta(weeks=4)
+    four_weeks_results = lottery_results.get_lottery().get_draws_in_date_range(start_date, end_date)
+    logging.debug("et: printing draws")
+    for draw in four_weeks_results:
+        logging.debug(draw.draw_date)
+        for line in ticket.lines:
+            score = line.score(draw.line)
+            logging.debug("et: winner %s", score[2])
+            eval_result = EvaluationResult(stats_method, ticket_method.name, draw, score)
+            eval_results.append(eval_result)
+    return eval_results
 
 
 def setup_logging(args):
     """ Set up logging. """
     split_filename = os.path.splitext(args.filename)
     log_filename = split_filename[0] + '-eval.log'
-    logging.basicConfig(filename=log_filename, level=logging.DEBUG)
+    logging.basicConfig(filename=log_filename, filemode='w', level=logging.DEBUG)
     logging.info('Started')
     logging.info(args)
 
@@ -109,34 +122,50 @@ def generate_and_evaluate(lottery_results):
     date_ranges = generate_date_ranges(lottery_results)
     for date_range in date_ranges:
         eval_results = []
-        stats_methods = \
-            lottery_results.get_lottery().get_stats_generation_methods()
-        print("gae", stats_methods)
+        stats_methods = lottery_results.get_lottery().get_stats_generation_methods()
+        # print("gae", stats_methods)
         for stats_method in stats_methods:
             logging.debug("gae: stats %s", stats_method.name)
             stats_method.analyse(lottery_results, date_range)
             num_lines = 4  ## FIXME HACK!!!!
-            ticket_methods = \
-                lottery_results.get_lottery().get_ticket_generation_methods()
+            ticket_methods = lottery_results.get_lottery().get_ticket_generation_methods()
             for ticket_method in ticket_methods:
                 logging.debug("gae: ticket %s", ticket_method.name)
-                ticket = ticket_method.generate(date_range[0], num_lines,
-                                                stats_method)
-                results = evaluate_ticket(ticket_method, ticket,
-                                          lottery_results)
+                ticket = ticket_method.generate(date_range[0], num_lines, stats_method)
+                results = evaluate_ticket(stats_method, ticket_method, ticket, lottery_results)
                 eval_results.append(results)
-        evaluation_results.append(("range", range, eval_results))
+        evaluation_results.append((range, eval_results))
     return evaluation_results
 
 
-def print_evaluation_results(evaluation_results):
-    """ Print out the evaluation results. """
+def collate_evaluation_results(evaluation_results):
+    """ Collate the evaluation results into results for each combination of
+        stats and ticket methods.
+    """
+    method_combination_scores = {} # Each entry: key = stats method + ticket method, (number of wins, biggest win (num balls))
     for eval_results in evaluation_results:
-        logging.info("Date range: " + eval_results[0])
-        logging.info("loop: " + str(eval_results[1]))
-        for method in eval_results[2]:
-            logging.info("  Method name: " + method.name)
-            logging.info("  Score: " + str(method.score))
+        logging.info("wer: Date range: %s", eval_results[0])
+        for results in eval_results[1]:
+            for eval_result in results:
+                key = eval_result.stats_method.name
+                key += eval_result.ticket_method
+                # eval_result.draw
+                print(key, eval_result.score)
+                if not method_combination_scores.get(key):
+                    method_combination_scores[key] = [0, 0, 0]
+                if eval_result.score[2]:
+                    method_combination_scores[key][0] += 1
+                    print("Added winner")
+    return method_combination_scores
+
+
+def print_collated_results(collated_results):
+    """ Print the collated results. """
+    print("")
+    print("Collated results")
+    ## AJB dict iterator
+    for key, score in collated_results.items():
+        print(key, score)
 
 
 def run():
@@ -147,7 +176,8 @@ def run():
     results.load_file(args.filename)
     log_results_info(results)
     evaluation_results = generate_and_evaluate(results)
-    print_evaluation_results(evaluation_results)
+    collated_results = collate_evaluation_results(evaluation_results)
+    print_collated_results(collated_results)
 
 
 if __name__ == "__main__":

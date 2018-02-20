@@ -319,9 +319,9 @@ class LotteryStatsGenerationMethodEuro1(LotteryStatsGenerationMethod):
             if num_balls > 20:
                 num_likley = 6
             most_likely = most_common_balls(frequency_of_balls, num_likley)
-            print("Most likely", most_likely)
+            # print("Most likely", most_likely)
             least_likely = least_common_balls(frequency_of_balls, num_likley)
-            print("Least likely", least_likely)
+            # print("Least likely", least_likely)
             if ball_set.get_name() == "main":
                 self._main_balls_most_probable = most_likely
                 self._main_balls_least_probable = least_likely
@@ -470,22 +470,3 @@ class LotteryEuroMillions(Lottery):
                 lucky_stars.append(lottery_draw.line.lucky_stars[1])
         return (main_balls, lucky_stars)
 
-    # FIXME This is identical to Lotto except for lottery_draw.line.
-    @staticmethod
-    def test_draw_against_ticket(lottery_draw, ticket):
-        """ Prints out the number of matches for each line of the given ticket
-            against the given draw.
-        """
-        best_score = (0, 0, False, [])
-        winning_lines = []
-
-        for line in ticket.lines:
-            score = line.score(lottery_draw.line)
-            LOGGER.info(score)
-            if score == best_score:
-                winning_lines.append(line)
-            if score[0] > best_score[0] or score[1] > best_score[1]:
-                best_score = score
-                winning_lines.clear()
-                winning_lines.append(line)
-        return (best_score, winning_lines, lottery_draw)

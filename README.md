@@ -42,6 +42,10 @@ Needs something clever to get the data.  wget doesn't work properly.
 
 ## Bugs
 Both stats methods are identical!!!
+Implementing evaluate_ticket()
+ticket needs to be a list of (Line, TGM.name , TSGM.name, Score) so results can be traced back to genreation methods.
+
+Scores of tickets are all = 1 FIXED.
 20180214 Tickets beign generated but not scored.
 Fixed stats generation problem.
 20180131 Lots.  Nothing works just now.
