@@ -153,9 +153,14 @@ def collate_evaluation_results(evaluation_results):
                 print(key, eval_result.score)
                 if not method_combination_scores.get(key):
                     method_combination_scores[key] = [0, 0, 0]
-                if eval_result.score[2]:
-                    method_combination_scores[key][0] += 1
-                    print("Added winner")
+                # Biggest winner (number of matched balls)
+                if eval_result.score[0] > method_combination_scores[key][0]:
+                    method_combination_scores[key][0] = eval_result.score[0]
+                    print("Inc biggest winner")
+                # Count of winners
+                if eval_result.score[1]:
+                    method_combination_scores[key][1] += 1
+                    print("Inc winner count")
     return method_combination_scores
 
 

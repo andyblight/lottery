@@ -82,10 +82,9 @@ class EuroMillionsLine:
 
     def score(self, line):
         """ Returns a tuple containing:
-        0 - count of main ball matches
-        1 - count of lucky star matches
-        2 - True if the line is a winner.
-        3 - string of the line with the matching balls shown
+        0 - count of main plus lucky star matches
+        1 - True if the line is a winner.
+        2 - string of the line with the matching balls shown
         """
         main_matched = 0
         lucky_matched = 0
@@ -100,7 +99,7 @@ class EuroMillionsLine:
                 lucky_matched += 1
                 matching_str = self._mark_ball(
                     matching_str, -1, iterator)
-        return (main_matched, lucky_matched,
+        return (main_matched + lucky_matched,
                 self._is_winner(main_matched, lucky_matched,), matching_str)
 
 
