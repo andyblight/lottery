@@ -142,7 +142,9 @@ def collate_evaluation_results(evaluation_results):
     """ Collate the evaluation results into results for each combination of
         stats and ticket methods.
     """
-    method_combination_scores = {} # Each entry: key = stats method + ticket method, (number of wins, biggest win (num balls))
+    # Each entry: key = stats method + ticket method, value = (number of wins, biggest win,
+    # [2 ball wins, 3 ball wins, 4 ball wins,...])
+    method_combination_scores = {}
     for eval_results in evaluation_results:
         logging.info("wer: Date range: %s", eval_results[0])
         for results in eval_results[1]:
@@ -151,16 +153,19 @@ def collate_evaluation_results(evaluation_results):
                 key += eval_result.ticket_method
                 # eval_result.draw
                 print(key, eval_result.score)
+                # Add new entry if key not found.
                 if not method_combination_scores.get(key):
-                    method_combination_scores[key] = [0, 0, 0]
-                # Biggest winner (number of matched balls)
-                if eval_result.score[0] > method_combination_scores[key][0]:
-                    method_combination_scores[key][0] = eval_result.score[0]
-                    print("Inc biggest winner")
+                    method_combination_scores[key] = [0, 0, []]
                 # Count of winners
                 if eval_result.score[1]:
-                    method_combination_scores[key][1] += 1
+                    method_combination_scores[key][0] += 1
                     print("Inc winner count")
+                    # Biggest winner (number of matched balls)
+                    if eval_result.score[0] > method_combination_scores[key][1]:
+                        method_combination_scores[key][1] = eval_result.score[0]
+                        print("Inc biggest winner")
+                    # Add to list of number of winning balls.
+                    method_combination_scores[key][2].append(eval_result.score[0])
     return method_combination_scores
 
 
@@ -168,6 +173,7 @@ def print_collated_results(collated_results):
     """ Print the collated results. """
     print("")
     print("Collated results")
+    print("stats method + ticket method, total number of wins, num of balls of biggest win, [num winning balls, ...])")
     ## AJB dict iterator
     for key, score in collated_results.items():
         print(key, score)

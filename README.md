@@ -6,9 +6,8 @@ be used to improve the chances of winning.
 DISCLAIMER: I take no responsibility whatsoever for the use of this code.  Use
 at your own risk.
 
-
-
 ## TODO
+
 Create new ticket generation class.
  * Create several different ticket generation methods to evaluate using the
    scores.
@@ -30,20 +29,16 @@ Looking at this problem from the other direction.
 - Use the results of the next draw to evaluate the stats generation methods.
 - Use the results of the evaluation to improve the stats generation methods.
 
-
-
 ## Future
+
 Read merseyworld.com website data using another app to update the CSV files.
 Pages are:
 http://lottery.merseyworld.com/cgi-bin/lottery?days=2&Machine=Z&Ballset=0&order=1&show=1&year=-1&display=CSV
 http://lottery.merseyworld.com/cgi-bin/lottery?days=19&Machine=Z&Ballset=0&order=1&show=1&year=-1&display=CSV
 Needs something clever to get the data.  wget doesn't work properly.
 
-
 ## Bugs
 Both stats methods are identical!!!
-Implementing evaluate_ticket()
-ticket needs to be a list of (Line, TGM.name , TSGM.name, Score) so results can be traced back to genreation methods.
 
 Scores of tickets are all = 1 FIXED.
 20180214 Tickets beign generated but not scored.
@@ -51,7 +46,7 @@ Fixed stats generation problem.
 20180131 Lots.  Nothing works just now.
 Fix ERROR probable ...
 ball_stats.get_most_probable() returning empty.
-
+Collated results work. 
 
 Look at the way date ranges are generated.  For the EuroMillions lottery, the
 date ranges may need to be generated per ball set, so generating a range of

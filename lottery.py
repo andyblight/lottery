@@ -55,6 +55,8 @@ class LotteryTicket:
     def __init__(self, draw_date):
         # LOGGER.info("Set date EM", draw_date)
         self.draw_date = draw_date
+        self.stats_generation_name = ""
+        self.ticket_generation_name = ""
         self.lines = []
 
     def print(self, printout):
