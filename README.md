@@ -30,17 +30,14 @@ Looking at this problem from the other direction.
 * Use the results of the next draw to evaluate the stats generation methods.
 * Use the results of the evaluation to improve the stats generation methods.
 
+In progress
+
 Write updater utility that fetches the Merseyworld data.
 Use Python Beautiful Soup to scrape the web site.
 
-
 ## Future
 
-Read merseyworld.com website data using another app to update the CSV files.
-Pages are:
-http://lottery.merseyworld.com/cgi-bin/lottery?days=2&Machine=Z&Ballset=0&order=1&show=1&year=-1&display=CSV
-http://lottery.merseyworld.com/cgi-bin/lottery?days=20&Machine=Z&Ballset=0&order=0&show=1&year=-1&display=CSV
-Needs something clever to get the data.  wget doesn't work properly.
+TBD
 
 ## Bugs
 
