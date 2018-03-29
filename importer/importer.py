@@ -8,6 +8,7 @@ http://lottery.merseyworld.com/cgi-bin/lottery?days=20&Machine=Z&Ballset=0&order
 """
 
 import argparse
+import csv
 import logging
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
@@ -18,6 +19,21 @@ LOTTO = "days=2&Machine=Z&Ballset=0&order=0&show=1&year=-1&display=CSV"
 LOTTO_URL = MERSEYWORLD_BASE_URL + LOTTO
 EUROMILLIONS = "days=20&Machine=Z&Ballset=0&order=0&show=1&year=-1&display=CSV"
 EUROMILLIONS_URL = MERSEYWORLD_BASE_URL + EUROMILLIONS
+
+
+
+def write_csv_file(filename, soup_data):
+    """ Write soup data to CSV file.  """
+    with open(filename, newline='') as csvfile:
+        file_writer = csv.writer(csvfile, delimiter=',')
+        first_line = True
+        for line in soup_data:
+            # TODO add parsing
+            if first_line:
+                file_writer.write_header(line)
+                first_line = False
+            else:
+                file_writer.write_row(line)
 
 
 def handle_parameters():
@@ -42,13 +58,10 @@ def fetch_and_process(url):
     """ Todo """
     logging.info("Fetching info from: %s", url)
     content = urlopen(url).read()
-    soup = BeautifulSoup(content, "lxml")
-    print(soup.prettify())
-    logging.info(soup.prettify())
-    # TODO
-    # Write to CSV file.
-    # Append results to one big file or keep for a year?
-
+    soup_data = BeautifulSoup(content, "lxml")
+    logging.info(soup_data.prettify())
+    # FiXME hardcoded file name
+    write_csv_file("filename.csv", soup_data)
 
 def run():
     """ Todo """

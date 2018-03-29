@@ -1,5 +1,7 @@
 #!/usr/bin/python3.6
-""" STUFF!!! """
+""" Provides methods for queriing data loaded from a CSV file of lottery
+    results.
+"""
 
 import csv
 import logging
@@ -30,8 +32,8 @@ class LotteryResults:
             logger.info(lottery.get_name())
 
     def parse_header(self, row):
-        """ Parse the header row to work out the file type. 
-        There are two sources, national lottery and 
+        """ Parse the header row to work out the file type.
+        There are two sources, national lottery and
         http://lottery.merseyworld.com.
         Each has a different header row so it is easy to call the correct row
         parser.

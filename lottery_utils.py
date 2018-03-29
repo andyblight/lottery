@@ -1,5 +1,5 @@
 """
-Utility functions for dealing with Lottery csv files.
+Utility functions for Lottery files.
 """
 
 import copy
