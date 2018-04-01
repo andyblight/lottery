@@ -11,29 +11,53 @@ import argparse
 import csv
 import logging
 from urllib.request import urlopen
-from bs4 import BeautifulSoup
 
 LOG_FILE = "importer.log"
 MERSEYWORLD_BASE_URL = "http://lottery.merseyworld.com/cgi-bin/lottery?"
 LOTTO = "days=2&Machine=Z&Ballset=0&order=0&show=1&year=-1&display=CSV"
 LOTTO_URL = MERSEYWORLD_BASE_URL + LOTTO
+LOTTO_FILENAME = "lotto.csv"
 EUROMILLIONS = "days=20&Machine=Z&Ballset=0&order=0&show=1&year=-1&display=CSV"
 EUROMILLIONS_URL = MERSEYWORLD_BASE_URL + EUROMILLIONS
+EURO_MILLIONS_FILENAME = "euromillions.csv"
 
 
-
-def write_csv_file(filename, soup_data):
-    """ Write soup data to CSV file.  """
-    with open(filename, newline='') as csvfile:
-        file_writer = csv.writer(csvfile, delimiter=',')
-        first_line = True
-        for line in soup_data:
-            # TODO add parsing
-            if first_line:
-                file_writer.write_header(line)
-                first_line = False
+def parse_list(content):
+    """ Load CSV data into a list.  """
+    csv_list = []
+    # Convert into a list of strings
+    unicode = content.decode()
+    content_list = unicode.split('\n')
+    state = 0
+    for line in content_list:
+        # print("state, line:", state, line)
+        if state == 0:
+            # Look for first <PRE>
+            if line.startswith('<PRE>'):
+                state = 1
+        elif state == 1:
+            # Look for header
+            if line.startswith('No., Day,DD,MMM,YYYY,'):
+                csv_list.append(line.split(','))
+                state = 2
+        elif state == 2:
+            # Process rows until blank line
+            if line:
+                csv_list.append(line.split(','))
             else:
-                file_writer.write_row(line)
+                # Processed all rows so quit
+                break
+        else:
+            continue
+    return csv_list
+
+
+def write_csv_file(filename, csv_list):
+    """ Write the dict to given CSV file.  """
+    with open(filename, 'w') as csvfile:
+        writer = csv.writer(csvfile)
+        for line in csv_list:
+            writer.writerow(line)
 
 
 def handle_parameters():
@@ -54,21 +78,22 @@ def setup_logging(args):
     logging.info(args)
 
 
-def fetch_and_process(url):
-    """ Todo """
+def fetch_and_process(url, filename):
+    """ Writes a CSV file from the page at the given URL. """
     logging.info("Fetching info from: %s", url)
     content = urlopen(url).read()
-    soup_data = BeautifulSoup(content, "lxml")
-    logging.info(soup_data.prettify())
-    # FiXME hardcoded file name
-    write_csv_file("filename.csv", soup_data)
+    logging.info(content)
+    csv_list = parse_list(content)
+    print(csv_list)
+    write_csv_file(filename, csv_list)
+
 
 def run():
     """ Todo """
     args = handle_parameters()
     setup_logging(args)
-    fetch_and_process(LOTTO_URL)
-    fetch_and_process(EUROMILLIONS_URL)
+    fetch_and_process(LOTTO_URL, LOTTO_FILENAME)
+    fetch_and_process(EUROMILLIONS_URL, EURO_MILLIONS_FILENAME)
 
 
 if __name__ == "__main__":
