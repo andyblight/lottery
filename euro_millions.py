@@ -14,7 +14,6 @@ LOGGER = logging.getLogger('EuroMillions')
 
 
 class EuroMillionsLine:
-
     """ Represents a line of lottery numbers. """
 
     def __init__(self):
@@ -29,9 +28,10 @@ class EuroMillionsLine:
     def as_string(self):
         """ Converts a line to a string. """
         # print("as_string, main, lucky", self.main_balls, self.lucky_stars)
-        main_str = 'Main balls: {0:2d}  {1:2d}  {2:2d}  {3:2d}  {4:2d}  '.format(
-            self.main_balls[0], self.main_balls[1], self.main_balls[2],
-            self.main_balls[3], self.main_balls[4])
+        main_str = 'Main balls: {0:2d}  {1:2d}  {2:2d}  {3:2d}  {4:2d}  ' \
+            .format(
+                self.main_balls[0], self.main_balls[1], self.main_balls[2],
+                self.main_balls[3], self.main_balls[4])
         lucky_str = 'Lucky stars: {0:2d}  {1:2d} '.format(
             self.lucky_stars[0], self.lucky_stars[1])
         return main_str + lucky_str
@@ -92,20 +92,19 @@ class EuroMillionsLine:
         for iterator in range(0, len(self.main_balls)):
             if self.main_balls[iterator] == line.main_balls[iterator]:
                 main_matched += 1
-                matching_str = self._mark_ball(
-                    matching_str, iterator, -1)
+                matching_str = self._mark_ball(matching_str, iterator, -1)
         for iterator in range(0, len(self.lucky_stars)):
             if self.lucky_stars[iterator] == line.lucky_stars[iterator]:
                 lucky_matched += 1
-                matching_str = self._mark_ball(
-                    matching_str, -1, iterator)
+                matching_str = self._mark_ball(matching_str, -1, iterator)
         return (main_matched + lucky_matched,
-                self._is_winner(main_matched, lucky_matched,), matching_str)
-
+                self._is_winner(
+                    main_matched,
+                    lucky_matched,
+                ), matching_str)
 
 
 class EuroMillionsDraw(LotteryDraw):
-
     """ Groups draw date and lottery line."""
 
     def __init__(self):
@@ -115,13 +114,6 @@ class EuroMillionsDraw(LotteryDraw):
         self.line = EuroMillionsLine()
         self.jackpot = 0
         self.jackpot_wins = 0
-
-    def __lt__(self, other):
-        """ Returns True when self < other.  Test is on draw date. """
-        result = False
-        if self.draw_date < other.draw_date:
-            result = True
-        return result
 
     def as_string(self):
         """ Return the draw date and line as a string. """
@@ -209,9 +201,10 @@ class LotteryTicketGenerationMethodEuro2(LotteryTicketGenerationMethod):
         ticket.print(False)
         return ticket
 
+
 class LotteryTicketGenerationMethodEuro3(LotteryTicketGenerationMethod):
     """ Ticket generation method concrete class.
-        Use mixture of most and least.
+        Use mixture of most for main and least for luck stars.
      """
 
     def __init__(self):
@@ -231,22 +224,16 @@ class LotteryTicketGenerationMethodEuro3(LotteryTicketGenerationMethod):
             LOGGER.info(least_probable[0])
             LOGGER.info(least_probable[1])
             if least_probable[0] and least_probable[1]:
-                # FIXME Hard coded for two lines
+                # FIXME Hard coded for one line
                 line = EuroMillionsLine()
                 num_main_balls = len(line.main_balls)
                 num_lucky_stars = len(line.lucky_stars)
-                # Use most probable for main balls and least for lucky stars
+                # Use most probable for main balls and least probable for
+                # lucky stars
                 for iterator in range(0, num_main_balls):
                     line.main_balls[iterator] = most_probable[0][iterator][0]
                 for iterator in range(0, num_lucky_stars):
                     line.lucky_stars[iterator] = least_probable[1][iterator][0]
-                line.sort()
-                ticket.lines.append(line)
-                # Reverse for second line
-                for iterator in range(0, num_main_balls):
-                    line.main_balls[iterator] = least_probable[0][iterator][0]
-                for iterator in range(0, num_lucky_stars):
-                    line.lucky_stars[iterator] = most_probable[1][iterator][0]
                 line.sort()
                 ticket.lines.append(line)
             else:
@@ -257,8 +244,51 @@ class LotteryTicketGenerationMethodEuro3(LotteryTicketGenerationMethod):
         ticket.print(False)
         return ticket
 
-class LotteryParserEuromillionsNL(LotteryParser):
 
+class LotteryTicketGenerationMethodEuro4(LotteryTicketGenerationMethod):
+    """ Ticket generation method concrete class.
+        Use mixture of most and least.
+     """
+
+    def __init__(self):
+        LotteryTicketGenerationMethod.__init__(self, "Euro4")
+
+    def generate(self, draw_date, num_lines, ball_stats):
+        """ """
+        ticket = LotteryTicket(draw_date)
+        # Debug
+        LOGGER.info("TGME4: %d", num_lines)
+        # Most probable
+        most_probable = ball_stats.get_most_probable()
+        LOGGER.info(most_probable[0])
+        LOGGER.info(most_probable[1])
+        if most_probable[0] and most_probable[1]:
+            least_probable = ball_stats.get_least_probable()
+            LOGGER.info(least_probable[0])
+            LOGGER.info(least_probable[1])
+            if least_probable[0] and least_probable[1]:
+                # FIXME Hard coded for one line
+                line = EuroMillionsLine()
+                num_main_balls = len(line.main_balls)
+                num_lucky_stars = len(line.lucky_stars)
+                # Use least probable for main balls and most probable for
+                # lucky stars
+                for iterator in range(0, num_main_balls):
+                    line.main_balls[iterator] = least_probable[0][iterator][0]
+                for iterator in range(0, num_lucky_stars):
+                    line.lucky_stars[iterator] = most_probable[1][iterator][0]
+                line.sort()
+                ticket.lines.append(line)
+            else:
+                LOGGER.error("TGME4: least probable is empty")
+        else:
+            LOGGER.error("TGME4: most probable is empty")
+        LOGGER.info("TGME4: ticket printout")
+        ticket.print(False)
+        return ticket
+
+
+class LotteryParserEuromillionsNL(LotteryParser):
     """ Parses the CSV data from the National Lottery. """
 
     def __init__(self):
@@ -352,12 +382,12 @@ class LotteryStatsGenerationMethodEuro1(LotteryStatsGenerationMethod):
         sets_of_balls = lottery.get_sets_of_balls()
         iterator = 0
         LOGGER.debug("LSGME:a %d", len(balls_in_range))
-        LOGGER.debug("LSGME:a1 %s", str(balls_in_range)) # AJB 2 empty arrays!
+        LOGGER.debug("LSGME:a1 %s", str(balls_in_range))  # AJB 2 empty arrays!
         for ball_set in sets_of_balls:
             LOGGER.debug("Set of balls: %s", ball_set.get_name())
             num_balls = ball_set.get_num_balls()
-            str_log = "LSGME1:a: NUM BALLS " + str(num_balls) + " iterator " + \
-                str(iterator)
+            str_log = "LSGME1:a: NUM BALLS " + str(num_balls) + " iterator " \
+                + str(iterator)
             LOGGER.info(str_log)
             frequency_of_balls = frequency(num_balls, balls_in_range[iterator])
             LOGGER.debug(frequency_of_balls)
@@ -407,16 +437,17 @@ class LotteryStatsGenerationMethodEuro2(LotteryStatsGenerationMethod):
 
     def analyse(self, lottery_results, date_range):
         """ """
-        #LOGGER.debug("analyse2:", date_range)
+        # LOGGER.debug("analyse2:", date_range)
         # A date range is (most_recent, short_range, long_range)
-        date_to= date_range[0]
+        date_to = date_range[0]
         date_from = date_range[2]  # FIXME What about short_range???
-        balls = lottery_results.get_lottery().get_balls_in_date_range(date_from, date_to)
+        balls = lottery_results.get_lottery().get_balls_in_date_range(
+            date_from, date_to)
         sets_of_balls = lottery_results.get_lottery().get_sets_of_balls()
         iterator = 0
         LOGGER.info(balls)
         for ball_set in sets_of_balls:
-            #LOGGER.debug("Set of balls:", ball_set.get_name())
+            # LOGGER.debug("Set of balls:", ball_set.get_name())
             num_balls = ball_set.get_num_balls()
             str_log = "LSGME2:a:NUM BALLS " + str(num_balls) + " iterator " + \
                 str(iterator)
@@ -456,7 +487,6 @@ class LotteryStatsGenerationMethodEuro2(LotteryStatsGenerationMethod):
 
 
 class LotteryEuroMillions(Lottery):
-
     """ The Euro Millions lottery. """
 
     def __init__(self):
@@ -468,11 +498,18 @@ class LotteryEuroMillions(Lottery):
         self._lucky_stars = SetOfBalls("lucky stars", 12)
         self._available_parsers.append(LotteryParserEuromillionsNL())
         self._available_parsers.append(LotteryParserEuromillionsMW())
-        self._ticket_generation_methods.append(LotteryTicketGenerationMethodEuro1())
-        self._ticket_generation_methods.append(LotteryTicketGenerationMethodEuro2())
-        self._ticket_generation_methods.append(LotteryTicketGenerationMethodEuro3())
-        self._stats_generation_methods.append(LotteryStatsGenerationMethodEuro1())
-        self._stats_generation_methods.append(LotteryStatsGenerationMethodEuro2())
+        self._ticket_generation_methods.append(
+            LotteryTicketGenerationMethodEuro1())
+        self._ticket_generation_methods.append(
+            LotteryTicketGenerationMethodEuro2())
+        self._ticket_generation_methods.append(
+            LotteryTicketGenerationMethodEuro3())
+        self._ticket_generation_methods.append(
+            LotteryTicketGenerationMethodEuro4())
+        self._stats_generation_methods.append(
+            LotteryStatsGenerationMethodEuro1())
+        self._stats_generation_methods.append(
+            LotteryStatsGenerationMethodEuro2())
         # Debug
         LOGGER.info("Initialised parsers:")
         for parser in self._available_parsers:
@@ -499,13 +536,15 @@ class LotteryEuroMillions(Lottery):
         """ Return a tuple containing the sets of balls in the give date
             range.
         """
-        LOGGER.debug("LEM:gbidr, len %d, from %s to %s",
-                      len(self.results), str(oldest_date), str(newest_date))
+        LOGGER.debug("LEM:gbidr, len %d, from %s to %s", len(self.results),
+                     str(oldest_date), str(newest_date))
         main_balls = []
         lucky_stars = []
         for lottery_draw in self.results:
-            if lottery_draw.draw_date >= oldest_date and lottery_draw.draw_date <= newest_date:
-                LOGGER.debug("LEM:gbidr, draw: %d", lottery_draw.line.main_balls[0])
+            if lottery_draw.draw_date >= oldest_date \
+                    and lottery_draw.draw_date <= newest_date:
+                LOGGER.debug("LEM:gbidr, draw: %d",
+                             lottery_draw.line.main_balls[0])
                 # Append all main balls to the given list
                 main_balls.append(lottery_draw.line.main_balls[0])
                 main_balls.append(lottery_draw.line.main_balls[1])
@@ -516,4 +555,3 @@ class LotteryEuroMillions(Lottery):
                 lucky_stars.append(lottery_draw.line.lucky_stars[0])
                 lucky_stars.append(lottery_draw.line.lucky_stars[1])
         return (main_balls, lucky_stars)
-

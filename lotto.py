@@ -20,14 +20,15 @@ Log winning lines under the line of the ticket it came from.
 import calendar
 import datetime
 import logging
+import sys
 
 from lottery import Lottery, LotteryTicket, LotteryDraw, LotteryParser
 from lottery_utils import SetOfBalls, convert_str_to_date
 
-logger = logging.getLogger('Lotto')
+LOGGER = logging.getLogger('Lotto')
+
 
 class LottoDraw(LotteryDraw):
-
     """ Groups draw date and lottery line."""
 
     def __init__(self):
@@ -38,7 +39,7 @@ class LottoDraw(LotteryDraw):
         # 6 main balls
         for _ in range(0, 6):
             self.main_balls.append(0)
-        self.bonus_ball = 0;
+        self.bonus_ball = 0
 
     def as_string(self):
         """ Returns this draw as a string. """
@@ -51,7 +52,6 @@ class LottoDraw(LotteryDraw):
 
 
 class LottoTicketLine:
-
     """ Represents a line of lottery numbers on a ticket. """
 
     def __init__(self):
@@ -68,7 +68,7 @@ class LottoTicketLine:
         if main >= 0 and main <= 5:
             index = main_ball_offset + (main * 4)
             line_string = line_string[:index] + '*' + line_string[index + 1:]
-        # logger.info(line_string)
+        # LOGGER.info(line_string)
         return line_string
 
     def sort(self):
@@ -120,10 +120,10 @@ class LottoTicketLine:
 
 
 class LotteryTicketLotto(LotteryTicket):
-
     """ Class representing a LottoTicket.
         Only implements lottery specific functions.
     """
+
     def generate_line_most_frequent_main(self, ball_stats):
         """ Generates one line from the ball stats.
             Uses the most frequently occurring balls.
@@ -171,19 +171,20 @@ class LotteryTicketLotto(LotteryTicket):
         """ Generates the given number of lines from the ball stats. """
         debug_on = True
         if debug_on:
-            logger.info("Gen lines EM " + str(num_lines) + " Ignored!")
+            LOGGER.info("Gen lines EM " + str(num_lines) + " Ignored!")
             # for iterator in range(0, num_lines):
-            logger.info(ball_stats[0])
-            logger.info(ball_stats[1])  # Most
-            logger.info(ball_stats[2])  # Least
+            LOGGER.info(ball_stats[0])
+            LOGGER.info(ball_stats[1])  # Most
+            LOGGER.info(ball_stats[2])  # Least
         self.lines.append(self.generate_line_most_frequent_main(ball_stats))
-        self.lines.append(self.generate_line_most_frequent_alternate(ball_stats))
+        self.lines.append(
+            self.generate_line_most_frequent_alternate(ball_stats))
         self.lines.append(self.generate_line_least_frequent_main(ball_stats))
-        self.lines.append(self.generate_line_least_frequent_alternate(ball_stats))
+        self.lines.append(
+            self.generate_line_least_frequent_alternate(ball_stats))
 
 
 class LotteryParserLottoNL(LotteryParser):
-
     """ Parses the CSV data from the National Lottery. """
 
     def __init__(self):
@@ -195,7 +196,7 @@ class LotteryParserLottoNL(LotteryParser):
         """ Returns True if the header row is for this lottery.
             Distinct items are "Bonus Ball", "Ball Set", "Machine", "Raffles"
          """
-        logger.info(self.name + row[7])
+        LOGGER.info(self.name + row[7])
         return row[7] == 'Bonus Ball'
 
     @staticmethod
@@ -219,7 +220,6 @@ class LotteryParserLottoNL(LotteryParser):
 
 
 class LotteryParserLottoMW(LotteryParser):
-
     """ Parses the CSV data from http://lottery.merseyworld.com/Winning_index.html. """
 
     def __init__(self):
@@ -230,7 +230,7 @@ class LotteryParserLottoMW(LotteryParser):
     def check_header(self, row):
         """ Returns True if this is merseyworld lotto.
         Unique values are Draw number and N1. """
-        logger.info(self.name + " '" + row[0] + "'" + row[5] + "'")
+        LOGGER.info(self.name + " '" + row[0] + "'" + row[5] + "'")
         return row[0] == 'No.' and row[5] == ' N1'
 
     @staticmethod
@@ -261,8 +261,8 @@ class LotteryParserLottoMW(LotteryParser):
         draw.ball_set = int(row[15])
         return draw
 
-class LotteryLotto(Lottery):
 
+class LotteryLotto(Lottery):
     """ The Euro Millions lottery. """
 
     def __init__(self):
@@ -273,9 +273,9 @@ class LotteryLotto(Lottery):
         self._available_parsers.append(LotteryParserLottoNL())
         self._available_parsers.append(LotteryParserLottoMW())
         # Debug
-        logger.info("Initialised parsers:")
+        LOGGER.info("Initialised parsers:")
         for parser in self._available_parsers:
-            logger.info(parser.name)
+            LOGGER.info(parser.name)
 
     def parse_row(self, row):
         """ Read row data and copy into LottoCSV class.
@@ -331,7 +331,7 @@ class LotteryLotto(Lottery):
 
         for line in ticket.lines:
             score = line.score(lottery_draw)
-            # logger.info(score)
+            # LOGGER.info(score)
             if score == best_score:
                 winning_lines.append(line)
             if score[0] > best_score[0] or score[1] > best_score[1]:

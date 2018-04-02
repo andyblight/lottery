@@ -7,14 +7,13 @@ import csv
 import logging
 
 from euro_millions import LotteryEuroMillions
-from lottery import Lottery
 from lotto import LotteryLotto
 
-logger = logging.getLogger('LotteryResults')
+
+LOGGER = logging.getLogger('LotteryResults')
 
 
 class LotteryResults:
-
     """
     The LotteryResults class reads a lottery results CSV file into an internal
     lottery instance and provides methods to access the data in the Lottery.
@@ -22,14 +21,14 @@ class LotteryResults:
 
     def __init__(self):
         self._lottery = None
-        logger.info("Lottery.__init__")
+        LOGGER.info("Lottery.__init__")
         self._available_lotteries = []
         self._available_lotteries.append(LotteryEuroMillions())
         self._available_lotteries.append(LotteryLotto())
         # Debug
-        logger.info("Initialised lotteries:")
+        LOGGER.info("Initialised lotteries:")
         for lottery in self._available_lotteries:
-            logger.info(lottery.get_name())
+            LOGGER.info(lottery.get_name())
 
     def parse_header(self, row):
         """ Parse the header row to work out the file type.
@@ -40,15 +39,15 @@ class LotteryResults:
         Each parser is hidden in the lottery class instance.
         """
         for lottery in self._available_lotteries:
-            logger.info("Checking lottery " + lottery.get_name())
+            LOGGER.info("Checking lottery " + lottery.get_name())
             result = lottery.check_header(row)
-            logger.info("Result " + str(result))
+            LOGGER.info("Result " + str(result))
             if result:
-                logger.info("Found parser in " + lottery.get_name())
+                LOGGER.info("Found parser in " + lottery.get_name())
                 self._lottery = lottery
                 break
-        if self._lottery == None:
-            logger.info("Using default lottery")
+        if self._lottery is None:
+            LOGGER.info("Using default lottery")
 
     def parse_row(self, row):
         """ Parse row data and append """

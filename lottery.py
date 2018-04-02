@@ -90,7 +90,7 @@ class LotteryStatsGenerationMethod:
 
     def analyse(self, lottery_results, date_range):
         """ """
-        LOGGER.info("TODO")
+        pass
 
     def get_most_probable(self):
         """ """
@@ -156,11 +156,11 @@ class Lottery:
         last_date = self.results[self._num_draws - 1].draw_date
         return (first_date, last_date)
 
-    def get_balls_in_date_range(self, date_from, date_to):
+    def get_balls_in_date_range(self, oldest_date, newest_date):
         """ Returns a tuple containing the sets of balls in the give date
             range.
         """
-        LOGGER.debug("TODO, %s, %s", date_from, date_to)
+        LOGGER.debug("TODO, %s, %s", oldest_date, newest_date)
         return 0
 
     def get_draws_in_date_range(self, date_from, date_to):
