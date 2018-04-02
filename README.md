@@ -30,20 +30,30 @@ Looking at this problem from the other direction.
 * Use the results of the next draw to evaluate the stats generation methods.
 * Use the results of the evaluation to improve the stats generation methods.
 
-In progress
+Decide what to do about merging results CSV files for better analysis.
 
-Write updater utility that fetches the Merseyworld data.
-Use Python Beautiful Soup to scrape the web site.
+## Bugs
+
+Vary stats ticket generation to improve evaluation.  Both stats methods are identical!!!
+ - 3 most likely and 3 least likely
+
+Fix lotto evaluation.
+
+Fix next_ticket.py so it passes tests in test.sh.
+
+Look at the way date ranges are generated.  For the EuroMillions lottery, the date ranges may need to be generated per ball set, so generating a range of dates first thing may be wrong.  Certainly, I need to set a start date, so I
+can use past data sets to test prediction methods.  How far to go back
+depends on each lottery and each set of balls.
 
 ## Future
 
 TBD
 
-## Bugs
+## In progress
 
-Vary stats ticket generation to improve evaluation.  Both stats methods are identical!!!
+Implementing new ticket generation method, 3 most, 3 least. 
 
-Look at the way date ranges are generated.  For the EuroMillions lottery, the date ranges may need to be generated per ball set, so generating a range of
-dates first thing may be wrong.  Certainly, I need to set a start date, so I
-can use past data sets to test prediction methods.  How far to go back
-depends on each lottery and each set of balls.
+
+## Done
+
+1/4/2018 Added importer utility.  Downloads 6 months of results for Lotto and Euromillions.

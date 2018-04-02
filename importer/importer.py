@@ -84,7 +84,7 @@ def fetch_and_process(url, filename):
     content = urlopen(url).read()
     logging.info(content)
     csv_list = parse_list(content)
-    print(csv_list)
+    # print(csv_list)
     write_csv_file(filename, csv_list)
 
 
