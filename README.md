@@ -34,12 +34,7 @@ Decide what to do about merging results CSV files for better analysis.
 
 ## Bugs
 
-Vary stats ticket generation to improve evaluation.  Both stats methods are identical!!!
- - 3 most likely and 3 least likely
-
-Fix lotto evaluation.
-
-Fix next_ticket.py so it passes tests in test.sh.
+Vary stats and ticket generation to improve evaluation.  Both stats methods are identical!!!
 
 Look at the way date ranges are generated.  For the EuroMillions lottery, the date ranges may need to be generated per ball set, so generating a range of dates first thing may be wrong.  Certainly, I need to set a start date, so I
 can use past data sets to test prediction methods.  How far to go back
@@ -51,9 +46,15 @@ TBD
 
 ## In progress
 
-Implementing new ticket generation method, 3 most, 3 least. 
+Integrate next ticket generation with the importer so that I can use the output
+of the program.
 
+1. Get next ticket generation to work.
+1. Fix Lotto evaluation.
+1. Integrate with importer.
 
 ## Done
 
-1/4/2018 Added importer utility.  Downloads 6 months of results for Lotto and Euromillions.
+20180405 next_ticket works for EuroMillions and MerseyWorld.
+20180402 Added new EuroMillions ticket generation method, most for main and least for lucky stars and reverse.
+20180401 Added importer utility.  Downloads 6 months of results for Lotto and Euromillions.

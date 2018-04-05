@@ -1,5 +1,4 @@
 #!/usr/bin/python3.6
-
 """
 This file generates statistics about range of results and evaluates the
 effectiveness of the generation methods by comparing against future results.
@@ -23,6 +22,7 @@ class EvaluationResult:
         self.draw = draw
         self.score = score
 
+
 def handle_parameters():
     """ Process the command line arguments.  Returns the values of the
     arguments in a argparse.Namespace object.
@@ -31,8 +31,7 @@ def handle_parameters():
         description=''' Generates statistics and suggests tickets to buy based
                         on the given CSV files.''')
     parser.add_argument('-v', '--verbose', help='''verbose output.''')
-    parser.add_argument(
-        "filename", help='CSV file or files to process')
+    parser.add_argument("filename", help='CSV file or files to process')
     return parser.parse_args()
 
 
@@ -60,8 +59,8 @@ def generate_date_ranges(results):
     results_full_range = results.get_lottery().get_date_range()
     logging.info('Generating dates from ' + results_full_range[0].isoformat() +
                  ' to ' + results_full_range[1].isoformat())
-    draws_in_range = results.get_lottery().get_draws_in_date_range(results_full_range[0],
-                                                                   results_full_range[1])
+    draws_in_range = results.get_lottery().get_draws_in_date_range(
+        results_full_range[0], results_full_range[1])
     for lottery_draw in draws_in_range:
         lottery_dates.append(lottery_draw.draw_date)
     # Generate date tuples
@@ -81,14 +80,16 @@ def evaluate_ticket(stats_method, ticket_method, ticket, lottery_results):
     start_date = ticket.draw_date
     # FIXME Hardcoded 4 weeks
     end_date = start_date + datetime.timedelta(weeks=4)
-    four_weeks_results = lottery_results.get_lottery().get_draws_in_date_range(start_date, end_date)
+    four_weeks_results = lottery_results.get_lottery().get_draws_in_date_range(
+        start_date, end_date)
     logging.debug("et: printing draws")
     for draw in four_weeks_results:
         logging.debug(draw.draw_date)
         for line in ticket.lines:
             score = line.score(draw.line)
             logging.debug("et: winner %s", score[2])
-            eval_result = EvaluationResult(stats_method, ticket_method.name, draw, score)
+            eval_result = EvaluationResult(stats_method, ticket_method.name,
+                                           draw, score)
             eval_results.append(eval_result)
     return eval_results
 
@@ -97,7 +98,8 @@ def setup_logging(args):
     """ Set up logging. """
     split_filename = os.path.splitext(args.filename)
     log_filename = split_filename[0] + '-eval.log'
-    logging.basicConfig(filename=log_filename, filemode='w', level=logging.DEBUG)
+    logging.basicConfig(
+        filename=log_filename, filemode='w', level=logging.DEBUG)
     logging.info('Started')
     logging.info(args)
 
@@ -122,17 +124,21 @@ def generate_and_evaluate(lottery_results):
     date_ranges = generate_date_ranges(lottery_results)
     for date_range in date_ranges:
         eval_results = []
-        stats_methods = lottery_results.get_lottery().get_stats_generation_methods()
+        stats_methods = lottery_results.get_lottery(
+        ).get_stats_generation_methods()
         # print("gae", stats_methods)
         for stats_method in stats_methods:
             logging.debug("gae: stats %s", stats_method.name)
             stats_method.analyse(lottery_results, date_range)
-            num_lines = 4  ## FIXME HACK!!!!
-            ticket_methods = lottery_results.get_lottery().get_ticket_generation_methods()
+            num_lines = 4  # FIXME HACK!!!!
+            ticket_methods = lottery_results.get_lottery(
+            ).get_ticket_generation_methods()
             for ticket_method in ticket_methods:
                 logging.debug("gae: ticket %s", ticket_method.name)
-                ticket = ticket_method.generate(date_range[0], num_lines, stats_method)
-                results = evaluate_ticket(stats_method, ticket_method, ticket, lottery_results)
+                ticket = ticket_method.generate(date_range[0], num_lines,
+                                                stats_method)
+                results = evaluate_ticket(stats_method, ticket_method, ticket,
+                                          lottery_results)
                 eval_results.append(results)
         evaluation_results.append((range, eval_results))
     return evaluation_results
@@ -162,10 +168,12 @@ def collate_evaluation_results(evaluation_results):
                     print("Inc winner count")
                     # Biggest winner (number of matched balls)
                     if eval_result.score[0] > method_combination_scores[key][1]:
-                        method_combination_scores[key][1] = eval_result.score[0]
+                        method_combination_scores[key][1] = eval_result.score[
+                            0]
                         print("Inc biggest winner")
                     # Add to list of number of winning balls.
-                    method_combination_scores[key][2].append(eval_result.score[0])
+                    method_combination_scores[key][2].append(
+                        eval_result.score[0])
     return method_combination_scores
 
 
@@ -173,8 +181,9 @@ def print_collated_results(collated_results):
     """ Print the collated results. """
     print("")
     print("Collated results")
-    print("stats method + ticket method, total number of wins, num of balls of biggest win, [num winning balls, ...])")
-    ## AJB dict iterator
+    print("stats method + ticket method, total number of wins, num of balls of"
+          "biggest win, [num winning balls, ...])")
+    # AJB dict iterator
     for key, score in collated_results.items():
         print(key, score)
 

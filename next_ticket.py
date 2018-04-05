@@ -1,19 +1,28 @@
 #!/usr/bin/python3.6
-
 """
-This file generates the next ticket from the lottery CSV file that is passed
-as a command line argument.
-
-The analysis is done elsewhere,
+This file generates a lottery ticket based on the results file given on
+the command line.  It uses the same methods as the program evaluate.py but
+does no evaluation.
 """
 
 import argparse
-import datetime
 import logging
 import os
 
 from lottery_results import LotteryResults
-from lottery_utils import frequency, most_common_balls, least_common_balls
+
+STATS_NAME = "Euro1"
+TICKET_NAME = "Euro3"
+
+
+def setup_logging(args):
+    """ Set up logging. """
+    split_filename = os.path.splitext(args.filename)
+    log_filename = split_filename[0] + '-next-ticket.log'
+    logging.basicConfig(
+        filename=log_filename, filemode='w', level=logging.DEBUG)
+    logging.info('Started')
+    logging.info(args)
 
 
 def handle_parameters():
@@ -21,143 +30,77 @@ def handle_parameters():
     arguments in a argparse.Namespace object.
     """
     parser = argparse.ArgumentParser(
-        description=''' Suggests a lottery tickets based on the data in the'''
-                    '''given CSV files.''')
-    parser.add_argument(
-        "filename", help='CSV file or files to process')
+        description=''' Generates tickets based on the given CSV files.''')
+    parser.add_argument('-v', '--verbose', help='''verbose output.''')
+    parser.add_argument("filename", help='The CSV file to process')
     return parser.parse_args()
 
 
-def ball_stats_in_date_range(results, date_from, date_to):
-    """ Returns the statistics about the balls for all ball sets for the given
-        range.
+def generate_date_range(results):
+    """ Returns the range of dates to use for stats generation.
+    The dates are generated backwards from the most recent results.
+    The range of dates has the format:
+        [(most_recent, short_range, long_range), ...]
+    where:
+        most_recent = The date of the most "recent" draw.  This date moves from
+                      the past to the future to simulate real life.
+        short_range = The date in the last few weeks.  Used for most often
+                      tests.
+        long_range = The date longest in the past.  Used for least often tests.
     """
-    # logging.info("Ball frequency from", date_from, "to", date_to)
-    balls = results.get_lottery().get_balls_in_date_range(date_from, date_to)
-    sets_of_balls = results.get_lottery().get_sets_of_balls()
-    iterator = 0
-    ball_stats = []
-    logging.info(balls)
-    for ball_set in sets_of_balls:
-        # logging.info("Set of balls:", ball_set.get_name())
-        num_balls = ball_set.get_num_balls()
-        str_log = "NUM BALLS " + str(num_balls) + " iterator " + str(iterator)
-        logging.info(str_log)
-        frequency_of_balls = frequency(num_balls, balls[iterator])
-        # logging.info(frequency_of_balls)
-        num_likley = 3
-        if num_balls > 20:
-            num_likley = 6
-        most_likely = most_common_balls(frequency_of_balls, num_likley)
-        # logging.info("Most likely", most_likely)
-        least_likely = least_common_balls(frequency_of_balls, num_likley)
-        # logging.info("Least likely", least_likely)
-        iterator += 1
-        ball_stats.append(frequency_of_balls)
-        ball_stats.append(most_likely)
-        ball_stats.append(least_likely)
-    return ball_stats
+    # FIXME Each lottery may need different settings.
+    short_range_offset = 4  # 2 draws per week * 2 weeks
+    long_range_offset = 40  # 2 draws per week * 20 weeks
+    # Generate one set of lottery dates
+    lottery_dates = []
+    results_full_range = results.get_lottery().get_date_range()
+    logging.info('Generating dates from ' + results_full_range[0].isoformat() +
+                 ' to ' + results_full_range[1].isoformat())
+    draws_in_range = results.get_lottery().get_draws_in_date_range(
+        results_full_range[0], results_full_range[1])
+    # Create list of dates from all results
+    for lottery_draw in draws_in_range:
+        lottery_dates.append(lottery_draw.draw_date)
+    # Generate date tuples
+    end_index = len(lottery_dates) - long_range_offset
+    most_recent = lottery_dates[end_index]
+    short_range = lottery_dates[end_index - short_range_offset]
+    long_range = lottery_dates[end_index - long_range_offset]
+    return (most_recent, short_range, long_range)
 
 
-def generate_ticket_next_lottery(next_lottery_date, results, stats):
-    """ Prints a ticket with a number of lines for the next draw. """
-    # logging.info("Generate ticket for next lottery:")
-    lottery = results.get_lottery()
-    return lottery.generate_ticket(next_lottery_date, 5, stats)
-
-
-def print_lottery_ticket(ticket, printout):
-    """ Prints a ticket with a number of lines for the next draw. """
-    log_str = "Ticket for next lottery:"
-    if printout:
-        print(log_str)
-    else:
-        logging.info(log_str)
-    ticket.print_ticket(printout)
-
-
-def print_matches_draws_date_range(results, date_from, date_to, ticket,
-                                   winning_draws):
-    """ For each draw in the given data range,
-            prints the draw
-            prints the number of matches in each line of the ticket.
+def generate_ticket(lottery_results):
+    """ Generate a ticket using the selected stats and ticket generation
+    method.
     """
-    logging.info("Draws in range from " +
-                 date_from.isoformat() + " to " + date_to.isoformat())
-    lottery_draws = results.get_lottery().get_draws_in_date_range(
-        date_from, date_to)
-    for lottery_draw in lottery_draws:
-        results.get_lottery().print_draw(lottery_draw)
-        test_results = results.get_lottery().test_draw_against_ticket(
-            lottery_draw, ticket)
-        best_score = test_results[0]
-        winning_lines = test_results[1]
-        draw = test_results[2]
-        if best_score[2]:
-            logging.info("WINNER!!!!")
-            logging.info("Best score" + str(best_score) + "for lines")
-            winning_draws.append((draw, best_score[3]))
-        else:
-            logging.info("No winners")
-        for line in winning_lines:
-            logging.info(line.as_string())
-
-
-def process_data_in_range(results, analysis_start, analysis_end, winning_draws,
-                          printout):
-    """ Process data in the given range. """
-    next_lottery_date = analysis_end + datetime.timedelta(days=1)
-    # Print ball stats of balls in range
-    stats = ball_stats_in_date_range(results, analysis_start, analysis_end)
-    # Print numbers for tickets
-    ticket = generate_ticket_next_lottery(
-        next_lottery_date, results, stats)
-    # Always write to log
-    print_lottery_ticket(ticket, False)
-    if printout:
-        print_lottery_ticket(ticket, True)
-    if not printout:
-        # Print draws after end of chosen range
-        draw_date_to = analysis_end + datetime.timedelta(days=14)
-        draw_date_from = analysis_end + datetime.timedelta(days=1)
-        print_matches_draws_date_range(
-            results, draw_date_from, draw_date_to, ticket, winning_draws)
-
-
-def print_summary(winning_draws):
-    """ Prints summary of winning draws. """
-    _draws = list(sorted(set(winning_draws)))
-    logging.info('.')
-    logging.info("SUMMARY")
-    logging.info(str(len(_draws)) + " winning draws:")
-    for draw in _draws:
-        log_str = draw[0].draw_date.isoformat()
-        log_str += draw[1]
-        logging.info(log_str)
-
-
-def process_data(results):
-    """ Print range of  """
-    winning_draws = []
-    # Print next ticket
-    date_range = results.get_lottery().get_date_range()
-    analysis_end = date_range[1]
-    analysis_start = analysis_end - datetime.timedelta(35)
-    process_data_in_range(results, analysis_start, analysis_end, winning_draws,
-                          True)
+    # Change to one date range.
+    date_range = generate_date_range(lottery_results)
+    stats_methods = lottery_results.get_lottery().\
+        get_stats_generation_methods()
+    # Select stats generation method.
+    for stats_method in stats_methods:
+        logging.debug("gt: stats %s", stats_method.name)
+        if stats_method.name == STATS_NAME:
+            stats_method.analyse(lottery_results, date_range)
+            # Select ticket generation method.
+            ticket_methods = lottery_results.get_lottery().\
+                get_ticket_generation_methods()
+            for ticket_method in ticket_methods:
+                logging.debug("gt: ticket %s", ticket_method.name)
+                num_lines = 4  # FIXME HACK!!!!
+                ticket = ticket_method.generate(date_range[0], num_lines,
+                                                stats_method)
+                ticket.print(True)
+            break
 
 
 def run():
     """ Reads the data from the given file into the results instance """
     args = handle_parameters()
-    split_filename = os.path.splitext(args.filename)
-    log_filename = split_filename[0] + '.log'
-    logging.basicConfig(filename=log_filename, level=logging.INFO)
-    logging.info('Started')
-    logging.info(args)
+    setup_logging(args)
     results = LotteryResults()
     results.load_file(args.filename)
-    process_data(results)
+    generate_ticket(results)
 
 
 if __name__ == "__main__":
