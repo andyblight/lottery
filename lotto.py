@@ -218,6 +218,8 @@ class LotteryParserLottoNL(LotteryParser):
         draw.bonus_ball = int(row[7])
         draw.ball_set = int(row[8])
         draw.machine = row[9]
+        #print("AJB: NL:", draw.main_balls)
+        #print("AJB: NL:", draw.bonus_ball)
         return draw
 
 
@@ -257,8 +259,8 @@ class LotteryParserLottoMW(LotteryParser):
         draw.main_balls[4] = int(row[9])
         draw.main_balls[5] = int(row[10])
         draw.bonus_ball = int(row[11])
-        print("AJB: ", draw.main_balls)
-        print("AJB: ", draw.bonus_ball)
+        #print("AJB: MW:", draw.main_balls)
+        #print("AJB: MW:", draw.bonus_ball)
         draw.jackpot = int(row[12])
         draw.jackpot_wins = int(row[13])
         draw.machine = row[14]
