@@ -3,7 +3,6 @@
 import calendar
 import datetime
 import logging
-import sys
 
 from lottery import Lottery, LotteryTicket, LotteryDraw, LotteryParser, \
     LotteryTicketGenerationMethod, LotteryStatsGenerationMethod
@@ -80,7 +79,7 @@ class EuroMillionsLine:
                 result = True
         return result
 
-    def score(self, line):
+    def score(self, draw):
         """ Returns a tuple containing:
         0 - count of main plus lucky star matches
         1 - True if the line is a winner.
@@ -88,13 +87,13 @@ class EuroMillionsLine:
         """
         main_matched = 0
         lucky_matched = 0
-        matching_str = line.as_string()
+        matching_str = draw.line.as_string()
         for iterator in range(0, len(self.main_balls)):
-            if self.main_balls[iterator] == line.main_balls[iterator]:
+            if self.main_balls[iterator] == draw.line.main_balls[iterator]:
                 main_matched += 1
                 matching_str = self._mark_ball(matching_str, iterator, -1)
         for iterator in range(0, len(self.lucky_stars)):
-            if self.lucky_stars[iterator] == line.lucky_stars[iterator]:
+            if self.lucky_stars[iterator] == draw.line.lucky_stars[iterator]:
                 lucky_matched += 1
                 matching_str = self._mark_ball(matching_str, -1, iterator)
         return (main_matched + lucky_matched,
@@ -129,8 +128,8 @@ class LotteryTicketGenerationMethodEuro1(LotteryTicketGenerationMethod):
         LotteryTicketGenerationMethod.__init__(self, "Euro1")
 
     def generate(self, draw_date, num_lines, ball_stats):
-        """ """
-        # TODO HACK
+        """ Generate a ticket. """
+        # FIXME Hardcoded lines
         if num_lines != 2:
             num_lines = 2
         ticket = LotteryTicket(draw_date)
@@ -361,7 +360,7 @@ class LotteryParserEuromillionsMW(LotteryParser):
 
 
 class LotteryStatsGenerationMethodEuro1(LotteryStatsGenerationMethod):
-    """ """
+    """ Stats generation method. """
 
     def __init__(self):
         LotteryStatsGenerationMethod.__init__(self, "Euro1")
@@ -496,8 +495,10 @@ class LotteryEuroMillions(Lottery):
         self._sets_of_balls = 2
         self._main_balls = SetOfBalls("main", 50)
         self._lucky_stars = SetOfBalls("lucky stars", 12)
+        # Parsers
         self._available_parsers.append(LotteryParserEuromillionsNL())
         self._available_parsers.append(LotteryParserEuromillionsMW())
+        # Ticket generation methods
         self._ticket_generation_methods.append(
             LotteryTicketGenerationMethodEuro1())
         self._ticket_generation_methods.append(
@@ -506,6 +507,7 @@ class LotteryEuroMillions(Lottery):
             LotteryTicketGenerationMethodEuro3())
         self._ticket_generation_methods.append(
             LotteryTicketGenerationMethodEuro4())
+        # Stats
         self._stats_generation_methods.append(
             LotteryStatsGenerationMethodEuro1())
         self._stats_generation_methods.append(
@@ -515,32 +517,25 @@ class LotteryEuroMillions(Lottery):
         for parser in self._available_parsers:
             LOGGER.info(parser.name)
 
+    def get_new_draw(self):
+        """ Return a new draw. """
+        return EuroMillionsDraw()
+
     def get_sets_of_balls(self):
         """ Returns all sets of balls for this lottery. """
         LOGGER.debug("LEM:gsob")
         return [self._main_balls, self._lucky_stars]
 
-    def parse_row(self, row):
-        """ Call correct parser to add row of draw data. """
-        LOGGER.debug("LEM:pr")
-        if self._parser:
-            draw = EuroMillionsDraw()
-            draw = self._parser.parse_row(row, draw)
-            self.results.append(draw)
-            self._num_draws += 1
-        else:
-            print("ERROR: parser is", self._parser)
-            sys.exit(1)
-
     def get_balls_in_date_range(self, oldest_date, newest_date):
-        """ Return a tuple containing the sets of balls in the give date
-            range.
+        """ Return a tuple containing the sets of balls in the given date
+            range.  The result is used for frequency counting so only the
+            number of each ball is returned.
         """
-        LOGGER.debug("LEM:gbidr, len %d, from %s to %s", len(self.results),
+        LOGGER.debug("LEM:gbidr, len %d, from %s to %s", len(self.draws),
                      str(oldest_date), str(newest_date))
         main_balls = []
         lucky_stars = []
-        for lottery_draw in self.results:
+        for lottery_draw in self.draws:
             if lottery_draw.draw_date >= oldest_date \
                     and lottery_draw.draw_date <= newest_date:
                 LOGGER.debug("LEM:gbidr, draw: %d",

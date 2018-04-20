@@ -34,24 +34,18 @@ class LotteryResults:
         """ Parse the header row to work out the file type.
         There are two sources, national lottery and
         http://lottery.merseyworld.com.
-        Each has a different header row so it is easy to call the correct row
-        parser.
         Each parser is hidden in the lottery class instance.
         """
         for lottery in self._available_lotteries:
-            LOGGER.info("Checking lottery " + lottery.get_name())
+            LOGGER.info("Checking lottery %s", lottery.get_name())
             result = lottery.check_header(row)
-            LOGGER.info("Result " + str(result))
+            LOGGER.info("Result %s", str(result))
             if result:
-                LOGGER.info("Found parser in " + lottery.get_name())
+                LOGGER.info("Found parser in %s", lottery.get_name())
                 self._lottery = lottery
                 break
         if self._lottery is None:
             LOGGER.info("Using default lottery")
-
-    def parse_row(self, row):
-        """ Parse row data and append """
-        self._lottery.parse_row(row)
 
     def load_file(self, filename):
         """ Load data from CSV file in the results.  The data is the file is
@@ -59,13 +53,17 @@ class LotteryResults:
         """
         with open(filename, newline='') as csvfile:
             filereader = csv.reader(csvfile, delimiter=',', quotechar='|')
-            ignore_header = True
+            is_header = True
             for row in filereader:
-                if ignore_header:
+                if is_header:
                     self.parse_header(row)
-                    ignore_header = False
-                    continue
-                self._lottery.parse_row(row)
+                    is_header = False
+                else:
+                    # Get new draw,
+                    draw = self._lottery.get_new_draw()
+                    # Parse raw into a LotteryDraw object and adds to list of
+                    # draws.
+                    self._lottery.parse_row(draw, row)
         self._lottery.reverse_results()
 
     def get_lottery(self):

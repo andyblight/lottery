@@ -49,9 +49,9 @@ TBD
 Integrate next ticket generation with the importer so that I can use the output
 of the program.
 
-1. Get next ticket generation to work.
-1. Fix Lotto evaluation.
-1. Integrate with importer.
+1. Get next ticket generation to work.  DONE.
+1. Fix Lotto evaluation and generation.
+1. Integrate with importer.  DONE using script.
 
 ## Done
 

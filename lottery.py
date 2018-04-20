@@ -1,8 +1,8 @@
 #!/usr/bin/python3.6
-
 """ Generic lottery class """
 import datetime
 import logging
+import sys
 
 from lottery_utils import SetOfBalls
 
@@ -10,7 +10,6 @@ LOGGER = logging.getLogger('Lottery')
 
 
 class LotteryDraw:
-
     """ One draw from the CSV file. """
 
     def __init__(self):
@@ -25,7 +24,6 @@ class LotteryDraw:
 
 
 class LotteryParser:
-
     """ Parses the CSV data.
     There may be many parsers for each lottery.
     Each lottery has one or more parsers.
@@ -47,7 +45,6 @@ class LotteryParser:
 
 
 class LotteryTicket:
-
     """ Represents a lottery ticket.
         Implements all common operations for a lottery ticket.
     """
@@ -77,7 +74,7 @@ class LotteryTicketGenerationMethod:
         self.name = name
 
     def generate(self, draw_date, num_lines, ball_stats):
-        """ """
+        """ Generate a new ticket. """
         LOGGER.info('TODO' + str(num_lines) + str(ball_stats[0][0]))
         return LotteryTicket(draw_date)
 
@@ -89,22 +86,21 @@ class LotteryStatsGenerationMethod:
         self.name = name
 
     def analyse(self, lottery_results, date_range):
-        """ """
+        """ Analyse the results in the given date range. """
         pass
 
     def get_most_probable(self):
-        """ """
+        """ Return the most probable numbers. """
         LOGGER.info("TODO")
-        return []
+        return ()
 
     def get_least_probable(self):
-        """ """
+        """ Return the least probably numbers. """
         LOGGER.info("TODO")
-        return []
+        return ()
 
 
 class Lottery:
-
     """ The base class for all lotteries.
         This class implements the functions for a single set of balls (the most
         common type of lottery).
@@ -113,8 +109,7 @@ class Lottery:
     def __init__(self):
         """ Initialises the class. """
         self._name = 'default'
-        self.results = []
-        self._num_draws = 0
+        self.draws = []
         self._balls = SetOfBalls('default', 10)
         self._get_date_index = 0
         self._parser = None
@@ -141,9 +136,22 @@ class Lottery:
                 break
         return result
 
+    def parse_row(self, draw, row):
+        """ Read row data into the given draw.  """
+        if self._parser:
+            draw = self._parser.parse_row(row, draw)
+            self.draws.append(draw)
+        else:
+            print("ERROR: parser is", self._parser)
+            sys.exit(1)
+
+    def get_new_draw(self):
+        """ Return a new draw from the sub-class. """
+        pass
+
     def reverse_results(self):
         """ Reverses the order of the results. """
-        self.results.reverse()
+        self.draws.reverse()
 
     def get_sets_of_balls(self):
         """ Returns a list containing all sets of balls for this lottery. """
@@ -152,8 +160,8 @@ class Lottery:
     def get_date_range(self):
         """ Returns a tuple containing the earliest and latest dates in the
         results. """
-        first_date = self.results[0].draw_date
-        last_date = self.results[self._num_draws - 1].draw_date
+        first_date = self.draws[0].draw_date
+        last_date = self.draws[len(self.draws) - 1].draw_date
         return (first_date, last_date)
 
     def get_balls_in_date_range(self, oldest_date, newest_date):
@@ -167,7 +175,7 @@ class Lottery:
         """ Returns a tuple of lottery_draws in the give date range. """
         lottery_draws = []
         # LOGGER.info(date_from, date_to)
-        for lottery_draw in self.results:
+        for lottery_draw in self.draws:
             if lottery_draw.draw_date >= date_from \
                     and lottery_draw.draw_date <= date_to:
                 # LOGGER.info("Matched", lottery_draw.draw_date)

@@ -34,12 +34,12 @@ def convert_str_to_date(date_str):
 
 def frequency(max_num, ball_list):
     """ Creates a list of frequencies from the given ball list """
-    # print(ball_list)
+    #print(ball_list)
     frequency_of_balls = []
     for ball_number in range(1, max_num + 1):
         ball_count = 0
         for ball in ball_list:
-            # print(ball_number, ball_count, ball)
+            #print(ball_number, ball_count, ball)
             if ball_number == ball:
                 ball_count += 1
         frequency_of_balls.append((ball_number, ball_count))
@@ -48,7 +48,8 @@ def frequency(max_num, ball_list):
 
 def most_common_balls(ball_set_in, max_balls):
     """ Select most common balls.
-        Returns something like this [(9, 12), (2, 10), (3, 10)] when max_balls = 3.
+        Returns something like this [(9, 12), (2, 10), (3, 10)] when
+        max_balls = 3.
     """
     # print("max_balls", max_balls)
     # Copy the ball set to stop the given ball set being modified
@@ -58,7 +59,8 @@ def most_common_balls(ball_set_in, max_balls):
         # Find the highest ball value in the set
         highest_value = 0
         highest_index = 0
-        for index in range(0, len(ball_set)):
+        ball_set_len = len(ball_set)
+        for index in range(0, ball_set_len):
             ball_set_info = ball_set[index]
             if highest_value < ball_set_info[1]:
                 highest_value = ball_set_info[1]

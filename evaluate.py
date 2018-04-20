@@ -86,7 +86,7 @@ def evaluate_ticket(stats_method, ticket_method, ticket, lottery_results):
     for draw in four_weeks_results:
         logging.debug(draw.draw_date)
         for line in ticket.lines:
-            score = line.score(draw.line)
+            score = line.score(draw)
             logging.debug("et: winner %s", score[2])
             eval_result = EvaluationResult(stats_method, ticket_method.name,
                                            draw, score)
@@ -148,11 +148,11 @@ def collate_evaluation_results(evaluation_results):
     """ Collate the evaluation results into results for each combination of
         stats and ticket methods.
     """
-    # Each entry: key = stats method + ticket method, value = (number of wins, biggest win,
-    # [2 ball wins, 3 ball wins, 4 ball wins,...])
+    # Each entry: key = stats method + ticket method, value =
+    # (number of wins, biggest win, [2 ball wins, 3 ball wins, 4 ball wins,...])
     method_combination_scores = {}
     for eval_results in evaluation_results:
-        logging.info("wer: Date range: %s", eval_results[0])
+        logging.info("cer: Date range: %s", eval_results[0])
         for results in eval_results[1]:
             for eval_result in results:
                 key = eval_result.stats_method.name
@@ -168,8 +168,7 @@ def collate_evaluation_results(evaluation_results):
                     print("Inc winner count")
                     # Biggest winner (number of matched balls)
                     if eval_result.score[0] > method_combination_scores[key][1]:
-                        method_combination_scores[key][1] = eval_result.score[
-                            0]
+                        method_combination_scores[key][1] = eval_result.score[0]
                         print("Inc biggest winner")
                     # Add to list of number of winning balls.
                     method_combination_scores[key][2].append(
