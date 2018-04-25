@@ -43,9 +43,9 @@ def generate_date_range(results):
         [(most_recent, short_range, long_range), ...]
     where:
         most_recent = The date of the most "recent" draw.  This date moves from
-                      the past to the future to simulate real life.
+                    the past to the future to simulate real life.
         short_range = The date in the last few weeks.  Used for most often
-                      tests.
+                    tests.
         long_range = The date longest in the past.  Used for least often tests.
     """
     # FIXME Each lottery may need different settings.
@@ -62,7 +62,7 @@ def generate_date_range(results):
     for lottery_draw in draws_in_range:
         lottery_dates.append(lottery_draw.draw_date)
     # Generate date tuples
-    end_index = len(lottery_dates) - long_range_offset
+    end_index = len(lottery_dates) - 1
     most_recent = lottery_dates[end_index]
     short_range = lottery_dates[end_index - short_range_offset]
     long_range = lottery_dates[end_index - long_range_offset]
@@ -75,6 +75,7 @@ def generate_ticket(lottery_results, chosen_stats_method):
     """
     # Change to one date range.
     date_range = generate_date_range(lottery_results)
+    logging.debug("gt: date_range %s", str(date_range))
     stats_methods = lottery_results.get_lottery().\
         get_stats_generation_methods()
     # Select stats generation method.

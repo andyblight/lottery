@@ -18,6 +18,7 @@ from lottery_utils import SetOfBalls, convert_str_to_date, frequency, \
 
 LOGGER = logging.getLogger('Lotto')
 
+
 class LottoTicketLine:
     """ Represents a line of lottery numbers on a ticket. """
 
@@ -84,6 +85,7 @@ class LottoTicketLine:
                     main_matched += 1
                     matching_str = self._mark_ball(matching_str, iterator)
         return (main_matched, self._is_winner(main_matched), matching_str)
+
 
 class LottoDraw(LotteryDraw):
     """ Groups draw date and lottery line."""
@@ -218,8 +220,8 @@ class LotteryParserLottoNL(LotteryParser):
         draw.bonus_ball = int(row[7])
         draw.ball_set = int(row[8])
         draw.machine = row[9]
-        #print("AJB: NL:", draw.main_balls)
-        #print("AJB: NL:", draw.bonus_ball)
+        # print("AJB: NL:", draw.main_balls)
+        # print("AJB: NL:", draw.bonus_ball)
         return draw
 
 
@@ -284,10 +286,12 @@ class LotteryStatsGenerationMethodLotto1(LotteryStatsGenerationMethod):
         date_to = date_range[0]
         date_from = date_range[2]  # FIXME What about short_range???
         lottery = lottery_results.get_lottery()
-        balls_in_range_tuple = lottery.get_balls_in_date_range(date_from, date_to)
+        balls_in_range_tuple = lottery.get_balls_in_date_range(
+            date_from, date_to)
         LOGGER.debug("LSGML1:a %d", len(balls_in_range_tuple[0]))
         LOGGER.debug("LSGML1:a1 %s", str(balls_in_range_tuple[0]))
-        sets_of_balls = lottery.get_sets_of_balls()  # Returns one set in a list
+        sets_of_balls = lottery.get_sets_of_balls()
+        # Returns one set in a list
         num_balls = sets_of_balls[0].get_num_balls()
         LOGGER.info("LSGML1:a: NUM BALLS %d", num_balls)
         frequency_of_balls = frequency(num_balls, balls_in_range_tuple[0])
@@ -295,9 +299,11 @@ class LotteryStatsGenerationMethodLotto1(LotteryStatsGenerationMethod):
         num_likley = 3
         if num_balls > 20:
             num_likley = 7
-        self._main_balls_most_probable = most_common_balls(frequency_of_balls, num_likley)
+        self._main_balls_most_probable = most_common_balls(
+            frequency_of_balls, num_likley)
         # print("Most likely", self._main_balls_most_probable)
-        self._main_balls_least_probable = least_common_balls(frequency_of_balls, num_likley)
+        self._main_balls_least_probable = least_common_balls(
+            frequency_of_balls, num_likley)
         # print("Least likely", self._main_balls_least_probable)
 
     def get_most_probable(self):
@@ -319,7 +325,6 @@ class LotteryStatsGenerationMethodLotto1(LotteryStatsGenerationMethod):
         return (self._main_balls_least_probable)
 
 
-
 class LotteryLotto(Lottery):
     """ The UK Lotto lottery. """
 
@@ -332,10 +337,13 @@ class LotteryLotto(Lottery):
         self._available_parsers.append(LotteryParserLottoNL())
         self._available_parsers.append(LotteryParserLottoMW())
         # Ticket generation methods
-        self._ticket_generation_methods.append(LotteryTicketGenerationMethodLotto1())
-        self._ticket_generation_methods.append(LotteryTicketGenerationMethodLotto2())
+        self._ticket_generation_methods.append(
+            LotteryTicketGenerationMethodLotto1())
+        self._ticket_generation_methods.append(
+            LotteryTicketGenerationMethodLotto2())
         # Stats
-        self._stats_generation_methods.append(LotteryStatsGenerationMethodLotto1())
+        self._stats_generation_methods.append(
+            LotteryStatsGenerationMethodLotto1())
         # Debug
         LOGGER.info("Initialised parsers:")
         for parser in self._available_parsers:
@@ -357,10 +365,19 @@ class LotteryLotto(Lottery):
             selected using the same machine and is the last one selected.
             Therefore there is nothing special about the bonus ball.
         """
+        LOGGER.debug("LL:gbidr, len %d, from %s to %s", len(self.draws),
+                     str(oldest_date), str(newest_date))
         main_balls = []
         for lottery_draw in self.draws:
-            if lottery_draw.draw_date >= oldest_date and \
-                    lottery_draw.draw_date <= newest_date:
+            LOGGER.debug("LL:gbidr, lottery draw date %s",
+                         str(lottery_draw.draw_date))
+            gt_oldest = lottery_draw.draw_date >= oldest_date
+            lt_newest = lottery_draw.draw_date <= newest_date
+            LOGGER.debug("LL:gbidr, lottery draw date %s, gt %d, lt %d",
+                         str(lottery_draw.draw_date), gt_oldest, lt_newest)
+            if gt_oldest and lt_newest:
+                LOGGER.debug("LL:gbidr, draw: %d", lottery_draw.main_balls[0])
+                # Append all main balls to the given list
                 main_balls.append(lottery_draw.main_balls[0])
                 main_balls.append(lottery_draw.main_balls[1])
                 main_balls.append(lottery_draw.main_balls[2])
