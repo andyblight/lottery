@@ -158,18 +158,20 @@ def collate_evaluation_results(evaluation_results):
                 key = eval_result.stats_method.name
                 key += eval_result.ticket_method
                 # eval_result.draw
-                print(key, eval_result.score)
+                # print(key, eval_result.score)
+                logging.info("cer: key: %s, score: %s",
+                             str(key), str(eval_result.score))
                 # Add new entry if key not found.
                 if not method_combination_scores.get(key):
                     method_combination_scores[key] = [0, 0, []]
                 # Count of winners
                 if eval_result.score[1]:
                     method_combination_scores[key][0] += 1
-                    print("Inc winner count")
+                    # print("Inc winner count")
                     # Biggest winner (number of matched balls)
                     if eval_result.score[0] > method_combination_scores[key][1]:
                         method_combination_scores[key][1] = eval_result.score[0]
-                        print("Inc biggest winner")
+                        # print("Inc biggest winner")
                     # Add to list of number of winning balls.
                     method_combination_scores[key][2].append(
                         eval_result.score[0])
@@ -180,7 +182,7 @@ def print_collated_results(collated_results):
     """ Print the collated results. """
     print("")
     print("Collated results")
-    print("stats method + ticket method, total number of wins, num of balls of"
+    print("stats method + ticket method, total number of wins, num of balls of "
           "biggest win, [num winning balls, ...])")
     # AJB dict iterator
     for key, score in collated_results.items():
