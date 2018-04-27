@@ -34,27 +34,24 @@ Decide what to do about merging results CSV files for better analysis.
 
 ## Bugs
 
-Vary stats and ticket generation to improve evaluation.  Both stats methods are identical!!!
+Vary stats and ticket generation to improve evaluation.
 
-Look at the way date ranges are generated.  For the EuroMillions lottery, the date ranges may need to be generated per ball set, so generating a range of dates first thing may be wrong.  Certainly, I need to set a start date, so I
+* Both stats methods are identical!!!
+* Ticket generation is very simple.
+
+Look at the way date ranges are generated.  For the EuroMillions lottery, the
+date ranges may need to be generated per ball set, so generating a range of
+dates first thing may be wrong.  Certainly, I need to set a start date, so I
 can use past data sets to test prediction methods.  How far to go back
 depends on each lottery and each set of balls.
 
-## Future
-
-TBD
-
 ## In progress
 
-Integrate next ticket generation with the importer so that I can use the output
-of the program.
-
-1. Get next ticket generation to work.  DONE.
-1. Fix Lotto evaluation and generation.
-1. Integrate with importer.  DONE using script.
+Thinking!!!!
 
 ## Done
 
+20180426 Lotto evaluation and ticket gneration working again.
 20180405 next_ticket works for EuroMillions and MerseyWorld.
 20180402 Added new EuroMillions ticket generation method, most for main and least for lucky stars and reverse.
 20180401 Added importer utility.  Downloads 6 months of results for Lotto and Euromillions.

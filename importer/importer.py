@@ -85,6 +85,7 @@ def fetch_and_process(url, filename):
     logging.info(content)
     csv_list = parse_list(content)
     # print(csv_list)
+    logging.info("Writing data to: %s", filename)
     write_csv_file(filename, csv_list)
 
 
