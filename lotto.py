@@ -105,7 +105,7 @@ class LottoDraw(LotteryDraw):
         str1 = '{0:2d}  {1:2d}  {2:2d}  {3:2d}  {4:2d}  {5:2d}'.format(
             self.main_balls[0], self.main_balls[1], self.main_balls[2],
             self.main_balls[3], self.main_balls[4], self.main_balls[5])
-        str2 = 'Bonus ball {0:2d}  Ball set {1:2d}  Machine {2}'.format(
+        str2 = 'Bonus ball {0:2d}  Ball set {1:2d}  Machine {2} '.format(
             self.bonus_ball, self.ball_set, self.machine)
         return self.draw_date.isoformat() + ' Main balls: ' + str1 + '  ' + str2
 
@@ -118,30 +118,21 @@ class LotteryTicketGenerationMethodLotto1(LotteryTicketGenerationMethod):
     def __init__(self):
         LotteryTicketGenerationMethod.__init__(self, "Lotto1")
 
-    def generate(self, draw_date, num_lines, ball_stats):
+    def generate(self, draw_date, ball_stats):
         """ Generate a ticket. """
-        # FIXME Hardcoded lines
-        if num_lines != 2:
-            num_lines = 2
         ticket = LotteryTicket(draw_date)
-        # Debug
-        LOGGER.info("LTGML1: num_lines %d", num_lines)
         # List of tuples containing (ball num, frequency)
         most_probable = ball_stats.get_most_probable()
         LOGGER.info(most_probable)
         if most_probable[0]:
-            for num_lines_it in range(0, num_lines):
-                line = LottoTicketLine()
-                max_balls = len(line.main_balls)
-                LOGGER.info("LTGML1: max balls %d", max_balls)
-                for iterator in range(0, max_balls):
-                    line.main_balls[iterator] = most_probable[iterator][0]
-                    LOGGER.info("LTGML1: %s", line.as_string())
-                # Use alternate numbers for second line
-                if num_lines_it == 1:
-                    line.main_balls[5] = most_probable[max_balls - 1][0]
-                line.sort()
-                ticket.lines.append(line)
+            line = LottoTicketLine()
+            max_balls = len(line.main_balls)
+            LOGGER.info("LTGML1: max balls %d", max_balls)
+            for iterator in range(0, max_balls):
+                line.main_balls[iterator] = most_probable[iterator][0]
+                LOGGER.info("LTGML1: %s", line.as_string())
+            line.sort()
+            ticket.lines.append(line)
         else:
             LOGGER.error("LTGML1: most probable is empty")
         LOGGER.info("LTGML1: ticket printout")
@@ -157,30 +148,21 @@ class LotteryTicketGenerationMethodLotto2(LotteryTicketGenerationMethod):
     def __init__(self):
         LotteryTicketGenerationMethod.__init__(self, "Lotto2")
 
-    def generate(self, draw_date, num_lines, ball_stats):
+    def generate(self, draw_date, ball_stats):
         """ Generate a ticket. """
-        # FIXME Hardcoded lines
-        if num_lines != 2:
-            num_lines = 2
         ticket = LotteryTicket(draw_date)
-        # Debug
-        LOGGER.info("LTGML1: num_lines %d", num_lines)
         # List of tuples containing (ball num, frequency)
         least_probable = ball_stats.get_least_probable()
         LOGGER.info(least_probable)
         if least_probable[0]:
-            for num_lines_it in range(0, num_lines):
-                line = LottoTicketLine()
-                max_balls = len(line.main_balls)
-                LOGGER.info("LTGML1: max balls %d", max_balls)
-                for iterator in range(0, max_balls):
-                    line.main_balls[iterator] = least_probable[iterator][0]
-                    LOGGER.info("LTGML1: %s", line.as_string())
-                # Use alternate numbers for second line
-                if num_lines_it == 1:
-                    line.main_balls[5] = least_probable[max_balls - 1][0]
-                line.sort()
-                ticket.lines.append(line)
+            line = LottoTicketLine()
+            max_balls = len(line.main_balls)
+            LOGGER.info("LTGML1: max balls %d", max_balls)
+            for iterator in range(0, max_balls):
+                line.main_balls[iterator] = least_probable[iterator][0]
+                LOGGER.info("LTGML1: %s", line.as_string())
+            line.sort()
+            ticket.lines.append(line)
         else:
             LOGGER.error("LTGML1: most probable is empty")
         LOGGER.info("LTGML1: ticket printout")

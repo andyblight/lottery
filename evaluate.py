@@ -135,8 +135,7 @@ def generate_and_evaluate(lottery_results):
             ).get_ticket_generation_methods()
             for ticket_method in ticket_methods:
                 logging.debug("gae: ticket %s", ticket_method.name)
-                ticket = ticket_method.generate(date_range[0], num_lines,
-                                                stats_method)
+                ticket = ticket_method.generate(date_range[0], stats_method)
                 results = evaluate_ticket(stats_method, ticket_method, ticket,
                                           lottery_results)
                 eval_results.append(results)

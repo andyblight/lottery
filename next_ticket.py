@@ -13,6 +13,8 @@ from lottery_results import LotteryResults
 
 EURO_STATS_NAME = "Euro1"
 LOTTO_STATS_NAME = "Lotto1"
+EURO_TICKET_METHOD = "Euro4"
+LOTTO_TICKET_METHOD = "Lotto1"
 
 
 def setup_logging(args):
@@ -69,7 +71,7 @@ def generate_date_range(results):
     return (most_recent, short_range, long_range)
 
 
-def generate_ticket(lottery_results, chosen_stats_method):
+def generate_ticket(lottery_results, chosen_stats_method, chosen_ticket_method):
     """ Generate a ticket using the selected stats and ticket generation
     method.
     """
@@ -88,10 +90,10 @@ def generate_ticket(lottery_results, chosen_stats_method):
                 get_ticket_generation_methods()
             for ticket_method in ticket_methods:
                 logging.debug("gt: ticket %s", ticket_method.name)
-                num_lines = 4  # FIXME HACK!!!!
-                ticket = ticket_method.generate(date_range[0], num_lines,
-                                                stats_method)
-                ticket.print(True)
+                if ticket_method.name == chosen_ticket_method:
+                    ticket = ticket_method.generate(date_range[0], stats_method)
+                    ticket.print(True)
+                    break
             break
 
 
@@ -104,11 +106,13 @@ def run():
     lottery_name = results.get_lottery().get_name()
     if lottery_name == "EuroMillions":
         stats_method = EURO_STATS_NAME
+        ticket_method = EURO_TICKET_METHOD
     elif lottery_name == "Lotto":
         stats_method = LOTTO_STATS_NAME
+        ticket_method = LOTTO_TICKET_METHOD
     else:
         logging.error("Unknown lottery %s", lottery_name)
-    generate_ticket(results, stats_method)
+    generate_ticket(results, stats_method, ticket_method)
 
 
 if __name__ == "__main__":

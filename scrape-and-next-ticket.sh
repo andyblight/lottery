@@ -17,4 +17,4 @@ cd importer
 ./importer.py
 cd ..
 ./next_ticket.py lotto.csv
-./next_ticket.py euromillions-2017.csv
+./next_ticket.py euromillions.csv

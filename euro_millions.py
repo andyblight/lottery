@@ -127,32 +127,22 @@ class LotteryTicketGenerationMethodEuro1(LotteryTicketGenerationMethod):
     def __init__(self):
         LotteryTicketGenerationMethod.__init__(self, "Euro1")
 
-    def generate(self, draw_date, num_lines, ball_stats):
+    def generate(self, draw_date, ball_stats):
         """ Generate a ticket. """
-        # FIXME Hardcoded lines
-        if num_lines != 2:
-            num_lines = 2
         ticket = LotteryTicket(draw_date)
-        # Debug
-        LOGGER.info("TGME1: %d", num_lines)
         most_probable = ball_stats.get_most_probable()
         LOGGER.info(most_probable[0])
         LOGGER.info(most_probable[1])
         if most_probable[0] and most_probable[1]:
-            for num_lines_it in range(0, num_lines):
-                line = EuroMillionsLine()
-                num_main_balls = len(line.main_balls)
-                num_lucky_stars = len(line.lucky_stars)
-                for iterator in range(0, num_main_balls):
-                    line.main_balls[iterator] = most_probable[0][iterator][0]
-                for iterator in range(0, num_lucky_stars):
-                    line.lucky_stars[iterator] = most_probable[1][iterator][0]
-                # Use alternate numbers for second line
-                if num_lines_it == 1:
-                    line.main_balls[4] = most_probable[0][num_main_balls][0]
-                    line.lucky_stars[1] = most_probable[1][num_lucky_stars][0]
-                line.sort()
-                ticket.lines.append(line)
+            line = EuroMillionsLine()
+            num_main_balls = len(line.main_balls)
+            num_lucky_stars = len(line.lucky_stars)
+            for iterator in range(0, num_main_balls):
+                line.main_balls[iterator] = most_probable[0][iterator][0]
+            for iterator in range(0, num_lucky_stars):
+                line.lucky_stars[iterator] = most_probable[1][iterator][0]
+            line.sort()
+            ticket.lines.append(line)
         else:
             LOGGER.error("TGME1: most probable is empty")
         LOGGER.info("TGME1: ticket printout")
@@ -168,31 +158,22 @@ class LotteryTicketGenerationMethodEuro2(LotteryTicketGenerationMethod):
     def __init__(self):
         LotteryTicketGenerationMethod.__init__(self, "Euro2")
 
-    def generate(self, draw_date, num_lines, ball_stats):
+    def generate(self, draw_date, ball_stats):
         """ """
-        # HACK
-        if num_lines != 2:
-            num_lines = 2
         ticket = LotteryTicket(draw_date)
         # Debug
-        LOGGER.info("TGME2: %d", num_lines)
         least_probable = ball_stats.get_least_probable()
         LOGGER.info(least_probable[0])
         LOGGER.info(least_probable[1])
         if least_probable[0] and least_probable[1]:
-            for num_lines_it in range(0, num_lines):
-                line = EuroMillionsLine()
-                num_main_balls = len(line.main_balls)
-                num_lucky_stars = len(line.lucky_stars)
-                for iterator in range(0, num_main_balls):
-                    line.main_balls[iterator] = least_probable[0][iterator][0]
-                for iterator in range(0, num_lucky_stars):
-                    line.lucky_stars[iterator] = least_probable[1][iterator][0]
-                # Use alternate numbers for second line
-                if num_lines_it == 1:
-                    line.main_balls[4] = least_probable[0][num_main_balls][0]
-                    line.lucky_stars[1] = least_probable[1][num_lucky_stars][0]
-                line.sort()
+            line = EuroMillionsLine()
+            num_main_balls = len(line.main_balls)
+            num_lucky_stars = len(line.lucky_stars)
+            for iterator in range(0, num_main_balls):
+                line.main_balls[iterator] = least_probable[0][iterator][0]
+            for iterator in range(0, num_lucky_stars):
+                line.lucky_stars[iterator] = least_probable[1][iterator][0]
+            line.sort()
             ticket.lines.append(line)
         else:
             LOGGER.error("TGME2: least probable is empty")
@@ -209,11 +190,9 @@ class LotteryTicketGenerationMethodEuro3(LotteryTicketGenerationMethod):
     def __init__(self):
         LotteryTicketGenerationMethod.__init__(self, "Euro3")
 
-    def generate(self, draw_date, num_lines, ball_stats):
+    def generate(self, draw_date, ball_stats):
         """ """
         ticket = LotteryTicket(draw_date)
-        # Debug
-        LOGGER.info("TGME3: %d", num_lines)
         # Most probable
         most_probable = ball_stats.get_most_probable()
         LOGGER.info(most_probable[0])
@@ -252,11 +231,9 @@ class LotteryTicketGenerationMethodEuro4(LotteryTicketGenerationMethod):
     def __init__(self):
         LotteryTicketGenerationMethod.__init__(self, "Euro4")
 
-    def generate(self, draw_date, num_lines, ball_stats):
+    def generate(self, draw_date, ball_stats):
         """ """
         ticket = LotteryTicket(draw_date)
-        # Debug
-        LOGGER.info("TGME4: %d", num_lines)
         # Most probable
         most_probable = ball_stats.get_most_probable()
         LOGGER.info(most_probable[0])
