@@ -9,13 +9,12 @@ at your own risk.
 
 ## TODO
 
-Use each generator to create one line.  Things to try:
+Create several different ticket generation methods to evaluate using the scores.
+Each line generator creates one line that is addd to a ticket.  Things to try:
 
 * Look at short term (less than n) results to pick up "hot" numbers.
 * Look at longer term (more than n) results for numbers that haven't  come up in a long time.
 * Look at winning results and look for patterns in previous draws.
-
-Create several different ticket generation methods to evaluate using the scores.
 
 Create more analysis tools to improve ticket generation.
 
@@ -50,6 +49,10 @@ can use past data sets to test prediction methods.  How far to go back
 depends on each lottery and each set of balls.
 
 ## In progress
+
+Removed num_lines from ticket generation methods.
+Change names of ticket generation to line generation.
+Noticed that removing the alternate path in ticket generation reduced number of winners.
 
 Euro4 Ticket generation seems to produce the most winners.  Modify
 next_ticket.py to generate ticket based on specified methods.

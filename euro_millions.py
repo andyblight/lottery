@@ -5,7 +5,7 @@ import datetime
 import logging
 
 from lottery import Lottery, LotteryTicket, LotteryDraw, LotteryParser, \
-    LotteryTicketGenerationMethod, LotteryStatsGenerationMethod
+    LotteryTicketLineGenerator, LotteryStatsGenerationMethod
 from lottery_utils import SetOfBalls, convert_str_to_date, frequency, \
     most_common_balls, least_common_balls
 
@@ -119,22 +119,21 @@ class EuroMillionsDraw(LotteryDraw):
         return self.draw_date.isoformat() + ' ' + self.line.as_string()
 
 
-class LotteryTicketGenerationMethodEuro1(LotteryTicketGenerationMethod):
-    """ Ticket generation method concrete class.
+class LotteryTicketLineGeneratorEuro1(LotteryTicketLineGenerator):
+    """ Ticket line generation method concrete class.
         Use most common stats.
     """
 
     def __init__(self):
-        LotteryTicketGenerationMethod.__init__(self, "Euro1")
+        LotteryTicketLineGenerator.__init__(self, "Euro1")
 
-    def generate(self, draw_date, ball_stats):
-        """ Generate a ticket. """
-        ticket = LotteryTicket(draw_date)
-        most_probable = ball_stats.get_most_probable()
+    def generate(self, stats_method):
+        """ Generate a line. """
+        line = EuroMillionsLine()
+        most_probable = stats_method.get_most_probable()
         LOGGER.info(most_probable[0])
         LOGGER.info(most_probable[1])
         if most_probable[0] and most_probable[1]:
-            line = EuroMillionsLine()
             num_main_balls = len(line.main_balls)
             num_lucky_stars = len(line.lucky_stars)
             for iterator in range(0, num_main_balls):
@@ -142,31 +141,27 @@ class LotteryTicketGenerationMethodEuro1(LotteryTicketGenerationMethod):
             for iterator in range(0, num_lucky_stars):
                 line.lucky_stars[iterator] = most_probable[1][iterator][0]
             line.sort()
-            ticket.lines.append(line)
         else:
-            LOGGER.error("TGME1: most probable is empty")
-        LOGGER.info("TGME1: ticket printout")
-        ticket.print(False)
-        return ticket
+            LOGGER.error("LTLGE1: most probable is empty")
+        return line
 
 
-class LotteryTicketGenerationMethodEuro2(LotteryTicketGenerationMethod):
-    """ Ticket generation method concrete class.
+class LotteryTicketLineGeneratorEuro2(LotteryTicketLineGenerator):
+    """ Ticket line generation method concrete class.
         Use least common balls.
      """
 
     def __init__(self):
-        LotteryTicketGenerationMethod.__init__(self, "Euro2")
+        LotteryTicketLineGenerator.__init__(self, "Euro2")
 
-    def generate(self, draw_date, ball_stats):
-        """ """
-        ticket = LotteryTicket(draw_date)
+    def generate(self, stats_method):
+        """ Generate a line. """
+        line = EuroMillionsLine()
         # Debug
-        least_probable = ball_stats.get_least_probable()
+        least_probable = stats_method.get_least_probable()
         LOGGER.info(least_probable[0])
         LOGGER.info(least_probable[1])
         if least_probable[0] and least_probable[1]:
-            line = EuroMillionsLine()
             num_main_balls = len(line.main_balls)
             num_lucky_stars = len(line.lucky_stars)
             for iterator in range(0, num_main_balls):
@@ -174,36 +169,31 @@ class LotteryTicketGenerationMethodEuro2(LotteryTicketGenerationMethod):
             for iterator in range(0, num_lucky_stars):
                 line.lucky_stars[iterator] = least_probable[1][iterator][0]
             line.sort()
-            ticket.lines.append(line)
         else:
-            LOGGER.error("TGME2: least probable is empty")
-        LOGGER.info("TGME2: ticket printout")
-        ticket.print(False)
-        return ticket
+            LOGGER.error("LTLGE2: least probable is empty")
+        return line
 
 
-class LotteryTicketGenerationMethodEuro3(LotteryTicketGenerationMethod):
-    """ Ticket generation method concrete class.
+class LotteryTicketLineGeneratorEuro3(LotteryTicketLineGenerator):
+    """ Ticket line generation method concrete class.
         Use mixture of most for main and least for luck stars.
      """
 
     def __init__(self):
-        LotteryTicketGenerationMethod.__init__(self, "Euro3")
+        LotteryTicketLineGenerator.__init__(self, "Euro3")
 
-    def generate(self, draw_date, ball_stats):
+    def generate(self, stats_method):
         """ """
-        ticket = LotteryTicket(draw_date)
+        line = EuroMillionsLine()
         # Most probable
-        most_probable = ball_stats.get_most_probable()
+        most_probable = stats_method.get_most_probable()
         LOGGER.info(most_probable[0])
         LOGGER.info(most_probable[1])
         if most_probable[0] and most_probable[1]:
-            least_probable = ball_stats.get_least_probable()
+            least_probable = stats_method.get_least_probable()
             LOGGER.info(least_probable[0])
             LOGGER.info(least_probable[1])
             if least_probable[0] and least_probable[1]:
-                # FIXME Hard coded for one line
-                line = EuroMillionsLine()
                 num_main_balls = len(line.main_balls)
                 num_lucky_stars = len(line.lucky_stars)
                 # Use most probable for main balls and least probable for
@@ -213,38 +203,33 @@ class LotteryTicketGenerationMethodEuro3(LotteryTicketGenerationMethod):
                 for iterator in range(0, num_lucky_stars):
                     line.lucky_stars[iterator] = least_probable[1][iterator][0]
                 line.sort()
-                ticket.lines.append(line)
             else:
-                LOGGER.error("TGME3: least probable is empty")
+                LOGGER.error("LTLGE3: least probable is empty")
         else:
-            LOGGER.error("TGME3: most probable is empty")
-        LOGGER.info("TGME3: ticket printout")
-        ticket.print(False)
-        return ticket
+            LOGGER.error("LTLGE3: most probable is empty")
+        return line
 
 
-class LotteryTicketGenerationMethodEuro4(LotteryTicketGenerationMethod):
-    """ Ticket generation method concrete class.
+class LotteryTicketLineGeneratorEuro4(LotteryTicketLineGenerator):
+    """ Ticket line generation method concrete class.
         Use mixture of most and least.
      """
 
     def __init__(self):
-        LotteryTicketGenerationMethod.__init__(self, "Euro4")
+        LotteryTicketLineGenerator.__init__(self, "Euro4")
 
-    def generate(self, draw_date, ball_stats):
+    def generate(self, stats_method):
         """ """
-        ticket = LotteryTicket(draw_date)
+        line = EuroMillionsLine()
         # Most probable
-        most_probable = ball_stats.get_most_probable()
+        most_probable = stats_method.get_most_probable()
         LOGGER.info(most_probable[0])
         LOGGER.info(most_probable[1])
         if most_probable[0] and most_probable[1]:
-            least_probable = ball_stats.get_least_probable()
+            least_probable = stats_method.get_least_probable()
             LOGGER.info(least_probable[0])
             LOGGER.info(least_probable[1])
             if least_probable[0] and least_probable[1]:
-                # FIXME Hard coded for one line
-                line = EuroMillionsLine()
                 num_main_balls = len(line.main_balls)
                 num_lucky_stars = len(line.lucky_stars)
                 # Use least probable for main balls and most probable for
@@ -254,14 +239,11 @@ class LotteryTicketGenerationMethodEuro4(LotteryTicketGenerationMethod):
                 for iterator in range(0, num_lucky_stars):
                     line.lucky_stars[iterator] = most_probable[1][iterator][0]
                 line.sort()
-                ticket.lines.append(line)
             else:
-                LOGGER.error("TGME4: least probable is empty")
+                LOGGER.error("LTLGE4: least probable is empty")
         else:
-            LOGGER.error("TGME4: most probable is empty")
-        LOGGER.info("TGME4: ticket printout")
-        ticket.print(False)
-        return ticket
+            LOGGER.error("LTLGE4: most probable is empty")
+        return line
 
 
 class LotteryParserEuromillionsNL(LotteryParser):
@@ -476,14 +458,14 @@ class LotteryEuroMillions(Lottery):
         self._available_parsers.append(LotteryParserEuromillionsNL())
         self._available_parsers.append(LotteryParserEuromillionsMW())
         # Ticket generation methods
-        self._ticket_generation_methods.append(
-            LotteryTicketGenerationMethodEuro1())
-        self._ticket_generation_methods.append(
-            LotteryTicketGenerationMethodEuro2())
-        self._ticket_generation_methods.append(
-            LotteryTicketGenerationMethodEuro3())
-        self._ticket_generation_methods.append(
-            LotteryTicketGenerationMethodEuro4())
+        self._line_generation_methods.append(
+            LotteryTicketLineGeneratorEuro1())
+        self._line_generation_methods.append(
+            LotteryTicketLineGeneratorEuro2())
+        self._line_generation_methods.append(
+            LotteryTicketLineGeneratorEuro3())
+        self._line_generation_methods.append(
+            LotteryTicketLineGeneratorEuro4())
         # Stats
         self._stats_generation_methods.append(
             LotteryStatsGenerationMethodEuro1())

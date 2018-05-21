@@ -53,7 +53,7 @@ class LotteryTicket:
         # LOGGER.info("Set date EM", draw_date)
         self.draw_date = draw_date
         self.stats_generation_name = ""
-        self.ticket_generation_name = ""
+        self.line_generation_name = ""
         self.lines = []
 
     def print(self, printout):
@@ -67,16 +67,16 @@ class LotteryTicket:
                 LOGGER.info(line.as_string())
 
 
-class LotteryTicketGenerationMethod:
-    """ Ticket generation method base class """
+class LotteryTicketLineGenerator:
+    """ Line generation method base class """
 
     def __init__(self, name):
         self.name = name
+        self.balls = []
 
-    def generate(self, draw_date, num_lines, ball_stats):
-        """ Generate a new ticket. """
-        LOGGER.info('TODO' + str(num_lines) + str(ball_stats[0][0]))
-        return LotteryTicket(draw_date)
+    def generate(self, stats_method):
+        """ Generate a new line using the ball stats. """
+        LOGGER.info('TODO' + str(ball_stats))
 
 
 class LotteryStatsGenerationMethod:
@@ -87,7 +87,8 @@ class LotteryStatsGenerationMethod:
 
     def analyse(self, lottery_results, date_range):
         """ Analyse the results in the given date range. """
-        pass
+        LOGGER.error("TODO")
+        return ()
 
     def get_most_probable(self):
         """ Return the most probable numbers. """
@@ -115,7 +116,7 @@ class Lottery:
         self._parser = None
         self._available_parsers = []
         # Generation methods are added by the concrete classes.
-        self._ticket_generation_methods = []
+        self._line_generation_methods = []
         self._stats_generation_methods = []
 
     def get_name(self):
@@ -148,6 +149,10 @@ class Lottery:
     def get_new_draw(self):
         """ Return a new draw from the sub-class. """
         pass
+
+    def get_new_ticket(self, ticket_datetime):
+        """ Return a new ticket. """
+        return LotteryTicket(ticket_datetime)
 
     def reverse_results(self):
         """ Reverses the order of the results. """
@@ -182,12 +187,12 @@ class Lottery:
                 lottery_draws.append(lottery_draw)
         return lottery_draws
 
-    def get_ticket_generation_methods(self):
-        """ Returns the list of ticket generation methods owned by this class.
+    def get_line_generation_methods(self):
+        """ Returns the list of line generation methods owned by this class.
         """
-        return self._ticket_generation_methods
+        return self._line_generation_methods
 
     def get_stats_generation_methods(self):
-        """ Returns the list of ticket generation methods owned by this class.
+        """ Returns the list of stats generation methods owned by this class.
         """
         return self._stats_generation_methods

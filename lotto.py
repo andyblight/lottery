@@ -12,7 +12,7 @@ import datetime
 import logging
 
 from lottery import Lottery, LotteryTicket, LotteryDraw, LotteryParser, \
-    LotteryTicketGenerationMethod, LotteryStatsGenerationMethod
+    LotteryTicketLineGenerator, LotteryStatsGenerationMethod
 from lottery_utils import SetOfBalls, convert_str_to_date, frequency, \
     most_common_balls, least_common_balls
 
@@ -110,64 +110,56 @@ class LottoDraw(LotteryDraw):
         return self.draw_date.isoformat() + ' Main balls: ' + str1 + '  ' + str2
 
 
-class LotteryTicketGenerationMethodLotto1(LotteryTicketGenerationMethod):
-    """ Ticket generation method concrete class.
+class LotteryTicketLineGeneratorLotto1(LotteryTicketLineGenerator):
+    """ Line generation method concrete class.
         Use most common stats.
     """
 
     def __init__(self):
-        LotteryTicketGenerationMethod.__init__(self, "Lotto1")
+        LotteryTicketLineGenerator.__init__(self, "Lotto1")
 
-    def generate(self, draw_date, ball_stats):
-        """ Generate a ticket. """
-        ticket = LotteryTicket(draw_date)
+    def generate(self, ball_stats):
+        """ Generate a line. """
+        line = LottoTicketLine()
         # List of tuples containing (ball num, frequency)
         most_probable = ball_stats.get_most_probable()
         LOGGER.info(most_probable)
         if most_probable[0]:
-            line = LottoTicketLine()
             max_balls = len(line.main_balls)
-            LOGGER.info("LTGML1: max balls %d", max_balls)
+            LOGGER.info("LTLGL1: max balls %d", max_balls)
             for iterator in range(0, max_balls):
                 line.main_balls[iterator] = most_probable[iterator][0]
-                LOGGER.info("LTGML1: %s", line.as_string())
+                LOGGER.info("LTLGL1: %s", line.as_string())
             line.sort()
-            ticket.lines.append(line)
         else:
-            LOGGER.error("LTGML1: most probable is empty")
-        LOGGER.info("LTGML1: ticket printout")
-        ticket.print(False)
-        return ticket
+            LOGGER.error("LTLGL1: most probable is empty")
+        return line
 
 
-class LotteryTicketGenerationMethodLotto2(LotteryTicketGenerationMethod):
+class LotteryTicketLineGeneratorLotto2(LotteryTicketLineGenerator):
     """ Ticket generation method concrete class.
         Use least common stats.
     """
 
     def __init__(self):
-        LotteryTicketGenerationMethod.__init__(self, "Lotto2")
+        LotteryTicketLineGenerator.__init__(self, "Lotto2")
 
-    def generate(self, draw_date, ball_stats):
-        """ Generate a ticket. """
-        ticket = LotteryTicket(draw_date)
+    def generate(self, ball_stats):
+        """ Generate a line. """
+        line = LottoTicketLine()
         # List of tuples containing (ball num, frequency)
         least_probable = ball_stats.get_least_probable()
         LOGGER.info(least_probable)
         if least_probable[0]:
-            line = LottoTicketLine()
             max_balls = len(line.main_balls)
-            LOGGER.info("LTGML1: max balls %d", max_balls)
+            LOGGER.info("LTLGL2: max balls %d", max_balls)
             for iterator in range(0, max_balls):
                 line.main_balls[iterator] = least_probable[iterator][0]
-                LOGGER.info("LTGML1: %s", line.as_string())
+                LOGGER.info("LTLGL2: %s", line.as_string())
             line.sort()
-            ticket.lines.append(line)
         else:
-            LOGGER.error("LTGML1: most probable is empty")
-        LOGGER.info("LTGML1: ticket printout")
-        ticket.print(False)
-        return ticket
+            LOGGER.error("LTLGL2: most probable is empty")
+        return line
 
 
 class LotteryParserLottoNL(LotteryParser):
@@ -319,10 +311,10 @@ class LotteryLotto(Lottery):
         self._available_parsers.append(LotteryParserLottoNL())
         self._available_parsers.append(LotteryParserLottoMW())
         # Ticket generation methods
-        self._ticket_generation_methods.append(
-            LotteryTicketGenerationMethodLotto1())
-        self._ticket_generation_methods.append(
-            LotteryTicketGenerationMethodLotto2())
+        self._line_generation_methods.append(
+            LotteryTicketLineGeneratorLotto1())
+        self._line_generation_methods.append(
+            LotteryTicketLineGeneratorLotto2())
         # Stats
         self._stats_generation_methods.append(
             LotteryStatsGenerationMethodLotto1())

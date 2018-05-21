@@ -87,11 +87,21 @@ LotteryResults
 	-available_lotteries[] of Lottery - uses these to find the right parser.
 
 LotteryDraw
+	A list of the balls drawn on a specific day.
 	+draw_date
+	+balls[]
 
 LotteryParser
 	None
 
-TicketLine is a single line on a ticket.  It has:
-	balls[]
-	+score(draw) - returns a Score based on the given draw data.
+LotteryTicketLine.
+	A list of balls that appear on one line of a ticket for the lottery.
+	ctor - stats_method_name, line_generator_name.
+	+balls[][] - list of lists of the balls in the line. To cope with EuroMillions.
+	+as_string() - returns a string of the line including the generation methods.
+	+score(draw) - returns a Score of the line based on the given draw data.
+
+LotteryLineGenerator
+	+name() - Returns the nme of the licket line.
+	+generate(ball_stats) - Sets the balls[] to values based on algorithms
+		using the ball_stats

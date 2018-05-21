@@ -4,6 +4,7 @@
 """
 
 import csv
+import datetime
 import logging
 
 from euro_millions import LotteryEuroMillions
@@ -69,3 +70,17 @@ class LotteryResults:
     def get_lottery(self):
         """ Returns the lottery instance. """
         return self._lottery
+
+    def generate_ticket(self, ball_stats, line_method_names):
+        """ Generates a ticket using the chosen line methods. """
+        ticket_datetime = datetime.datetime.now()
+        ticket = self.get_lottery().get_new_ticket(ticket_datetime)
+        line_methods = self.get_lottery().get_line_generation_methods()
+        for line_name in line_method_names:
+            for line_method in line_methods:
+                logging.debug("LR.gt: line %s", line_method.name)
+                if line_method.name == line_name:
+                    line = line_method.generate(ball_stats)
+                    ticket.lines.append(line)
+                    break
+        return ticket

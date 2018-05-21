@@ -71,10 +71,10 @@ def generate_date_ranges(results):
         long_range = lottery_dates[i]
         date_ranges.append((most_recent, short_range, long_range))
     # print("HACK", date_ranges)
-    return date_ranges
+line return date_ranges
 
 
-def evaluate_ticket(stats_method, ticket_method, ticket, lottery_results):
+def evaluate_line(stats_method, ticket_method, line, lottery_results):
     """ Evaluates one ticket against the next four draws. """
     eval_results = []
     start_date = ticket.draw_date
@@ -130,13 +130,12 @@ def generate_and_evaluate(lottery_results):
         for stats_method in stats_methods:
             logging.debug("gae: stats %s", stats_method.name)
             stats_method.analyse(lottery_results, date_range)
-            num_lines = 4  # FIXME HACK!!!!
-            ticket_methods = lottery_results.get_lottery(
-            ).get_ticket_generation_methods()
-            for ticket_method in ticket_methods:
-                logging.debug("gae: ticket %s", ticket_method.name)
-                ticket = ticket_method.generate(date_range[0], stats_method)
-                results = evaluate_ticket(stats_method, ticket_method, ticket,
+            line_methods = lottery_results.get_lottery(
+            ).get_line_generation_methods()
+            for line_method in line_methods:
+                logging.debug("gae: ticket %s", line_method.name)
+                line = line_method.generate(date_range[0], stats_method)
+                results = evaluate_line(stats_method, line_method, line,
                                           lottery_results)
                 eval_results.append(results)
         evaluation_results.append((range, eval_results))
