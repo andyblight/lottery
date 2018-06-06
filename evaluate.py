@@ -12,6 +12,8 @@ import os
 
 from lottery_results import LotteryResults
 
+NUMBER_OF_WEEKS = 4
+
 
 class EvaluationResult:
     """ Info about how each method performed. """
@@ -71,26 +73,23 @@ def generate_date_ranges(results):
         long_range = lottery_dates[i]
         date_ranges.append((most_recent, short_range, long_range))
     # print("HACK", date_ranges)
-line return date_ranges
+    return date_ranges
 
 
-def evaluate_line(stats_method, ticket_method, line, lottery_results):
-    """ Evaluates one ticket against the next four draws. """
+def evaluate_line(start_date, num_weeks, stats_name, line_name, line,
+                  lottery_results):
+    """ Evaluates one ticket line against the next four draws. """
     eval_results = []
-    start_date = ticket.draw_date
-    # FIXME Hardcoded 4 weeks
-    end_date = start_date + datetime.timedelta(weeks=4)
+    end_date = start_date + datetime.timedelta(weeks=num_weeks)
     four_weeks_results = lottery_results.get_lottery().get_draws_in_date_range(
         start_date, end_date)
-    logging.debug("et: printing draws")
+    logging.debug("el: printing draws")
     for draw in four_weeks_results:
         logging.debug(draw.draw_date)
-        for line in ticket.lines:
-            score = line.score(draw)
-            logging.debug("et: winner %s", score[2])
-            eval_result = EvaluationResult(stats_method, ticket_method.name,
-                                           draw, score)
-            eval_results.append(eval_result)
+        score = line.score(draw)
+        logging.debug("el: winner %s", score[2])
+        eval_result = EvaluationResult(stats_name, line_name, draw, score)
+        eval_results.append(eval_result)
     return eval_results
 
 
@@ -134,10 +133,11 @@ def generate_and_evaluate(lottery_results):
             ).get_line_generation_methods()
             for line_method in line_methods:
                 logging.debug("gae: ticket %s", line_method.name)
-                line = line_method.generate(date_range[0], stats_method)
-                results = evaluate_line(stats_method, line_method, line,
-                                          lottery_results)
-                eval_results.append(results)
+                line = line_method.generate(stats_method)
+                line_result = evaluate_line(date_range[0], NUMBER_OF_WEEKS,
+                                        stats_method.name, line_method.name,
+                                        line, lottery_results)
+                eval_results.append(line_result)
         evaluation_results.append((range, eval_results))
     return evaluation_results
 
@@ -151,28 +151,27 @@ def collate_evaluation_results(evaluation_results):
     method_combination_scores = {}
     for eval_results in evaluation_results:
         logging.info("cer: Date range: %s", eval_results[0])
-        for results in eval_results[1]:
-            for eval_result in results:
-                key = eval_result.stats_method.name
-                key += eval_result.ticket_method
+        for line_result in eval_results[1]:
+            for result in line_result:
+                key = result.stats_method
+                key += result.ticket_method
                 # eval_result.draw
                 # print(key, eval_result.score)
-                logging.info("cer: key: %s, score: %s",
-                             str(key), str(eval_result.score))
+                logging.info("cer: key: %s, score: %s", str(key),
+                             str(result.score))
                 # Add new entry if key not found.
                 if not method_combination_scores.get(key):
                     method_combination_scores[key] = [0, 0, []]
                 # Count of winners
-                if eval_result.score[1]:
+                if result.score[1]:
                     method_combination_scores[key][0] += 1
                     # print("Inc winner count")
                     # Biggest winner (number of matched balls)
-                    if eval_result.score[0] > method_combination_scores[key][1]:
-                        method_combination_scores[key][1] = eval_result.score[0]
+                    if result.score[0] > method_combination_scores[key][1]:
+                        method_combination_scores[key][1] = result.score[0]
                         # print("Inc biggest winner")
                     # Add to list of number of winning balls.
-                    method_combination_scores[key][2].append(
-                        eval_result.score[0])
+                    method_combination_scores[key][2].append(result.score[0])
     return method_combination_scores
 
 
@@ -180,8 +179,8 @@ def print_collated_results(collated_results):
     """ Print the collated results. """
     print("")
     print("Collated results")
-    print("stats method + ticket method, total number of wins, num of balls of "
-          "biggest win, [num winning balls, ...])")
+    print("stats method + ticket method, total number of wins, num of balls "
+          "of biggest win, [num winning balls, ...])")
     # AJB dict iterator
     for key, score in collated_results.items():
         print(key, score)
