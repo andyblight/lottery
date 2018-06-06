@@ -50,15 +50,16 @@ depends on each lottery and each set of balls.
 
 ## In progress
 
-Removed num_lines from ticket generation methods.
-Change names of ticket generation to line generation.
 Noticed that removing the alternate path in ticket generation reduced number of winners.
+Test this.
 
 Euro4 Ticket generation seems to produce the most winners.  Modify
 next_ticket.py to generate ticket based on specified methods.
 
 ## Done
 
+20180606 Removed num_lines from ticket generation methods.
+Change names of ticket generation to line generation.
 20180510 Run eval-test.sh.  Lotto ticket generation method 2 generates 0 winners.
 Looks like a bug.
 Analysis of the log file shows that ticket method 2 only generates 1 ball

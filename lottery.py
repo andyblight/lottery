@@ -76,7 +76,7 @@ class LotteryTicketLineGenerator:
 
     def generate(self, stats_method):
         """ Generate a new line using the ball stats. """
-        LOGGER.info('TODO' + str(ball_stats))
+        LOGGER.info('TODO' + str(stats_method))
 
 
 class LotteryStatsGenerationMethod:
