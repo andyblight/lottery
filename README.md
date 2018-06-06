@@ -9,8 +9,15 @@ at your own risk.
 
 ## TODO
 
+The ultimate goal is to predict big winners, getting wins with 4 balls or more.
+Work out a way to do this.
+Lotto is more complicated to predict as there are a number of ball sets in use.
+Maybe one of the smaller lotteries might be more use, Thunderball?
+
+Is date range in the output useful?  Are the dates of the draws useful?
+
 Create several different ticket generation methods to evaluate using the scores.
-Each line generator creates one line that is addd to a ticket.  Things to try:
+Each line generator creates one line that is add to a ticket.  Things to try:
 
 * Look at short term (less than n) results to pick up "hot" numbers.
 * Look at longer term (more than n) results for numbers that haven't  come up in a long time.
@@ -50,14 +57,16 @@ depends on each lottery and each set of balls.
 
 ## In progress
 
-Noticed that removing the alternate path in ticket generation reduced number of winners.
-Test this.
+Noticed that line generation method Lotto2 is significantly worse at predicting
+winners.
 
 Euro4 Ticket generation seems to produce the most winners.  Modify
 next_ticket.py to generate ticket based on specified methods.
 
 ## Done
 
+20180607 Noticed that removing the alternate path in ticket generation reduced number
+of winners.  This was shown to be due to halving the number of lines being tested.
 20180606 Removed num_lines from ticket generation methods.
 Change names of ticket generation to line generation.
 20180510 Run eval-test.sh.  Lotto ticket generation method 2 generates 0 winners.

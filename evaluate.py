@@ -79,7 +79,7 @@ def generate_date_ranges(results):
 def evaluate_line(start_date, num_weeks, stats_name, line_name, line,
                   lottery_results):
     """ Evaluates one ticket line against the next four draws. """
-    eval_results = []
+    line_results = []
     end_date = start_date + datetime.timedelta(weeks=num_weeks)
     four_weeks_results = lottery_results.get_lottery().get_draws_in_date_range(
         start_date, end_date)
@@ -89,8 +89,8 @@ def evaluate_line(start_date, num_weeks, stats_name, line_name, line,
         score = line.score(draw)
         logging.debug("el: winner %s", score[2])
         eval_result = EvaluationResult(stats_name, line_name, draw, score)
-        eval_results.append(eval_result)
-    return eval_results
+        line_results.append(eval_result)
+    return line_results
 
 
 def setup_logging(args):
@@ -149,8 +149,16 @@ def collate_evaluation_results(evaluation_results):
     # Each entry: key = stats method + ticket method, value =
     # (number of wins, biggest win, [2 ball wins, 3 ball wins, 4 ball wins,...])
     method_combination_scores = {}
+    # evaluation_results is a
+    # list of eval_results which is a
+    # list of line_results which is a
+    # list of EvaluationResult
     for eval_results in evaluation_results:
-        logging.info("cer: Date range: %s", eval_results[0])
+        ## FIXME AAAAAAA
+        # The date range is  NOT PRESSENT
+        # print("cer: Date range: ",  eval_results)
+        # logging.info("cer: Date range: from %s to %s", eval_results[0][0],
+        #               eval_results[0][1])
         for line_result in eval_results[1]:
             for result in line_result:
                 key = result.stats_method
@@ -179,6 +187,7 @@ def print_collated_results(collated_results):
     """ Print the collated results. """
     print("")
     print("Collated results")
+    # What date range do I need to show?  What is useful to help understand 
     print("stats method + ticket method, total number of wins, num of balls "
           "of biggest win, [num winning balls, ...])")
     # AJB dict iterator
