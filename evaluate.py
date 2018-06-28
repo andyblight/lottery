@@ -2,7 +2,6 @@
 """
 This file generates statistics about range of results and evaluates the
 effectiveness of the generation methods by comparing against future results.
-
 """
 
 import argparse
@@ -10,7 +9,7 @@ import datetime
 import logging
 import os
 
-from lottery_results import LotteryResults
+from lottery.lottery_results import LotteryResults
 
 NUMBER_OF_WEEKS = 4
 
@@ -155,7 +154,7 @@ def collate_evaluation_results(evaluation_results):
     # list of EvaluationResult
     for eval_results in evaluation_results:
         ## FIXME AAAAAAA
-        # The date range is  NOT PRESSENT
+        # The date range is  NOT PRESENT
         # print("cer: Date range: ",  eval_results)
         # logging.info("cer: Date range: from %s to %s", eval_results[0][0],
         #               eval_results[0][1])

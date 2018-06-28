@@ -9,7 +9,7 @@ import argparse
 import logging
 import os
 
-from lottery_results import LotteryResults
+from lottery.lottery_results import LotteryResults
 
 EURO_STATS_NAME = "Euro1"
 LOTTO_STATS_NAME = "Lotto1"

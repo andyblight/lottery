@@ -4,9 +4,9 @@ import calendar
 import datetime
 import logging
 
-from lottery import Lottery, LotteryTicket, LotteryDraw, LotteryParser, \
+from ..lottery import Lottery, LotteryTicket, LotteryDraw, LotteryParser, \
     LotteryTicketLineGenerator, LotteryStatsGenerationMethod
-from lottery_utils import SetOfBalls, convert_str_to_date, frequency, \
+from ..lottery_utils import SetOfBalls, convert_str_to_date, frequency, \
     most_common_balls, least_common_balls
 
 LOGGER = logging.getLogger('EuroMillions')

@@ -7,8 +7,8 @@ import csv
 import datetime
 import logging
 
-from euro_millions import LotteryEuroMillions
-from lotto import LotteryLotto
+from .euromillions.euro_millions import LotteryEuroMillions
+from .lotto.lotto import LotteryLotto
 
 
 LOGGER = logging.getLogger('LotteryResults')

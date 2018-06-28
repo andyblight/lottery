@@ -2,8 +2,9 @@
 """
 This file imports CSV data from the merseyworld web site.  Pages are:
 Lotto:
-http://lottery.merseyworld.com/cgi-bin/lottery?days=2&Machine=Z&Ballset=0&order=1&show=1&year=-1&display=CSV
-Euromillions
+http://lottery.merseyworld.com/cgi-bin/lottery?days=2&Machine=Z&Ballset=0&order=0&show=1&year=-1&display=CSV
+
+Euromillions:
 http://lottery.merseyworld.com/cgi-bin/lottery?days=20&Machine=Z&Ballset=0&order=0&show=1&year=-1&display=CSV
 """
 
@@ -80,11 +81,14 @@ def setup_logging(args):
 
 def fetch_and_process(url, filename):
     """ Writes a CSV file from the page at the given URL. """
+    print("Fetching info from: ", url)
     logging.info("Fetching info from: %s", url)
-    content = urlopen(url).read()
+    content = urlopen(url, timeout=10).read()
+    print("Fetched.")
     logging.info(content)
     csv_list = parse_list(content)
     # print(csv_list)
+    print("Writing data to: ", filename)
     logging.info("Writing data to: %s", filename)
     write_csv_file(filename, csv_list)
 

@@ -4,14 +4,16 @@ The aim of the project is to predict winning lottery tickets.  This should be
 impossible but I have a hunch that there are patterns in the results that can
 be used to improve the chances of winning.
 
+The ultimate goal is to predict big winners, getting wins of 4 balls or more.
+
 DISCLAIMER: I take no responsibility whatsoever for the use of this code.  Use
 at your own risk.
 
 ## TODO
 
-The ultimate goal is to predict big winners, getting wins with 4 balls or more.
-Work out a way to do this.
 Lotto is more complicated to predict as there are a number of ball sets in use.
+EuroMillions is two sets of balls and machines.  Predict each set independently
+to line generation need to be significantly different from Lotto.
 Maybe one of the smaller lotteries might be more use, Thunderball?
 
 Is date range in the output useful?  Are the dates of the draws useful?
@@ -57,14 +59,27 @@ depends on each lottery and each set of balls.
 
 ## In progress
 
-Noticed that line generation method Lotto2 is significantly worse at predicting
-winners.
+Move line generation classes into a separate file for each lottery.
 
-Euro4 Ticket generation seems to produce the most winners.  Modify
-next_ticket.py to generate ticket based on specified methods.
+## Decisions
+
+### Leave old methods in the code
+
+This is the better approach for now as it is easier to compare old and new methods.
+It also means that old methods keep the same names so it makes comparison easier.
+This means that the LineGeneration classes need to be moved into their own files
+to avoid the enevitable clutter many classes will cause.
+
+Pythin project structure:  http://docs.python-guide.org/en/latest/writing/structure/
+
+## Status
+
+20180608  Best: Euro1Euro2, Lotto1Lotto1.  Worst: Euro1Euro3,  Lotto1Lotto2
 
 ## Done
 
+20180628 Improved directory structure in preparation for moving LineGeneration classes
+into their own directories.
 20180607 Noticed that removing the alternate path in ticket generation reduced number
 of winners.  This was shown to be due to halving the number of lines being tested.
 20180606 Removed num_lines from ticket generation methods.

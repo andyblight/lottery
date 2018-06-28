@@ -4,7 +4,7 @@ import datetime
 import logging
 import sys
 
-from lottery_utils import SetOfBalls
+from .lottery_utils import SetOfBalls
 
 LOGGER = logging.getLogger('Lottery')
 
