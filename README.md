@@ -11,6 +11,11 @@ at your own risk.
 
 ## TODO
 
+Running with the results, 20180625, shows that the line generation algorithms need
+to be improved.  Lotto (0 wins) was worse than EuroMillions (2 wins) but all were 
+way worse than my previous attempts.  I guess I must be missing something 
+fundamental in the way the lines are being generated.
+
 Lotto is more complicated to predict as there are a number of ball sets in use.
 EuroMillions is two sets of balls and machines.  Predict each set independently
 to line generation need to be significantly different from Lotto.
